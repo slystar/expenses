@@ -1,4 +1,6 @@
 Expenses::Application.routes.draw do
+  resources :stores
+
   resources :expenses
 
   resources :users
