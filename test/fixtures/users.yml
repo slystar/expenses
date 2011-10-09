@@ -3,11 +3,11 @@
 one:
   id: 1
   user_name: MyString
-  password: MyString
+  password_digest: MyString
   name: MyString
 
 two:
-  id: 1
+  id: 2
   user_name: MyString
-  password: MyString
+  password_digest: MyString
   name: MyString
