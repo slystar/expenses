@@ -1,0 +1,34 @@
+%p#notice= notice
+%p
+  %b Date purchased:
+  = @expense.date_purchased
+%p
+  %b Description:
+  = @expense.description
+%p
+  %b Pay method:
+  = @expense.pay_method_id
+%p
+  %b Reason:
+  = @expense.reason_id
+%p
+  %b Store:
+  = @expense.store_id
+%p
+  %b User:
+  = @expense.user_id
+%p
+  %b Group:
+  = @expense.group_id
+%p
+  %b Amount:
+  = @expense.amount
+%p
+  %b Process date:
+  = @expense.process_date
+%p
+  %b Process flag:
+  = @expense.process_flag
+= link_to 'Edit', edit_expense_path(@expense)
+|
+\#{link_to 'Back', expenses_path}

@@ -21,6 +21,9 @@ gem 'jquery-rails'
 # To use ActiveModel has_secure_password
 gem 'bcrypt-ruby', '~> 3.0.0'
 
+# Haml
+gem 'haml-rails'
+
 # Use unicorn as the web server
 # gem 'unicorn'
 
@@ -29,6 +32,11 @@ gem 'bcrypt-ruby', '~> 3.0.0'
 
 # To use debugger
 # gem 'ruby-debug19', :require => 'ruby-debug'
+
+group :development do
+  gem 'hpricot'
+  gem 'ruby_parser'
+end
 
 group :test do
   # Pretty printed test output
