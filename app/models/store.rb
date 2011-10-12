@@ -3,5 +3,5 @@ class Store < ActiveRecord::Base
     attr_accessible :store
 
     # Validations
-    validates :store, :presence => true, :uniqueness => true, :length => {:minimum => 2}
+    validates :store, :presence => true, :uniqueness => true, :length => {:maximum => 50}
 end
