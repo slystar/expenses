@@ -36,9 +36,13 @@ gem 'haml-rails'
 group :development do
   gem 'hpricot'
   gem 'ruby_parser'
+  gem 'rspec-rails', '>= 2.6.1'
 end
 
 group :test do
   # Pretty printed test output
   gem 'turn', :require => false
+  gem 'activesupport'
+  gem 'rspec-rails', '>= 2.6.1'
+  gem 'webrat', '>= 0.7.1'
 end
