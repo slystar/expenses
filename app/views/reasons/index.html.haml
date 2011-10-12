@@ -1,0 +1,19 @@
+%h1 Listing reasons
+
+%table
+  %tr
+    %th Reason
+    %th
+    %th
+    %th
+
+  - @reasons.each do |reason|
+    %tr
+      %td= reason.reason
+      %td= link_to 'Show', reason
+      %td= link_to 'Edit', edit_reason_path(reason)
+      %td= link_to 'Destroy', reason, :confirm => 'Are you sure?', :method => :delete
+
+%br
+
+= link_to 'New Reason', new_reason_path

@@ -1,0 +1,9 @@
+%p#notice= notice
+
+%p
+  %b Reason:
+  = @reason.reason
+
+= link_to 'Edit', edit_reason_path(@reason)
+\|
+= link_to 'Back', reasons_path
