@@ -21,6 +21,12 @@ describe Store do
 	store.should_not be_valid
     end
 
+    it "should be unique, case insensitive" do
+	Store.create!(@attr)
+	store=Store.new(@attr.merge(:store => "FUTURE SHOP"))
+	store.should_not be_valid
+    end
+
     it "should have a maximum of characters" do
 	store=Store.new(@attr.merge(:store => "a" * 51))
 	store.should_not be_valid

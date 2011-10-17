@@ -21,6 +21,12 @@ describe Reason do
 	reason.should_not be_valid
     end
 
+    it "should be unique, case insensitive" do
+	Reason.create!(@attr)
+	reason=Reason.new(@attr.merge(:store => "FUTURE SHOP"))
+	reason.should_not be_valid
+    end
+
     it "should have a maximum of characters" do
 	reason=Reason.new(@attr.merge(:reason => "a" * 51))
 	reason.should_not be_valid

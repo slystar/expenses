@@ -3,5 +3,5 @@ class Reason < ActiveRecord::Base
     attr_accessible :reason
 
     # Validations
-    validates :reason, :presence => true, :uniqueness => true, :length => {:maximum => 50}
+    validates :reason, :presence => true, :uniqueness => {:case_sensitive => false}, :length => {:maximum => 50}
 end
