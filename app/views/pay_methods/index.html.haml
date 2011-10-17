@@ -1,0 +1,19 @@
+%h1 Listing pay_methods
+
+%table
+  %tr
+    %th Pay method
+    %th
+    %th
+    %th
+
+  - @pay_methods.each do |pay_method|
+    %tr
+      %td= pay_method.pay_method
+      %td= link_to 'Show', pay_method
+      %td= link_to 'Edit', edit_pay_method_path(pay_method)
+      %td= link_to 'Destroy', pay_method, :confirm => 'Are you sure?', :method => :delete
+
+%br
+
+= link_to 'New Pay method', new_pay_method_path

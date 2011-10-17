@@ -1,4 +1,6 @@
 Expenses::Application.routes.draw do
+  resources :pay_methods
+
   resources :reasons
 
   get "logout" => "sessions#destroy", :as => "logout"
