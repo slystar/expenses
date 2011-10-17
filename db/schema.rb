@@ -11,7 +11,14 @@
 #
 # It's strongly recommended to check this file into your version control system.
 
-ActiveRecord::Schema.define(:version => 20111017012206) do
+ActiveRecord::Schema.define(:version => 20111017014648) do
+
+  create_table "backups", :force => true do |t|
+    t.datetime "backup_date"
+    t.integer  "backup_dir_size_KB"
+    t.datetime "created_at"
+    t.datetime "updated_at"
+  end
 
   create_table "expenses", :force => true do |t|
     t.date     "date_purchased",                                                   :null => false
