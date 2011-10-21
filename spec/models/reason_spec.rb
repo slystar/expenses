@@ -23,8 +23,9 @@ describe Reason do
 
     it "should be unique, case insensitive" do
 	Reason.create!(@attr)
-	reason=Reason.new(@attr.merge(:name => "HOME"))
-	reason.should_not be_valid
+	upcased=@attr.inject({}) { |h, (k, v)| h[k] = v.upcase; h }
+	reason=Reason.new(upcased)
+	upcased.should_not == @attr and reason.should_not be_valid
     end
 
     it "should have a maximum of characters" do

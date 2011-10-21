@@ -23,8 +23,9 @@ describe PayMethod do
 
     it "should be unique, case insensitive" do
 	PayMethod.create!(@attr)
-	pay_method=PayMethod.new(@attr.merge(:name => "CREDIT Card"))
-	pay_method.should_not be_valid
+	upcased=@attr.inject({}) { |h, (k, v)| h[k] = v.upcase; h }
+	pay_method=PayMethod.new(upcased)
+	upcased.should_not == @attr and pay_method.should_not be_valid
     end
 
     it "should have a maximum of characters" do

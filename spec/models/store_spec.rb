@@ -33,8 +33,9 @@ describe Store do
 
     it "should be unique, case insensitive" do
 	Store.create!(@attr)
-	store=Store.new(@attr.merge(:name => "FUTURE SHOP"))
-	store.should_not be_valid
+	upcased=@attr.inject({}) { |h, (k, v)| h[k] = v.upcase; h }
+	store=Store.new(upcased)
+	upcased.should_not == @attr and store.should_not be_valid
     end
 
     it "should have a maximum of characters" do
