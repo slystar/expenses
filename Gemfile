@@ -37,6 +37,8 @@ group :development do
   gem 'hpricot'
   gem 'ruby_parser'
   gem 'rspec-rails', '>= 2.6.1'
+  gem 'watchr'
+  gem 'spork', '~> 0.9.0.rc'
 end
 
 group :test do
@@ -45,4 +47,6 @@ group :test do
   gem 'activesupport'
   gem 'rspec-rails', '>= 2.6.1'
   gem 'webrat', '>= 0.7.1'
+  gem 'watchr'
+  gem 'spork', '~> 0.9.0.rc'
 end
