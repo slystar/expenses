@@ -1,7 +1,7 @@
 class PayMethod < ActiveRecord::Base
     # Accessible attributes
-    attr_accessible :pay_method
+    attr_accessible :name
 
     # Validations
-    validates :pay_method, :presence => true, :uniqueness => {:case_sensitive => false}, :length => {:maximum => 50}
+    validates :name, :presence => true, :uniqueness => {:case_sensitive => false}, :length => {:maximum => 50}
 end
