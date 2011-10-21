@@ -4,7 +4,17 @@ describe Store do
 
     before(:each) do
 	@attr={:store => "Future Shop"}
+	@attr_expense={:date_purchased => Time.now, :pay_method_id => 1, :reason_id => 1, :user_id => 1, :group_id => 1}
     end
+
+    def expense_with_store()
+	store=Store.create(@attr)
+	expense=Expense.new(@attr_expense)
+	expense.store=store
+	expense.save
+	return expense
+    end
+
 
     it "should create a new instance given valid attributes" do
 	Store.create!(@attr)
@@ -30,5 +40,27 @@ describe Store do
     it "should have a maximum of characters" do
 	store=Store.new(@attr.merge(:store => "a" * 51))
 	store.should_not be_valid
+    end
+
+    it "should not be destroyed if store has expenses" do
+	expense=expense_with_store
+	store=expense.store
+	store.destroy
+	store.should_not be_destroyed
+    end
+
+    it "should have an error if it has expenses and destroy is called" do
+	expense=expense_with_store
+	store=expense.store
+	store.destroy
+	store.errors.size.should == 1
+    end
+
+    it "should be destroyed if store has no expenses" do
+	expense=expense_with_store
+	store=expense.store
+	expense.destroy
+	store.destroy
+	store.should be_destroyed
     end
 end
