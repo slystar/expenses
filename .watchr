@@ -34,7 +34,7 @@ def run_spec_and_notify(file)
     # Notify
     Libnotify.show do |notify|
 	notify.summary=file
-	notify.body=results.gsub(/\e[^\s]*/,'')
+	notify.body=results.gsub(/\e\[\d+m/,'')
 	notify.timeout=5
 	notify.icon_path=icon
     end
