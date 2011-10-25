@@ -69,4 +69,10 @@ describe Store do
 	store=Store.new(@attr)
 	store.should respond_to(:expenses)
     end
+
+    it "should have the right associated expense" do
+	expense=expense_with_store
+	store=expense.store
+	store.expenses.first.should == expense
+    end
 end
