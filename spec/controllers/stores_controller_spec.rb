@@ -24,7 +24,7 @@ describe StoresController do
   # Store. As you add validations to Store, be sure to
   # update the return value of this method accordingly.
   def valid_attributes
-    {}
+    {:name => 'Future Shop'}
   end
 
   describe "GET index" do

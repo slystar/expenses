@@ -64,4 +64,9 @@ describe Store do
 	store.destroy
 	store.should be_destroyed
     end
+
+    it "should have expenses attributes" do
+	store=Store.new(@attr)
+	store.should respond_to(:expenses)
+    end
 end
