@@ -75,4 +75,11 @@ describe Store do
 	store=expense.store
 	store.expenses.first.should == expense
     end
+
+    it "should not include other stores expenese" do
+	expense=expense_with_store
+	store=expense.store
+	expense2=Expense.new(@attr_expense)
+	store.expenses.size.should == 1
+    end
 end
