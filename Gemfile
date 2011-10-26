@@ -33,20 +33,22 @@ gem 'haml-rails'
 # To use debugger
 # gem 'ruby-debug19', :require => 'ruby-debug'
 
+group :development, :test do
+  gem 'rspec-rails', '>= 2.6.1'
+  gem 'spork', '~> 0.9.0.rc'
+  gem 'watchr'
+  gem 'capybara'
+  gem 'launchy'
+end
+
 group :development do
   gem 'hpricot'
   gem 'ruby_parser'
-  gem 'rspec-rails', '>= 2.6.1'
-  gem 'watchr'
-  gem 'spork', '~> 0.9.0.rc'
 end
 
 group :test do
   # Pretty printed test output
   gem 'turn', :require => false
   gem 'activesupport'
-  gem 'rspec-rails', '>= 2.6.1'
   gem 'webrat', '>= 0.7.1'
-  gem 'watchr'
-  gem 'spork', '~> 0.9.0.rc'
 end
