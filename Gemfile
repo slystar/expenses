@@ -38,7 +38,6 @@ group :development, :test do
   gem 'spork', '~> 0.9.0.rc'
   gem 'watchr'
   gem 'capybara'
-  gem 'launchy'
 end
 
 group :development do
