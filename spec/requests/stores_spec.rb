@@ -7,5 +7,10 @@ describe "Stores" do
       get stores_path
       response.status.should be(200)
     end
+    it "it should create a store" do
+      visit "/stores"
+      page.should have_content("New Store")
+      click_on 'New Store'
+    end
   end
 end

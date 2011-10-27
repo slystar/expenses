@@ -5,3 +5,5 @@ tmp/
 .sass-cache/
 .rvmrc*
 **.swp
+webrat.log
+capybara*.log
