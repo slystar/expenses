@@ -58,10 +58,17 @@ def run_spec(file)
     puts
 end
 
+# Watch Rspec files themselves
 watch("spec/.*/*_spec.rb") do |match|
     run_spec match[0]
 end
 
+# Watch ruby files in app directory and call matching spec
 watch("app/(.*/.*).rb") do |match|
     run_spec %{spec/#{match[1]}_spec.rb}
+end
+
+# Watch haml files in views and call matching requests spec
+watch("app/views/(.*)/.*.haml") do |match|
+    run_spec %{spec/requests/#{match[1]}_spec.rb}
 end
