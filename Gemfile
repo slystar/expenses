@@ -37,14 +37,15 @@ group :development, :test do
   gem 'rspec-rails', '>= 2.6.1'
   gem 'spork', '~> 0.9.0.rc'
   gem 'capybara'
+  gem 'watchr'
 end
 
 group :development do
   gem 'hpricot'
   gem 'ruby_parser'
-  gem 'rb-inotify'
-  gem 'libnotify'
-  gem 'guard-rspec'
+  #gem 'rb-inotify'
+  #gem 'libnotify'
+  #gem 'guard-rspec'
 end
 
 group :test do
