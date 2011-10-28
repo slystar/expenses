@@ -36,18 +36,23 @@ gem 'haml-rails'
 group :development, :test do
   gem 'rspec-rails', '>= 2.6.1'
   gem 'spork', '~> 0.9.0.rc'
-  gem 'watchr'
   gem 'capybara'
 end
 
 group :development do
   gem 'hpricot'
   gem 'ruby_parser'
+  gem 'spork', '~> 0.9.0.rc'
+  gem 'rb-inotify'
+  gem 'libnotify'
+  gem 'guard-rspec'
 end
 
 group :test do
   # Pretty printed test output
   gem 'turn', :require => false
   gem 'activesupport'
-  #gem 'webrat', '>= 0.7.1'
+  gem 'webrat', '>= 0.7.1'
+  gem 'spork', '~> 0.9.0.rc'
+  gem 'factory_girl_rails'
 end
