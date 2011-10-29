@@ -43,9 +43,9 @@ end
 group :development do
   gem 'hpricot'
   gem 'ruby_parser'
-  #gem 'rb-inotify'
-  #gem 'libnotify'
-  #gem 'guard-rspec'
+  gem 'rb-inotify'
+  gem 'libnotify'
+  gem 'guard-rspec'
 end
 
 group :test do
