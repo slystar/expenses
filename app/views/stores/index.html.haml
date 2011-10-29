@@ -7,7 +7,7 @@
     %th
   - @stores.each do |store|
     %tr
-      %td= store.store
+      %td= store.name
       %td= link_to 'Show', store
       %td= link_to 'Edit', edit_store_path(store)
       %td= link_to 'Destroy', store, confirm: 'Are you sure?', method: :delete

@@ -48,7 +48,8 @@ def run_spec(file)
 	return
     end
 
-    puts "Running #{file}"
+    puts("-" * 60)
+    puts "#{Time.now} -- Running #{file}"
     # Check if we want graphical notification
     if @libnotify
 	run_spec_and_notify(file)
