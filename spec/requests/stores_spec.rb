@@ -6,6 +6,7 @@ describe "Stores:" do
 	@stores=[]
 	names=["Future Shop","Best Buy", "New Egg"]
 	names.each{|name| @stores.push(Store.create(:name => name))}
+	@store_with_expense=Expense.create(:date_purchased => Time.now, :pay_method_id => 1, :reason_id => 1, :user_id => 1, :group_id => 1, :store_id => 1)
     end
 
     describe "Controller methods:" do
@@ -26,7 +27,20 @@ describe "Stores:" do
 	    page.should have_content("Back")
 	end
 
-	it "new" do
+	it "edit" do
+	    id=1
+	    name="Canadian Tire"
+	    visit "#{stores_path}/#{id}/edit"
+	    fill_in "Name", :with => name
+	    click_on "Update Store"
+	    page.should have_content(name)
+	    page.should have_selector('a', :hrf => "#{stores_path}/#{id}/edit")
+	    page.should have_selector('a', :hrf => "#{stores_path}")
+	    page.should have_selector("div#flash_notice")
+	    current_path.should == "#{stores_path}/#{id}"
+	end
+
+	it "create" do
 	    stores_count=Store.find(:all).count
 	    name="Test"
 	    visit "#{stores_path}/new"
@@ -35,14 +49,23 @@ describe "Stores:" do
 	    page.should have_content(name)
 	    page.should have_content("Edit")
 	    page.should have_content("Back")
-	    page.has_selector?("div#flash")
+	    page.should have_selector("div#flash_notice")
 	    current_path.should == "#{stores_path}/#{stores_count + 1}"
+	    #page.driver.browser.switch_to.alert.accept
 	end
 
-	it "edit"
-	it "create"
-	it "update"
-	it "destroy"
+	it "destroy" do
+	    id=2
+	    visit stores_path
+	    start_count=all('a').select { |a| a[:href] =~ /#{stores_path}\/[0-9]\/edit/ }.count
+	    rack_test_session_wrapper = Capybara.current_session.driver
+	    rack_test_session_wrapper.delete "#{stores_path}/#{id}"
+	    visit stores_path
+	    end_count=all('a').select { |a| a[:href] =~ /#{stores_path}\/[0-9]\/edit/ }.count
+	    end_count.should == (start_count - 1)
+	    link=all('a').select{|a| a[:href] == "#{stores_path}/#{id}/edit"}.first
+	    link.should be_nil
+	end
     end
 
     describe "custom tests:" do
@@ -56,10 +79,23 @@ describe "Stores:" do
 	    visit "#{stores_path}/new"
 	    fill_in "Name", :with => name
 	    click_on "Create Store"
-	    page.has_selector?("div#error_explanation")
+	    page.should have_selector("div#error_explanation")
 	    current_path.should == "#{stores_path}"
 	end
 
-	it "should show an error when renaming to a duplicate store"
+	it "should show an error when renaming to a duplicate store" do
+	    id=1
+	    existing_name=Store.find(id).name
+	    name=@stores[1].name
+	    name.should_not == existing_name
+	    visit "#{stores_path}/#{id}/edit"
+	    fill_in "Name", :with => name
+	    click_on "Update Store"
+	    page.should have_selector('a', :hrf => "#{stores_path}")
+	    page.should have_selector("div#error_explanation")
+	    current_path.should == "#{stores_path}/#{id}"
+	end
+
+	it "should not allow the deletion of a store with expenses"
     end
 end
