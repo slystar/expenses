@@ -23,8 +23,17 @@ describe ExpensesController do
   # This should return the minimal set of attributes required to create a valid
   # Expense. As you add validations to Expense, be sure to
   # update the return value of this method accordingly.
-  def valid_attributes
-    {}
+    def valid_attributes
+	{
+	     :date_purchased => Date.today,
+	     :description => 'new gold car',
+	     :pay_method_id => 1,
+	     :reason_id =>1,
+	     :store_id =>1,
+	     :user_id =>1,
+	     :group_id =>1,
+	     :amount => 10.50
+	}
   end
 
   describe "GET index" do

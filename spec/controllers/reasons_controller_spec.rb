@@ -24,7 +24,7 @@ describe ReasonsController do
   # Reason. As you add validations to Reason, be sure to
   # update the return value of this method accordingly.
   def valid_attributes
-    {}
+    {:name => 'restaurant'}
   end
 
   describe "GET index" do

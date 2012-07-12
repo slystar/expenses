@@ -24,7 +24,7 @@ describe PayMethodsController do
   # PayMethod. As you add validations to PayMethod, be sure to
   # update the return value of this method accordingly.
   def valid_attributes
-    {}
+    {:name => 'mastercard'}
   end
 
   describe "GET index" do
