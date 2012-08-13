@@ -49,6 +49,9 @@ def run_spec(file)
 	return
     end
 
+    # Clear terminal
+    #system('clear')
+    
     puts("-" * 60)
     puts "#{Time.now} -- Running #{file}"
     # Check if we want graphical notification
