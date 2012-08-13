@@ -2,6 +2,8 @@ require 'spec_helper'
 
 describe Reason do
 
+    pending "Need to test associations"
+
     before(:each) do
 	@attr={:name => "Home"}
     end

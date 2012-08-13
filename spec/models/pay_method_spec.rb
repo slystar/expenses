@@ -2,6 +2,8 @@ require 'spec_helper'
 
 describe PayMethod do
 
+    pending "Need to test associations"
+
     before(:each) do
 	@attr={:name => "Credit card"}
     end
