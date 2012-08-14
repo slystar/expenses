@@ -2,12 +2,15 @@
 # Look for argument
 notify=ARGV[1]
 
+# Variables
+@flag_clear=false
+
 # Check for notify
 if notify =~ /libnotify/i
     # Require library
     require 'libnotify'
     # Set flag
-    @libnotify=true
+    @flag_libnotify=true
     # Get current directory
     pwd=Dir.pwd
     # Set icon paths
@@ -15,6 +18,11 @@ if notify =~ /libnotify/i
     @icon[:fail]=File.join(pwd,'.autotest_images/fail.png')
     @icon[:pass]=File.join(pwd,'.autotest_images/pass.png')
     @icon[:pending]=File.join(pwd,'.autotest_images/pending.png')
+end
+
+# Check for clear
+if notify =~ /clear/i
+    @flag_clear=true
 end
 
 def run_spec_and_notify(file)
@@ -50,12 +58,12 @@ def run_spec(file)
     end
 
     # Clear terminal
-    #system('clear')
+    system('clear') if @flag_clear
     
     puts("-" * 60)
     puts "#{Time.now} -- Running #{file}"
     # Check if we want graphical notification
-    if @libnotify
+    if @flag_libnotify
 	run_spec_and_notify(file)
     else
 	system "bundle exec rspec #{file}"
