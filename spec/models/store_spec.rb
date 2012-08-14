@@ -6,6 +6,7 @@ describe Store do
 
     before(:each) do
 	@attr={:name => "Future Shop"}
+	@object=FactoryGirl.build(:store)
 	@attr_expense={:date_purchased => Time.now, :pay_method_id => 1, :reason_id => 1, :user_id => 1, :group_id => 1}
     end
 
@@ -19,12 +20,11 @@ describe Store do
 
 
     it "should create a new instance given valid attributes" do
-	Store.create!(@attr)
+	@object.should be_valid
     end
 
-    it "should require a store" do
-	no_store=Store.new(@attr.merge(:name => ""))
-	no_store.should_not be_valid
+    it "should require a store name" do
+	FactoryGirl.build(:store, name: nil).should_not be_valid
     end
 
     it "should be unique" do
