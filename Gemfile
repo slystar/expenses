@@ -38,6 +38,7 @@ group :development, :test do
   gem 'spork', '~> 0.9.0.rc'
   gem 'capybara'
   gem 'watchr'
+  gem 'factory_girl_rails'
 end
 
 group :development do
@@ -53,5 +54,5 @@ group :test do
   gem 'turn', :require => false
   gem 'activesupport'
   #gem 'webrat', '>= 0.7.1'
-  gem 'factory_girl_rails'
+  gem 'faker'
 end
