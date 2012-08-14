@@ -47,6 +47,15 @@ module Expenses
 
     config.generators do |g|
       g.template_engine :haml
+      # see http://everydayrails.com/2012/03/12/testing-series-rspec-setup.html
+      g.test_framework :rspec,
+	  :fixtures => true,
+	  :view_specs => false,
+	  :helper_specs => true,
+	  :routing_specs => false,
+	  :controller_specs => true,
+	  :request_specs => true
+      g.fixtrue_replacement :factory_girl, :dir => "spec/factories"
     end
   end
 end
