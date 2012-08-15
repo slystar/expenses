@@ -39,6 +39,8 @@ group :development, :test do
   gem 'capybara'
   gem 'watchr'
   gem 'factory_girl_rails'
+  gem 'guard-rspec'
+  gem 'guard-spork'
 end
 
 group :development do
@@ -46,7 +48,6 @@ group :development do
   gem 'ruby_parser'
   gem 'rb-inotify'
   gem 'libnotify'
-  gem 'guard-rspec'
 end
 
 group :test do
