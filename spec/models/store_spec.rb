@@ -10,10 +10,10 @@ describe Store do
 	@attr_expense={:date_purchased => Time.now, :pay_method_id => 1, :reason_id => 1, :user_id => 1, :group_id => 1}
     end
 
-    def expense_with_store()
-	store=Store.create(@attr)
+    def create_expense_with_store()
+	@store=Store.create(@attr)
 	expense=Expense.new(@attr_expense)
-	expense.store=store
+	expense.store=@store
 	expense.save
 	return expense
     end
@@ -46,42 +46,41 @@ describe Store do
     end
 
     it "should not be destroyed if store has expenses" do
-	expense=expense_with_store
+	expense=create_expense_with_store
 	store=expense.store
 	store.destroy
 	store.should_not be_destroyed
     end
 
     it "should have an error if it has expenses and destroy is called" do
-	expense=expense_with_store
+	expense=create_expense_with_store
 	store=expense.store
 	store.destroy
 	store.errors.size.should == 1
     end
 
-    it "should be destroyed if store has no expenses" do
-	expense=expense_with_store
+    it "should be destroyable if store has no expenses" do
+	expense=create_expense_with_store
 	store=expense.store
 	expense.destroy
 	store.destroy
 	store.should be_destroyed
     end
 
-    it "should have expenses attributes" do
+    it "should respond to expenses" do
 	store=Store.new(@attr)
 	store.should respond_to(:expenses)
     end
 
-    it "should have the right associated expense" do
-	expense=expense_with_store
-	store=expense.store
-	store.expenses.first.should == expense
+    it "should have expenses attributes" do
+	expense=create_expense_with_store
+	expense2=Expense.create(get_attr_expense)
+	@store.expenses.size.should == 2
     end
 
-    it "should not include other stores expenese" do
-	expense=expense_with_store
+    it "should have the right associated expense" do
+	expense=create_expense_with_store
 	store=expense.store
-	expense2=Expense.new(@attr_expense)
-	store.expenses.size.should == 1
+	store.expenses.first.should == expense
     end
 end

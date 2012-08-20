@@ -1,5 +1,6 @@
 require 'rubygems'
 require 'spork'
+require "#{File.dirname(__FILE__)}/spec_helper_custom.rb"
 
 Spork.prefork do
   # Loading more in this block will cause your tests to run faster. However,
@@ -32,6 +33,9 @@ RSpec.configure do |config|
   # examples within a transaction, remove the following line or assign false
   # instead of true.
   config.use_transactional_fixtures = true
+
+  # Custom helpers
+  config.include SpecHelpFunctions
 end
 end
 
