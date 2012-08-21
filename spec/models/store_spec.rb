@@ -2,12 +2,10 @@ require 'spec_helper'
 
 describe Store do
 
-    pending "Need to test associations"
-
     before(:each) do
 	@attr={:name => "Future Shop"}
 	@object=FactoryGirl.build(:store)
-	@attr_expense={:date_purchased => Time.now, :pay_method_id => 1, :reason_id => 1, :user_id => 1, :group_id => 1}
+	@attr_expense={:date_purchased => Time.now, :store_id => 1, :pay_method_id => 1, :reason_id => 1, :user_id => 1, :group_id => 1}
     end
 
     def create_expense_with_store()
@@ -17,7 +15,6 @@ describe Store do
 	expense.save
 	return expense
     end
-
 
     it "should create a new instance given valid attributes" do
 	@object.should be_valid
@@ -45,6 +42,23 @@ describe Store do
 	store.should_not be_valid
     end
 
+    it "should respond to expenses" do
+	store=Store.new(@attr)
+	store.should respond_to(:expenses)
+    end
+
+    it "should have expenses attributes" do
+	expense=create_expense_with_store
+	Expense.create(@attr_expense)
+	Expense.create(@attr_expense.merge(:store_id => 2))
+	@store.expenses.size.should == 2
+    end
+
+    it "should have the right associated expense" do
+	expense=create_expense_with_store
+	@store.should == expense.store
+    end
+
     it "should not be destroyed if store has expenses" do
 	expense=create_expense_with_store
 	store=expense.store
@@ -65,22 +79,5 @@ describe Store do
 	expense.destroy
 	store.destroy
 	store.should be_destroyed
-    end
-
-    it "should respond to expenses" do
-	store=Store.new(@attr)
-	store.should respond_to(:expenses)
-    end
-
-    it "should have expenses attributes" do
-	expense=create_expense_with_store
-	expense2=Expense.create(get_attr_expense)
-	@store.expenses.size.should == 2
-    end
-
-    it "should have the right associated expense" do
-	expense=create_expense_with_store
-	store=expense.store
-	store.expenses.first.should == expense
     end
 end
