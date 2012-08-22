@@ -95,7 +95,5 @@ describe "Stores:" do
 	    page.should have_selector("div#error_explanation")
 	    current_path.should == "#{stores_path}/#{id}"
 	end
-
-	it "should not allow the deletion of a store with expenses"
     end
 end
