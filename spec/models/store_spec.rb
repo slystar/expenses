@@ -77,7 +77,7 @@ describe Store do
 	expense=create_expense_with_store
 	store=expense.store
 	store.destroy
-	store.errors.messages.values.flatten.grep(/store/).size.should > 0
+	store.errors.messages.values.flatten.grep(/Store/).size.should > 0
     end
 
     it "should be destroyable if store has no expenses" do
