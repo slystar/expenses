@@ -73,6 +73,13 @@ describe PayMethod do
 	pay_method.errors.size.should == 1
     end
 
+    it "should have an error containing model name if it has expenses and destroy is called" do
+	expense=create_expense_with_pay_method
+	pay_method=expense.pay_method
+	pay_method.destroy
+	pay_method.errors.messages.values.flatten.grep(/PayMethod/).size.should > 0
+    end
+
     it "should be destroyable if pay_method has no expenses" do
 	expense=create_expense_with_pay_method
 	pay_method=expense.pay_method

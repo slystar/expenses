@@ -73,6 +73,13 @@ describe Reason do
 	reason.errors.size.should == 1
     end
 
+    it "should have an error containing model name if it has expenses and destroy is called" do
+	expense=create_expense_with_reason
+	reason=expense.reason
+	reason.destroy
+	reason.errors.messages.values.flatten.grep(/Reason/).size.should > 0
+    end
+
     it "should be destroyable if reason has no expenses" do
 	expense=create_expense_with_reason
 	reason=expense.reason

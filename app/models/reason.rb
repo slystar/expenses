@@ -16,7 +16,7 @@ class Reason < ActiveRecord::Base
     # Method to check for expenses
     def verify_expenses
 	if self.expenses.size > 0
-	    errors.add(:base,"Can't delete store: #{self.name} because it has expenses assigned to it")
+	    errors.add(:base,"Can't delete #{self.class}: #{self.name} because it has expenses assigned to it")
 	    return false
 	else
 	    return true

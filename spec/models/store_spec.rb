@@ -73,6 +73,13 @@ describe Store do
 	store.errors.size.should == 1
     end
 
+    it "should have an error containing model name if it has expenses and destroy is called" do
+	expense=create_expense_with_store
+	store=expense.store
+	store.destroy
+	store.errors.messages.values.flatten.grep(/store/).size.should > 0
+    end
+
     it "should be destroyable if store has no expenses" do
 	expense=create_expense_with_store
 	store=expense.store
