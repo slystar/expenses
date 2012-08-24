@@ -15,6 +15,8 @@ describe Expense do
 
     it "should have a group_id"
 
+    it "should have an amount"
+
     it "should only allow numbers in amount"
 
     it "should not be created with a process date"
