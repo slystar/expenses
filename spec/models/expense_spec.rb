@@ -21,5 +21,7 @@ describe Expense do
 
     it "should not be created with process flag set to true"
 
-    it "should not be destroyable"
+    it "should not be destroyable if it's been processed"
+
+    it "should be destroyable if it hasn't been processed"
 end
