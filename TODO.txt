@@ -1,0 +1,11 @@
+Models:
+- user groups + membership
+- user roles + permissions
+- user_charge.rb
+- user_payment.rb
+
+Backups:
+- put backing up code in model?
+
+Bonus:
+- import csv from bank
