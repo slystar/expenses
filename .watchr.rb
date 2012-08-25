@@ -1,12 +1,14 @@
 # Created by Sly
 # Look for argument
-notify=ARGV[1]
+args=ARGV
 
 # Variables
 @flag_clear=false
+@flag_libnotify=false
 
 # Check for notify
-if notify =~ /libnotify/i
+if args.grep(/popup/i).size > 0
+    puts("ON: popup libnotify")
     # Require library
     require 'libnotify'
     # Set flag
@@ -21,7 +23,8 @@ if notify =~ /libnotify/i
 end
 
 # Check for clear
-if notify =~ /clear/i
+if args.grep(/clear/i).size > 0
+    puts("ON: clear screen")
     @flag_clear=true
 end
 
