@@ -9,7 +9,7 @@ describe Reason do
 
     def create_expense_with_reason()
 	@reason=Reason.create(@attr)
-	expense=Expense.new(@attr_expense)
+	expense=get_valid_expense
 	expense.reason=@reason
 	expense.save
 	return expense

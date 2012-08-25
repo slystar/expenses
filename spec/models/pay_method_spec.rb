@@ -9,7 +9,7 @@ describe PayMethod do
 
     def create_expense_with_pay_method()
 	@pay_method=PayMethod.create(@attr)
-	expense=Expense.new(@attr_expense)
+	expense=get_valid_expense
 	expense.pay_method=@pay_method
 	expense.save
 	return expense

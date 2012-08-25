@@ -10,7 +10,7 @@ describe Store do
 
     def create_expense_with_store()
 	@store=Store.create(@attr)
-	expense=Expense.new(@attr_expense)
+	expense=get_valid_expense
 	expense.store=@store
 	expense.save
 	return expense

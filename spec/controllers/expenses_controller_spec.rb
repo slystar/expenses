@@ -24,6 +24,10 @@ describe ExpensesController do
   # Expense. As you add validations to Expense, be sure to
   # update the return value of this method accordingly.
     def valid_attributes
+	#Create required objects
+	store=Store.create(:name => Faker::Company.name)
+	reason=Reason.create(:name => Faker::Name.name)
+	pay_method=PayMethod.create(:name => Faker::Name.name)
 	{
 	     :date_purchased => Date.today,
 	     :description => 'new gold car',
