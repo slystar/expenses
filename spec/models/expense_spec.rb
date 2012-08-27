@@ -80,17 +80,60 @@ describe Expense do
 	expense.should_not be_valid
     end
 
-    it "should have an amount"
+    it "should have an amount" do
+	expense=Expense.new(@attr)
+	expense.amount=nil
+	expense.should_not be_valid
+    end
 
-    it "should only allow numbers in amount"
+    it "should allow a float in amount" do
+	expense=Expense.new(@attr)
+	expense.amount="1.567"
+	expense.should be_valid
+    end
 
-    it "should not be created with a process date"
+    it "should not allow letters in amount" do
+	expense=Expense.new(@attr)
+	expense.amount="aa15"
+	expense.should_not be_valid
+    end
 
-    it "should not be created with process flag set to true"
+    it "should not be created with a process date" do
+	expense=Expense.new(@attr)
+	expense.process_date=Time.now
+	expense.should_not be_valid
+    end
 
-    it "should not be destroyable if it's been processed"
+    it "should allow a process date once it's been saved" do
+	expense=Expense.create!(@attr)
+	expense.process_date=Time.now
+	expense.should be_valid
+    end
 
-    it "should be destroyable if it hasn't been processed"
+    it "should not be created with process flag set to true" do
+	expense=Expense.new(@attr)
+	expense.process_flag=true
+	expense.should_not be_valid
+    end
+
+    it "should allow to set process_flag once it's been saved" do
+	expense=Expense.create!(@attr)
+	expense.process_flag=true
+	expense.should be_valid
+    end
+
+    it "should not be destroyable if it's been processed" do
+	expense=Expense.create!(@attr)
+	expense.process_flag=true
+	expense.destroy
+	expense.should_not be_destroyed
+    end
+
+    it "should destroyable if it has not been processed" do
+	expense=Expense.create!(@attr)
+	expense.destroy
+	expense.should be_destroyed
+    end
 
     pending "Review this test"
 end
