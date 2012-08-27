@@ -6,6 +6,7 @@ class Expense < ActiveRecord::Base
     belongs_to :store
     belongs_to :pay_method
     belongs_to :reason
+    belongs_to :user
 
     # Validations
     validates :date_purchased, :presence => true, :custom_valid_datetime => true
@@ -17,4 +18,5 @@ class Expense < ActiveRecord::Base
     validates_presence_of :store
     validates_presence_of :pay_method
     validates_presence_of :reason
+    validates_presence_of :user
 end

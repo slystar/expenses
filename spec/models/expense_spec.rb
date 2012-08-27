@@ -3,10 +3,7 @@ require 'spec_helper'
 describe Expense do
 
     before(:each) do
-	@store=Store.create(:name => 'Future shop')
-	@reason=Reason.create(:name => 'TV')
-	@pay_method=PayMethod.create(:name => 'cash')
-	@attr={:date_purchased => Time.now, :store_id => @store.id, :pay_method_id => @pay_method.id, :reason_id => @reason.id, :user_id => 1, :group_id => 1}
+	@attr=get_attr_expense
     end
 
     it "should create a record with valid attributes" do
@@ -66,7 +63,7 @@ describe Expense do
 	expense.should_not be_valid
     end
 
-    pending "should map to an existing user" do
+    it "should map to an existing user" do
 	expense=Expense.new(@attr)
 	expense.user_id=9990000000
 	expense.should_not be_valid

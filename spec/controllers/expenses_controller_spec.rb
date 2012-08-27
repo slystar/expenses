@@ -19,26 +19,16 @@ require 'spec_helper'
 # that an instance is receiving a specific message.
 
 describe ExpensesController do
+    before(:each) do
+	@attr=get_attr_expense
+    end
 
   # This should return the minimal set of attributes required to create a valid
   # Expense. As you add validations to Expense, be sure to
   # update the return value of this method accordingly.
     def valid_attributes
-	#Create required objects
-	store=Store.create(:name => Faker::Company.name)
-	reason=Reason.create(:name => Faker::Name.name)
-	pay_method=PayMethod.create(:name => Faker::Name.name)
-	{
-	     :date_purchased => Date.today,
-	     :description => 'new gold car',
-	     :pay_method_id => 1,
-	     :reason_id =>1,
-	     :store_id =>1,
-	     :user_id =>1,
-	     :group_id =>1,
-	     :amount => 10.50
-	}
-  end
+	@attr
+    end
 
   describe "GET index" do
     it "assigns all expenses as @expenses" do
