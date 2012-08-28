@@ -1,4 +1,6 @@
 Expenses::Application.routes.draw do
+  resources :groups
+
   resources :pay_methods
 
   resources :reasons
