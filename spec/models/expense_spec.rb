@@ -74,7 +74,7 @@ describe Expense do
 	expense.should_not be_valid
     end
 
-    pending "should map to an existing group" do
+    it "should map to an existing group" do
 	expense=Expense.new(@attr)
 	expense.group_id=9990000000
 	expense.should_not be_valid
