@@ -134,6 +134,4 @@ describe Expense do
 	expense.destroy
 	expense.should be_destroyed
     end
-
-    pending "Review this test"
 end
