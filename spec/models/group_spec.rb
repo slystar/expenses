@@ -1,7 +1,6 @@
 require 'spec_helper'
 
 describe Group do
-  pending "add some examples to (or delete) #{__FILE__}"
 
     before(:each) do
 	@attr={:name => "Group 1", :description => 'group 1 desc'}
