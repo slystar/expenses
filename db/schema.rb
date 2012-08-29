@@ -11,7 +11,7 @@
 #
 # It's strongly recommended to check this file into your version control system.
 
-ActiveRecord::Schema.define(:version => 20120828161542) do
+ActiveRecord::Schema.define(:version => 20120828171019) do
 
   create_table "backups", :force => true do |t|
     t.datetime "backup_date"
@@ -31,6 +31,13 @@ ActiveRecord::Schema.define(:version => 20120828161542) do
     t.decimal  "amount",         :precision => 10, :scale => 2, :default => 0.0
     t.date     "process_date"
     t.boolean  "process_flag",                                  :default => false
+    t.datetime "created_at"
+    t.datetime "updated_at"
+  end
+
+  create_table "group_members", :force => true do |t|
+    t.integer  "user_id"
+    t.integer  "group_id"
     t.datetime "created_at"
     t.datetime "updated_at"
   end
