@@ -25,4 +25,30 @@ describe User do
 	user=User.new(@attr.merge(:password => ""))
 	user.should_not be_valid
     end
+
+    it "should have a default group upon creation" do
+	user=User.create!(@attr)
+	group=user.groups.find{|g| g.name == user.user_name}
+	group.should_not be_nil
+    end
+
+    it "should be in a minimum of groups on creation" do
+	user=User.create!(@attr)
+	user.groups.size.should == 2
+    end
+
+    pending "should have a User.groups method" do
+    end
+
+    pending "should add a new user to the default ALL group" do
+    end
+
+    pending "should not be destroyable if it has expenses" do
+    end
+
+    pending "should have default group destroyed on destruction" do
+    end
+
+    pending "should have all group memberships removed on destruction" do
+    end
 end

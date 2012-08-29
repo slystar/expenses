@@ -86,4 +86,13 @@ describe Group do
 	group.destroy
 	group.should be_destroyed
     end
+
+    pending "should provide the Group.users function" do
+    end
+
+    pending "should have a default ALL group" do
+    end
+
+    pending "should not be able to destroy default ALL group" do
+    end
 end
