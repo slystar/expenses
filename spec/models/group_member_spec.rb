@@ -8,7 +8,7 @@ describe GroupMember do
     before(:each) do
 	@user=User.create!(:user_name => Faker::Name.name, :password => 'test')
 	@group=create_group
-	@attr={:user_id => @user, :group_id => @group}
+	@attr={:user_id => @user.id, :group_id => @group.id}
     end
 
     it "should create a new instance given valid attributes" do
