@@ -89,12 +89,41 @@ describe Group do
 	group.should be_destroyed
     end
 
-    pending "should provide the Group.users function" do
+    it "should not be able to destroy default ALL group" do
+	user=User.create!(:user_name => 'user1', :password => 'a')
+	group=Group.where(:name => 'ALL').first
+	group.destroy
+	group.errors.size.should == 1
+	group.should_not be_destroyed
     end
 
-    pending "should have a default ALL group" do
+    it "should not be able to destroy group with users in it" do
+	group=Group.create!(@attr)
+	u1=User.create!(:user_name => 'user1', :password => 'a')
+	group.users << u1
+	group.destroy
+	group.errors.size.should == 1
+	group.should_not be_destroyed
     end
 
-    pending "should not be able to destroy default ALL group" do
+    it "should be destroyable if it's empty" do
+	group=Group.create!(@attr)
+	group.destroy
+	group.should be_destroyed
+    end
+
+    it "should provide the Group.users function" do
+	group=Group.create!(@attr)
+	u1=User.create!(:user_name => 'user1', :password => 'a')
+	u2=User.create!(:user_name => 'user2', :password => 'a')
+	group.users << u1
+	group.users << u2
+	group.users.size.should == 2
+    end
+
+    it "should have a default ALL group" do
+	user=User.create!(:user_name => 'user1', :password => 'a')
+	all=Group.where(:name => 'ALL')
+	all.size.should > 0
     end
 end

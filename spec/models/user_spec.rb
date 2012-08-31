@@ -21,9 +21,12 @@ describe User do
 	user.should_not be_valid
     end
 
-    it "should have a password_digest" do
+    it "should have a password" do
 	user=User.new(@attr.merge(:password => ""))
 	user.should_not be_valid
+    end
+
+    pending "should have a password with minimum 8 characters" do
     end
 
     it "should have a default group upon creation" do
