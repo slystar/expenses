@@ -8,7 +8,7 @@ describe Group do
     end
 
     def create_expense_with_group()
-	@group=Group.create(@attr)
+	@group=Group.create!(@attr)
 	expense=get_valid_expense
 	expense.group=@group
 	expense.save
@@ -48,8 +48,10 @@ describe Group do
 
     it "should have expenses attributes" do
 	expense=create_expense_with_group
-	Expense.create(@attr_expense)
-	Expense.create(@attr_expense.merge(:group_id => 2))
+	group=expense.group
+	group_other=Group.create!(@attr.merge(:name => Faker::Name.name))
+	Expense.create!(@attr_expense.merge(:group_id => group.id))
+	Expense.create!(@attr_expense.merge(:group_id => group_other.id))
 	@group.expenses.size.should == 2
     end
 

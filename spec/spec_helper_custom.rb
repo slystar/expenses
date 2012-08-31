@@ -12,6 +12,7 @@ module SpecHelpFunctions
     # Create a valid expense object
     def get_valid_expense
 	attr=get_attr_expense
-	return Expense.create(attr)
+	e=Expense.create!(attr)
+	return e
     end
 end

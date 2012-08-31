@@ -46,6 +46,9 @@ describe User do
     pending "should not be destroyable if it has expenses" do
     end
 
+    pending "should not be destroyable if it has expenses through groups" do
+    end
+
     pending "should have default group destroyed on destruction" do
     end
 

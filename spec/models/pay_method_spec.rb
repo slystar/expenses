@@ -8,7 +8,7 @@ describe PayMethod do
     end
 
     def create_expense_with_pay_method()
-	@pay_method=PayMethod.create(@attr)
+	@pay_method=PayMethod.create!(@attr)
 	expense=get_valid_expense
 	expense.pay_method=@pay_method
 	expense.save
@@ -49,8 +49,8 @@ describe PayMethod do
 
     it "should have expenses attributes" do
 	expense=create_expense_with_pay_method
-	Expense.create(@attr_expense)
-	Expense.create(@attr_expense.merge(:pay_method_id => 2))
+	Expense.create!(@attr_expense)
+	Expense.create!(@attr_expense.merge(:pay_method_id => 2))
 	@pay_method.expenses.size.should == 2
     end
 

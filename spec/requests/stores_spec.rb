@@ -5,8 +5,7 @@ describe "Stores:" do
     before(:each) do
 	@stores=[]
 	names=["Future Shop","Best Buy", "New Egg"]
-	names.each{|name| @stores.push(Store.create(:name => name))}
-	@store_with_expense=Expense.create(:date_purchased => Time.now, :pay_method_id => 1, :reason_id => 1, :user_id => 1, :group_id => 1, :store_id => 1)
+	names.each{|name| @stores.push(Store.create!(:name => name))}
     end
 
     describe "Controller methods:" do

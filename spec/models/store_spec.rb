@@ -9,7 +9,7 @@ describe Store do
     end
 
     def create_expense_with_store()
-	@store=Store.create(@attr)
+	@store=Store.create!(@attr)
 	expense=get_valid_expense
 	expense.store=@store
 	expense.save
@@ -49,8 +49,8 @@ describe Store do
 
     it "should have expenses attributes" do
 	expense=create_expense_with_store
-	Expense.create(@attr_expense)
-	Expense.create(@attr_expense.merge(:store_id => 2))
+	Expense.create!(@attr_expense)
+	Expense.create!(@attr_expense.merge(:store_id => 2))
 	@store.expenses.size.should == 2
     end
 

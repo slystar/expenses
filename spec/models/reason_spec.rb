@@ -8,7 +8,7 @@ describe Reason do
     end
 
     def create_expense_with_reason()
-	@reason=Reason.create(@attr)
+	@reason=Reason.create!(@attr)
 	expense=get_valid_expense
 	expense.reason=@reason
 	expense.save
@@ -49,8 +49,8 @@ describe Reason do
 
     it "should have expenses attributes" do
 	expense=create_expense_with_reason
-	Expense.create(@attr_expense)
-	Expense.create(@attr_expense.merge(:reason_id => 2))
+	Expense.create!(@attr_expense)
+	Expense.create!(@attr_expense.merge(:reason_id => 2))
 	@reason.expenses.size.should == 2
     end
 
