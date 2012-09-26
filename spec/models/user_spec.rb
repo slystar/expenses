@@ -3,7 +3,7 @@ require 'spec_helper'
 describe User do
 
     before(:each) do
-	@attr={:user_name => 'test', :password => 'test'}
+	@attr={:user_name => 'test', :password => 'testpassword'}
     end
 
      it "should create a new instance given valid attributes" do
@@ -26,7 +26,9 @@ describe User do
 	user.should_not be_valid
     end
 
-    pending "should have a password with minimum 8 characters" do
+    it "should have a password with minimum 8 characters" do
+	user=User.new(@attr.merge(:password => "a" * 7))
+	user.should_not be_valid
     end
 
     it "should have a default group upon creation" do
@@ -40,13 +42,30 @@ describe User do
 	user.groups.size.should == 2
     end
 
-    pending "should have a User.groups method" do
+    it "should have a User.groups method" do
+	user=User.create!(@attr)
+	user.should respond_to(:groups)
     end
 
-    pending "should add a new user to the default ALL group" do
+    it "should add a new user to the default ALL group" do
+	user=User.create!(@attr)
+	group=Group.where(:name => 'ALL').first
+	found_user=group.users.detect{|u| u.user_name == user.user_name}
+	found_user.should == user
     end
 
-    pending "should not be destroyable if it has expenses" do
+    it "should have a method expenses" do
+	user=User.create!(@attr)
+	user.should respond_to(:expenses)
+    end
+
+    it "should not be destroyable if it has expenses" do
+	expense=get_valid_expense
+	user=User.create!(@attr)
+	expense.user=user
+	expense.save
+	user.destroy
+	user.should_not be_destroyed
     end
 
     pending "should not be destroyable if it has expenses through groups" do

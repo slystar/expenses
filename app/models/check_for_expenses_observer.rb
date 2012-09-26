@@ -1,6 +1,6 @@
 class CheckForExpensesObserver < ActiveRecord::Observer
     # Observe these models
-    observe :pay_method, :store, :reason, :group
+    observe :pay_method, :store, :reason, :group, :user
 
     # Method to check for expenses
     def before_destroy(object)

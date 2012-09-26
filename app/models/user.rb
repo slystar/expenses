@@ -8,13 +8,14 @@ class User < ActiveRecord::Base
     # Relationshipts
     has_many :group_members
     has_many :groups, :through => :group_members
+    has_many :expenses
 
     # Validations
-    validates_presence_of :user_name
-    validates_uniqueness_of :user_name
-    validates_presence_of :password, :on => :create
+    validates :user_name, :presence => true, :uniqueness => true
+    validates :password, :presence => true, :length => {:minimum => 8}
 
     # Callbacks
+    # before_destroy: see observer check_for_expenses_observer.rb
     after_create :check_for_default_group, :add_user_group
 
     private
