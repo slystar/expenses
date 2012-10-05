@@ -6,7 +6,7 @@ describe GroupMember do
     end
 
     before(:each) do
-	@user=User.create!(:user_name => Faker::Name.name, :password => 'test')
+	@user=User.create!(:user_name => Faker::Name.name, :password => 'testgroupmember')
 	@group=create_group
 	@attr={:user_id => @user.id, :group_id => @group.id}
     end
