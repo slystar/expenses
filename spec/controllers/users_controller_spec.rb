@@ -24,7 +24,7 @@ describe UsersController do
   # User. As you add validations to User, be sure to
   # update the return value of this method accordingly.
   def valid_attributes
-    {:user_name => 'test', :password => 'abcd'}
+    {:user_name => 'usercontroller', :password => 'usercontroller'}
   end
 
   describe "GET index" do
