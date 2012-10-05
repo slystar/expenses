@@ -16,9 +16,35 @@ class User < ActiveRecord::Base
 
     # Callbacks
     # before_destroy: see observer check_for_expenses_observer.rb
+    before_destroy :check_for_expenses_through_groups
+    after_destroy :remove_default_group
     after_create :check_for_default_group, :add_user_group
 
     private
+
+    # Method to remove default group
+    def remove_default_group
+	# Get default group
+	default_group=Group.where(:name => self.user_name).first
+	# Destroy it
+	default_group.destroy
+    end
+
+    # Method to check for expenses through groups
+    def check_for_expenses_through_groups
+	# Get all groups
+	groups=self.groups
+	# Loop over groups
+	groups.each do |group|
+	    # Skip group all
+	    next if group.name=='ALL'
+	    # Check if group has expenses
+	    if group.expenses.size > 0
+		self.errors.add(:base,"Can't delete #{self.class}: #{self.name} because it has expenses assigned to it through group '#{group.name}'")
+		return false
+	    end
+	end
+    end
 
     # Method to check for the default groups
     def check_for_default_group()

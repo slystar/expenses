@@ -4,6 +4,7 @@ describe User do
 
     before(:each) do
 	@attr={:user_name => 'test', :password => 'testpassword'}
+	@attr_group={:name => "Group user spec", :description => 'group used in user spec tests'}
     end
 
      it "should create a new instance given valid attributes" do
@@ -68,10 +69,43 @@ describe User do
 	user.should_not be_destroyed
     end
 
-    pending "should not be destroyable if it has expenses through groups" do
+    it "should not be destroyable if it has expenses through groups other than ALL" do
+	puts
+	expense=get_valid_expense
+	user=User.create!(@attr)
+	group=Group.create!(@attr_group)
+	# Create group membership
+	attr_group_member={:user_id => user.id, :group_id => group.id}
+	GroupMember.create!(attr_group_member)
+	# Set expense to use this group
+	expense.group_id=group.id
+	# Save expense
+	expense.save
+	# User should be part of the group
+	user.groups.should include(group)
+	# Try to destroy user
+	user.destroy
+	user.errors.size.should > 0
+	user.should_not be_destroyed
     end
 
-    pending "should have default group destroyed on destruction" do
+    it "should have default group destroyed on destruction" do
+	# Create user
+	user=User.create!(@attr)
+	# Get all groups count
+	groups1=Group.all.size
+	# Destroy user
+	user.destroy
+	# Check if user is destroyed
+	user.should be_destroyed
+	# Get all groups count
+	groups2=Group.all.size
+	# Count should be one less
+	(groups1 - groups2).should == 1
+	# Get default group
+	default_group=Group.where(:name => user.user_name)
+	# Default group should not exist
+	default_group.size.should == 0
     end
 
     pending "should have all group memberships removed on destruction" do
