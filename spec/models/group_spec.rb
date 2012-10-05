@@ -90,7 +90,7 @@ describe Group do
     end
 
     it "should not be able to destroy default ALL group" do
-	user=User.create!(:user_name => 'user1', :password => 'a')
+	user=User.create!(:user_name => 'user1', :password => 'testpasswordgroup')
 	group=Group.where(:name => 'ALL').first
 	group.destroy
 	group.errors.size.should == 1
@@ -99,7 +99,7 @@ describe Group do
 
     it "should not be able to destroy group with users in it" do
 	group=Group.create!(@attr)
-	u1=User.create!(:user_name => 'user1', :password => 'a')
+	u1=User.create!(:user_name => 'user1', :password => 'testpasswordgroup')
 	group.users << u1
 	group.destroy
 	group.errors.size.should == 1
@@ -114,15 +114,15 @@ describe Group do
 
     it "should provide the Group.users function" do
 	group=Group.create!(@attr)
-	u1=User.create!(:user_name => 'user1', :password => 'a')
-	u2=User.create!(:user_name => 'user2', :password => 'a')
+	u1=User.create!(:user_name => 'user1', :password => 'testpasswordgroup')
+	u2=User.create!(:user_name => 'user2', :password => 'testpasswordgroup')
 	group.users << u1
 	group.users << u2
 	group.users.size.should == 2
     end
 
     it "should have a default ALL group" do
-	user=User.create!(:user_name => 'user1', :password => 'a')
+	user=User.create!(:user_name => 'user1', :password => 'testpasswordgroup')
 	all=Group.where(:name => 'ALL')
 	all.size.should > 0
     end
