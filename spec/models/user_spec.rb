@@ -110,4 +110,7 @@ describe User do
 
     pending "should have all group memberships removed on destruction" do
     end
+
+    pending "should have empty groups removed on destruction" do
+    end
 end
