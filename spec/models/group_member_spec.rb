@@ -47,4 +47,10 @@ describe GroupMember do
 	gm=GroupMember.new(@attr.merge(:group_id => 99999))
 	gm.should_not be_valid
     end
+
+    pending "should be destroyable if it is not linked to any expenses" do
+    end
+
+    pending "should not be destroyable if it is linked to expenses" do
+    end
 end
