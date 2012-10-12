@@ -48,9 +48,32 @@ describe GroupMember do
 	gm.should_not be_valid
     end
 
-    pending "should be destroyable if it is not linked to any expenses" do
+    it "should be destroyable if it is not linked to any expenses" do
+	# Create valid record
+	gm=GroupMember.create!(@attr)
+	# Destroy object
+	gm.destroy
+	# Should be destroyed
+	gm.should be_destroyed
     end
 
-    pending "should not be destroyable if it is linked to expenses" do
+    it "should not be destroyable if it is linked to expenses" do
+	# Create valid record
+	gm=GroupMember.create!(@attr)
+	# Create an expense
+	expense=get_valid_expense
+	# Set expense to this membership group
+	expense.group_id=gm.group_id
+	# Save expense
+	expense.save
+	# Destroy object
+	gm.destroy
+	# Should be destroyed
+	gm.should_not be_destroyed
+	# Check errors
+	gm.errors.size.should == 1
+    end
+
+    pending "should be destroyable even if the user still exists" do
     end
 end
