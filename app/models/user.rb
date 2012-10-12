@@ -6,7 +6,7 @@ class User < ActiveRecord::Base
     attr_accessible :user_name, :password, :password_confirmation
 
     # Relationshipts
-    has_many :group_members
+    has_many :group_members, :dependent => :delete_all
     has_many :groups, :through => :group_members
     has_many :expenses
 

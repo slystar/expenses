@@ -108,9 +108,12 @@ describe User do
 	default_group.size.should == 0
     end
 
-    pending "should have all group memberships removed on destruction" do
-    end
-
-    pending "should have empty groups removed on destruction" do
+    it "should have all group memberships removed on destruction" do
+	# Create user
+	user=User.create!(@attr)
+	# Destroy user, should remove following memberships
+	# - group: ALL
+	# - group: User
+	lambda{user.destroy}.should change(GroupMember,:count).by(-2)
     end
 end
