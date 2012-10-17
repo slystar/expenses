@@ -1,0 +1,1382 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE html
+  PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN"
+  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en" lang="en">
+<head>
+  <title>RSpec results</title>
+  <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+  <meta http-equiv="Expires" content="-1" />
+  <meta http-equiv="Pragma" content="no-cache" />
+  <style type="text/css">
+  body {
+    margin: 0;
+    padding: 0;
+    background: #fff;
+    font-size: 80%;
+  }
+  </style>
+  <script type="text/javascript">
+    // <![CDATA[
+
+function addClass(element_id, classname) {
+  document.getElementById(element_id).className += (" " + classname);
+}
+
+function removeClass(element_id, classname) {
+  var elem = document.getElementById(element_id);
+  var classlist = elem.className.replace(classname,'');
+  elem.className = classlist;
+}
+
+function moveProgressBar(percentDone) {
+  document.getElementById("rspec-header").style.width = percentDone +"%";
+}
+
+function makeRed(element_id) {
+  removeClass(element_id, 'passed');
+  removeClass(element_id, 'not_implemented');
+  addClass(element_id,'failed');
+}
+
+function makeYellow(element_id) {
+  var elem = document.getElementById(element_id);
+  if (elem.className.indexOf("failed") == -1) {  // class doesn't includes failed
+    if (elem.className.indexOf("not_implemented") == -1) { // class doesn't include not_implemented
+      removeClass(element_id, 'passed');
+      addClass(element_id,'not_implemented');
+    }
+  }
+}
+
+function apply_filters() {
+  var passed_filter = document.getElementById('passed_checkbox').checked;
+  var failed_filter = document.getElementById('failed_checkbox').checked;
+  var pending_filter = document.getElementById('pending_checkbox').checked;
+
+  assign_display_style("example passed", passed_filter);
+  assign_display_style("example failed", failed_filter);
+  assign_display_style("example not_implemented", pending_filter);
+
+  assign_display_style_for_group("example_group passed", passed_filter);
+  assign_display_style_for_group("example_group not_implemented", pending_filter, pending_filter || passed_filter);
+  assign_display_style_for_group("example_group failed", failed_filter, failed_filter || pending_filter || passed_filter);
+}
+
+function get_display_style(display_flag) {
+  var style_mode = 'none';
+  if (display_flag == true) {
+    style_mode = 'block';
+  }
+  return style_mode;
+}
+
+function assign_display_style(classname, display_flag) {
+  var style_mode = get_display_style(display_flag);
+  var elems = document.getElementsByClassName(classname)
+  for (var i=0; i<elems.length;i++) {
+    elems[i].style.display = style_mode;
+  }
+}
+
+function assign_display_style_for_group(classname, display_flag, subgroup_flag) {
+  var display_style_mode = get_display_style(display_flag);
+  var subgroup_style_mode = get_display_style(subgroup_flag);
+  var elems = document.getElementsByClassName(classname)
+  for (var i=0; i<elems.length;i++) {
+    var style_mode = display_style_mode;
+    if ((display_flag != subgroup_flag) && (elems[i].getElementsByTagName('dt')[0].innerHTML.indexOf(", ") != -1)) {
+      elems[i].style.display = subgroup_style_mode;
+    } else {
+      elems[i].style.display = display_style_mode;
+    }
+  }
+}
+
+    // ]]>
+  </script>
+  <style type="text/css">
+#rspec-header {
+  background: #65C400; color: #fff; height: 4em;
+}
+
+.rspec-report h1 {
+  margin: 0px 10px 0px 10px;
+  padding: 10px;
+  font-family: "Lucida Grande", Helvetica, sans-serif;
+  font-size: 1.8em;
+  position: absolute;
+}
+
+#label {
+  float:left;
+}
+
+#display-filters {
+  float:left;
+  padding: 28px 0 0 40%;
+  font-family: "Lucida Grande", Helvetica, sans-serif;
+}
+
+#summary {
+  float:right;
+  padding: 5px 10px;
+  font-family: "Lucida Grande", Helvetica, sans-serif;
+  text-align: right;
+}
+
+#summary p {
+  margin: 0 0 0 2px;
+}
+
+#summary #totals {
+  font-size: 1.2em;
+}
+
+.example_group {
+  margin: 0 10px 5px;
+  background: #fff;
+}
+
+dl {
+  margin: 0; padding: 0 0 5px;
+  font: normal 11px "Lucida Grande", Helvetica, sans-serif;
+}
+
+dt {
+  padding: 3px;
+  background: #65C400;
+  color: #fff;
+  font-weight: bold;
+}
+
+dd {
+  margin: 5px 0 5px 5px;
+  padding: 3px 3px 3px 18px;
+}
+
+dd .duration {
+  padding-left: 5px;
+  text-align: right;
+  right: 0px;
+  float:right;
+}
+
+dd.example.passed {
+  border-left: 5px solid #65C400;
+  border-bottom: 1px solid #65C400;
+  background: #DBFFB4; color: #3D7700;
+}
+
+dd.example.not_implemented {
+  border-left: 5px solid #FAF834;
+  border-bottom: 1px solid #FAF834;
+  background: #FCFB98; color: #131313;
+}
+
+dd.example.pending_fixed {
+  border-left: 5px solid #0000C2;
+  border-bottom: 1px solid #0000C2;
+  color: #0000C2; background: #D3FBFF;
+}
+
+dd.example.failed {
+  border-left: 5px solid #C20000;
+  border-bottom: 1px solid #C20000;
+  color: #C20000; background: #FFFBD3;
+}
+
+
+dt.not_implemented {
+  color: #000000; background: #FAF834;
+}
+
+dt.pending_fixed {
+  color: #FFFFFF; background: #C40D0D;
+}
+
+dt.failed {
+  color: #FFFFFF; background: #C40D0D;
+}
+
+
+#rspec-header.not_implemented {
+  color: #000000; background: #FAF834;
+}
+
+#rspec-header.pending_fixed {
+  color: #FFFFFF; background: #C40D0D;
+}
+
+#rspec-header.failed {
+  color: #FFFFFF; background: #C40D0D;
+}
+
+
+.backtrace {
+  color: #000;
+  font-size: 12px;
+}
+
+a {
+  color: #BE5C00;
+}
+
+/* Ruby code, style similar to vibrant ink */
+.ruby {
+  font-size: 12px;
+  font-family: monospace;
+  color: white;
+  background-color: black;
+  padding: 0.1em 0 0.2em 0;
+}
+
+.ruby .keyword { color: #FF6600; }
+.ruby .constant { color: #339999; }
+.ruby .attribute { color: white; }
+.ruby .global { color: white; }
+.ruby .module { color: white; }
+.ruby .class { color: white; }
+.ruby .string { color: #66FF00; }
+.ruby .ident { color: white; }
+.ruby .method { color: #FFCC00; }
+.ruby .number { color: white; }
+.ruby .char { color: white; }
+.ruby .comment { color: #9933CC; }
+.ruby .symbol { color: white; }
+.ruby .regex { color: #44B4CC; }
+.ruby .punct { color: white; }
+.ruby .escape { color: white; }
+.ruby .interp { color: white; }
+.ruby .expr { color: white; }
+
+.ruby .offending { background-color: gray; }
+.ruby .linenum {
+  width: 75px;
+  padding: 0.1em 1em 0.2em 0;
+  color: #000000;
+  background-color: #FFFBD3;
+}
+
+  </style>
+</head>
+<body>
+<div class="rspec-report">
+
+<div id="rspec-header">
+  <div id="label">
+    <h1>RSpec Code Examples</h1>
+  </div>
+
+  <div id="display-filters">
+    <input id="passed_checkbox" name="passed_checkbox" type="checkbox" checked onchange="apply_filters()" value="1"> <label for="passed_checkbox">Passed</label>
+    <input id="failed_checkbox" name="failed_checkbox" type="checkbox" checked onchange="apply_filters()" value="2"> <label for="failed_checkbox">Failed</label>
+    <input id="pending_checkbox" name="pending_checkbox" type="checkbox" checked onchange="apply_filters()" value="3"> <label for="pending_checkbox">Pending</label>
+  </div>
+
+  <div id="summary">
+    <p id="totals">&nbsp;</p>
+    <p id="duration">&nbsp;</p>
+  </div>
+</div>
+
+
+<div class="results">
+<div id="div_group_1" class="example_group passed">
+  <dl style="margin-left: 0px;">
+  <dt id="example_group_1" class="passed">StoresController</dt>
+  </dl>
+</div>
+<div id="div_group_2" class="example_group passed">
+  <dl style="margin-left: 15px;">
+  <dt id="example_group_2" class="passed">routing</dt>
+    <script type="text/javascript">moveProgressBar('0.3');</script>
+    <dd class="example passed"><span class="passed_spec_name">routes to #index</span><span class='duration'>0.00605s</span></dd>
+    <script type="text/javascript">moveProgressBar('0.7');</script>
+    <dd class="example passed"><span class="passed_spec_name">routes to #new</span><span class='duration'>0.00155s</span></dd>
+    <script type="text/javascript">moveProgressBar('1.1');</script>
+    <dd class="example passed"><span class="passed_spec_name">routes to #show</span><span class='duration'>0.00148s</span></dd>
+    <script type="text/javascript">moveProgressBar('1.5');</script>
+    <dd class="example passed"><span class="passed_spec_name">routes to #edit</span><span class='duration'>0.00159s</span></dd>
+    <script type="text/javascript">moveProgressBar('1.8');</script>
+    <dd class="example passed"><span class="passed_spec_name">routes to #create</span><span class='duration'>0.00174s</span></dd>
+    <script type="text/javascript">moveProgressBar('2.2');</script>
+    <dd class="example passed"><span class="passed_spec_name">routes to #update</span><span class='duration'>0.00193s</span></dd>
+    <script type="text/javascript">moveProgressBar('2.6');</script>
+    <dd class="example passed"><span class="passed_spec_name">routes to #destroy</span><span class='duration'>0.00200s</span></dd>
+  </dl>
+</div>
+<div id="div_group_3" class="example_group passed">
+  <dl style="margin-left: 0px;">
+  <dt id="example_group_3" class="passed">ExpensesController</dt>
+  </dl>
+</div>
+<div id="div_group_4" class="example_group passed">
+  <dl style="margin-left: 15px;">
+  <dt id="example_group_4" class="passed">routing</dt>
+    <script type="text/javascript">moveProgressBar('3.0');</script>
+    <dd class="example passed"><span class="passed_spec_name">routes to #index</span><span class='duration'>0.04574s</span></dd>
+    <script type="text/javascript">moveProgressBar('3.4');</script>
+    <dd class="example passed"><span class="passed_spec_name">routes to #new</span><span class='duration'>0.00145s</span></dd>
+    <script type="text/javascript">moveProgressBar('3.7');</script>
+    <dd class="example passed"><span class="passed_spec_name">routes to #show</span><span class='duration'>0.00144s</span></dd>
+    <script type="text/javascript">moveProgressBar('4.1');</script>
+    <dd class="example passed"><span class="passed_spec_name">routes to #edit</span><span class='duration'>0.00152s</span></dd>
+    <script type="text/javascript">moveProgressBar('4.5');</script>
+    <dd class="example passed"><span class="passed_spec_name">routes to #create</span><span class='duration'>0.00164s</span></dd>
+    <script type="text/javascript">moveProgressBar('4.9');</script>
+    <dd class="example passed"><span class="passed_spec_name">routes to #update</span><span class='duration'>0.00195s</span></dd>
+    <script type="text/javascript">moveProgressBar('5.3');</script>
+    <dd class="example passed"><span class="passed_spec_name">routes to #destroy</span><span class='duration'>0.00176s</span></dd>
+  </dl>
+</div>
+<div id="div_group_5" class="example_group passed">
+  <dl style="margin-left: 0px;">
+  <dt id="example_group_5" class="passed">PayMethodsController</dt>
+  </dl>
+</div>
+<div id="div_group_6" class="example_group passed">
+  <dl style="margin-left: 15px;">
+  <dt id="example_group_6" class="passed">routing</dt>
+    <script type="text/javascript">moveProgressBar('5.6');</script>
+    <dd class="example passed"><span class="passed_spec_name">routes to #index</span><span class='duration'>0.00210s</span></dd>
+    <script type="text/javascript">moveProgressBar('6.0');</script>
+    <dd class="example passed"><span class="passed_spec_name">routes to #new</span><span class='duration'>0.00134s</span></dd>
+    <script type="text/javascript">moveProgressBar('6.4');</script>
+    <dd class="example passed"><span class="passed_spec_name">routes to #show</span><span class='duration'>0.00144s</span></dd>
+    <script type="text/javascript">moveProgressBar('6.8');</script>
+    <dd class="example passed"><span class="passed_spec_name">routes to #edit</span><span class='duration'>0.00139s</span></dd>
+    <script type="text/javascript">moveProgressBar('7.1');</script>
+    <dd class="example passed"><span class="passed_spec_name">routes to #create</span><span class='duration'>0.00170s</span></dd>
+    <script type="text/javascript">moveProgressBar('7.5');</script>
+    <dd class="example passed"><span class="passed_spec_name">routes to #update</span><span class='duration'>0.00176s</span></dd>
+    <script type="text/javascript">moveProgressBar('7.9');</script>
+    <dd class="example passed"><span class="passed_spec_name">routes to #destroy</span><span class='duration'>0.00180s</span></dd>
+  </dl>
+</div>
+<div id="div_group_7" class="example_group passed">
+  <dl style="margin-left: 0px;">
+  <dt id="example_group_7" class="passed">UsersController</dt>
+  </dl>
+</div>
+<div id="div_group_8" class="example_group passed">
+  <dl style="margin-left: 15px;">
+  <dt id="example_group_8" class="passed">routing</dt>
+    <script type="text/javascript">moveProgressBar('8.3');</script>
+    <dd class="example passed"><span class="passed_spec_name">routes to #index</span><span class='duration'>0.00210s</span></dd>
+    <script type="text/javascript">moveProgressBar('8.7');</script>
+    <dd class="example passed"><span class="passed_spec_name">routes to #new</span><span class='duration'>0.00127s</span></dd>
+    <script type="text/javascript">moveProgressBar('9.0');</script>
+    <dd class="example passed"><span class="passed_spec_name">routes to #show</span><span class='duration'>0.00142s</span></dd>
+    <script type="text/javascript">moveProgressBar('9.4');</script>
+    <dd class="example passed"><span class="passed_spec_name">routes to #edit</span><span class='duration'>0.00143s</span></dd>
+    <script type="text/javascript">moveProgressBar('9.8');</script>
+    <dd class="example passed"><span class="passed_spec_name">routes to #create</span><span class='duration'>0.00165s</span></dd>
+    <script type="text/javascript">moveProgressBar('10.2');</script>
+    <dd class="example passed"><span class="passed_spec_name">routes to #update</span><span class='duration'>0.00182s</span></dd>
+    <script type="text/javascript">moveProgressBar('10.6');</script>
+    <dd class="example passed"><span class="passed_spec_name">routes to #destroy</span><span class='duration'>0.00176s</span></dd>
+  </dl>
+</div>
+<div id="div_group_9" class="example_group passed">
+  <dl style="margin-left: 0px;">
+  <dt id="example_group_9" class="passed">ReasonsController</dt>
+  </dl>
+</div>
+<div id="div_group_10" class="example_group passed">
+  <dl style="margin-left: 15px;">
+  <dt id="example_group_10" class="passed">routing</dt>
+    <script type="text/javascript">moveProgressBar('10.9');</script>
+    <dd class="example passed"><span class="passed_spec_name">routes to #index</span><span class='duration'>0.00202s</span></dd>
+    <script type="text/javascript">moveProgressBar('11.3');</script>
+    <dd class="example passed"><span class="passed_spec_name">routes to #new</span><span class='duration'>0.00131s</span></dd>
+    <script type="text/javascript">moveProgressBar('11.7');</script>
+    <dd class="example passed"><span class="passed_spec_name">routes to #show</span><span class='duration'>0.00144s</span></dd>
+    <script type="text/javascript">moveProgressBar('12.1');</script>
+    <dd class="example passed"><span class="passed_spec_name">routes to #edit</span><span class='duration'>0.00137s</span></dd>
+    <script type="text/javascript">moveProgressBar('12.5');</script>
+    <dd class="example passed"><span class="passed_spec_name">routes to #create</span><span class='duration'>0.00176s</span></dd>
+    <script type="text/javascript">moveProgressBar('12.8');</script>
+    <dd class="example passed"><span class="passed_spec_name">routes to #update</span><span class='duration'>0.00175s</span></dd>
+    <script type="text/javascript">moveProgressBar('13.2');</script>
+    <dd class="example passed"><span class="passed_spec_name">routes to #destroy</span><span class='duration'>0.00184s</span></dd>
+  </dl>
+</div>
+<div id="div_group_11" class="example_group passed">
+  <dl style="margin-left: 0px;">
+  <dt id="example_group_11" class="passed">ExpensesController</dt>
+  </dl>
+</div>
+<div id="div_group_12" class="example_group passed">
+  <dl style="margin-left: 15px;">
+  <dt id="example_group_12" class="passed">GET index</dt>
+    <script type="text/javascript">moveProgressBar('13.6');</script>
+    <dd class="example passed"><span class="passed_spec_name">assigns all expenses as @expenses</span><span class='duration'>0.78509s</span></dd>
+  </dl>
+</div>
+<div id="div_group_13" class="example_group passed">
+  <dl style="margin-left: 15px;">
+  <dt id="example_group_13" class="passed">GET show</dt>
+    <script type="text/javascript">moveProgressBar('14.0');</script>
+    <dd class="example passed"><span class="passed_spec_name">assigns the requested expense as @expense</span><span class='duration'>0.13096s</span></dd>
+  </dl>
+</div>
+<div id="div_group_14" class="example_group passed">
+  <dl style="margin-left: 15px;">
+  <dt id="example_group_14" class="passed">GET new</dt>
+    <script type="text/javascript">moveProgressBar('14.3');</script>
+    <dd class="example passed"><span class="passed_spec_name">assigns a new expense as @expense</span><span class='duration'>0.11686s</span></dd>
+  </dl>
+</div>
+<div id="div_group_15" class="example_group passed">
+  <dl style="margin-left: 15px;">
+  <dt id="example_group_15" class="passed">GET edit</dt>
+    <script type="text/javascript">moveProgressBar('14.7');</script>
+    <dd class="example passed"><span class="passed_spec_name">assigns the requested expense as @expense</span><span class='duration'>0.12213s</span></dd>
+  </dl>
+</div>
+<div id="div_group_16" class="example_group passed">
+  <dl style="margin-left: 15px;">
+  <dt id="example_group_16" class="passed">POST create</dt>
+  </dl>
+</div>
+<div id="div_group_17" class="example_group passed">
+  <dl style="margin-left: 30px;">
+  <dt id="example_group_17" class="passed">with valid params</dt>
+    <script type="text/javascript">moveProgressBar('15.1');</script>
+    <dd class="example passed"><span class="passed_spec_name">creates a new Expense</span><span class='duration'>0.18922s</span></dd>
+    <script type="text/javascript">moveProgressBar('15.5');</script>
+    <dd class="example passed"><span class="passed_spec_name">assigns a newly created expense as @expense</span><span class='duration'>0.23739s</span></dd>
+    <script type="text/javascript">moveProgressBar('15.9');</script>
+    <dd class="example passed"><span class="passed_spec_name">redirects to the created expense</span><span class='duration'>0.12064s</span></dd>
+  </dl>
+</div>
+<div id="div_group_18" class="example_group passed">
+  <dl style="margin-left: 30px;">
+  <dt id="example_group_18" class="passed">with invalid params</dt>
+    <script type="text/javascript">moveProgressBar('16.2');</script>
+    <dd class="example passed"><span class="passed_spec_name">assigns a newly created but unsaved expense as @expense</span><span class='duration'>0.11627s</span></dd>
+    <script type="text/javascript">moveProgressBar('16.6');</script>
+    <dd class="example passed"><span class="passed_spec_name">re-renders the &#x27;new&#x27; template</span><span class='duration'>0.11765s</span></dd>
+  </dl>
+</div>
+<div id="div_group_19" class="example_group passed">
+  <dl style="margin-left: 15px;">
+  <dt id="example_group_19" class="passed">PUT update</dt>
+  </dl>
+</div>
+<div id="div_group_20" class="example_group passed">
+  <dl style="margin-left: 30px;">
+  <dt id="example_group_20" class="passed">with valid params</dt>
+    <script type="text/javascript">moveProgressBar('17.0');</script>
+    <dd class="example passed"><span class="passed_spec_name">updates the requested expense</span><span class='duration'>0.12886s</span></dd>
+    <script type="text/javascript">moveProgressBar('17.4');</script>
+    <dd class="example passed"><span class="passed_spec_name">assigns the requested expense as @expense</span><span class='duration'>0.19267s</span></dd>
+    <script type="text/javascript">moveProgressBar('17.8');</script>
+    <dd class="example passed"><span class="passed_spec_name">redirects to the expense</span><span class='duration'>0.13493s</span></dd>
+  </dl>
+</div>
+<div id="div_group_21" class="example_group passed">
+  <dl style="margin-left: 30px;">
+  <dt id="example_group_21" class="passed">with invalid params</dt>
+    <script type="text/javascript">moveProgressBar('18.1');</script>
+    <dd class="example passed"><span class="passed_spec_name">assigns the expense as @expense</span><span class='duration'>0.12803s</span></dd>
+    <script type="text/javascript">moveProgressBar('18.5');</script>
+    <dd class="example passed"><span class="passed_spec_name">re-renders the &#x27;edit&#x27; template</span><span class='duration'>0.12592s</span></dd>
+  </dl>
+</div>
+<div id="div_group_22" class="example_group passed">
+  <dl style="margin-left: 15px;">
+  <dt id="example_group_22" class="passed">DELETE destroy</dt>
+    <script type="text/javascript">moveProgressBar('18.9');</script>
+    <dd class="example passed"><span class="passed_spec_name">destroys the requested expense</span><span class='duration'>0.12903s</span></dd>
+    <script type="text/javascript">moveProgressBar('19.3');</script>
+    <dd class="example passed"><span class="passed_spec_name">redirects to the expenses list</span><span class='duration'>0.22558s</span></dd>
+  </dl>
+</div>
+<div id="div_group_23" class="example_group passed">
+  <dl style="margin-left: 0px;">
+  <dt id="example_group_23" class="passed">GroupsController</dt>
+  </dl>
+</div>
+<div id="div_group_24" class="example_group passed">
+  <dl style="margin-left: 15px;">
+  <dt id="example_group_24" class="passed">GET index</dt>
+    <script type="text/javascript">moveProgressBar('19.6');</script>
+    <dd class="example passed"><span class="passed_spec_name">assigns all groups as @groups</span><span class='duration'>0.01577s</span></dd>
+  </dl>
+</div>
+<div id="div_group_25" class="example_group passed">
+  <dl style="margin-left: 15px;">
+  <dt id="example_group_25" class="passed">GET show</dt>
+    <script type="text/javascript">moveProgressBar('20.0');</script>
+    <dd class="example passed"><span class="passed_spec_name">assigns the requested group as @group</span><span class='duration'>0.01145s</span></dd>
+  </dl>
+</div>
+<div id="div_group_26" class="example_group passed">
+  <dl style="margin-left: 15px;">
+  <dt id="example_group_26" class="passed">GET new</dt>
+    <script type="text/javascript">moveProgressBar('20.4');</script>
+    <dd class="example passed"><span class="passed_spec_name">assigns a new group as @group</span><span class='duration'>0.00683s</span></dd>
+  </dl>
+</div>
+<div id="div_group_27" class="example_group passed">
+  <dl style="margin-left: 15px;">
+  <dt id="example_group_27" class="passed">GET edit</dt>
+    <script type="text/javascript">moveProgressBar('20.8');</script>
+    <dd class="example passed"><span class="passed_spec_name">assigns the requested group as @group</span><span class='duration'>0.01122s</span></dd>
+  </dl>
+</div>
+<div id="div_group_28" class="example_group passed">
+  <dl style="margin-left: 15px;">
+  <dt id="example_group_28" class="passed">POST create</dt>
+  </dl>
+</div>
+<div id="div_group_29" class="example_group passed">
+  <dl style="margin-left: 30px;">
+  <dt id="example_group_29" class="passed">with valid params</dt>
+    <script type="text/javascript">moveProgressBar('21.2');</script>
+    <dd class="example passed"><span class="passed_spec_name">creates a new Group</span><span class='duration'>0.01056s</span></dd>
+    <script type="text/javascript">moveProgressBar('21.5');</script>
+    <dd class="example passed"><span class="passed_spec_name">assigns a newly created group as @group</span><span class='duration'>0.00867s</span></dd>
+    <script type="text/javascript">moveProgressBar('21.9');</script>
+    <dd class="example passed"><span class="passed_spec_name">redirects to the created group</span><span class='duration'>0.00868s</span></dd>
+  </dl>
+</div>
+<div id="div_group_30" class="example_group passed">
+  <dl style="margin-left: 30px;">
+  <dt id="example_group_30" class="passed">with invalid params</dt>
+    <script type="text/javascript">moveProgressBar('22.3');</script>
+    <dd class="example passed"><span class="passed_spec_name">assigns a newly created but unsaved group as @group</span><span class='duration'>0.00632s</span></dd>
+    <script type="text/javascript">moveProgressBar('22.7');</script>
+    <dd class="example passed"><span class="passed_spec_name">re-renders the &#x27;new&#x27; template</span><span class='duration'>0.00625s</span></dd>
+  </dl>
+</div>
+<div id="div_group_31" class="example_group passed">
+  <dl style="margin-left: 15px;">
+  <dt id="example_group_31" class="passed">PUT update</dt>
+  </dl>
+</div>
+<div id="div_group_32" class="example_group passed">
+  <dl style="margin-left: 30px;">
+  <dt id="example_group_32" class="passed">with valid params</dt>
+    <script type="text/javascript">moveProgressBar('23.1');</script>
+    <dd class="example passed"><span class="passed_spec_name">updates the requested group</span><span class='duration'>0.01092s</span></dd>
+    <script type="text/javascript">moveProgressBar('23.4');</script>
+    <dd class="example passed"><span class="passed_spec_name">assigns the requested group as @group</span><span class='duration'>0.01295s</span></dd>
+    <script type="text/javascript">moveProgressBar('23.8');</script>
+    <dd class="example passed"><span class="passed_spec_name">redirects to the group</span><span class='duration'>0.01148s</span></dd>
+  </dl>
+</div>
+<div id="div_group_33" class="example_group passed">
+  <dl style="margin-left: 30px;">
+  <dt id="example_group_33" class="passed">with invalid params</dt>
+    <script type="text/javascript">moveProgressBar('24.2');</script>
+    <dd class="example passed"><span class="passed_spec_name">assigns the group as @group</span><span class='duration'>0.01122s</span></dd>
+    <script type="text/javascript">moveProgressBar('24.6');</script>
+    <dd class="example passed"><span class="passed_spec_name">re-renders the &#x27;edit&#x27; template</span><span class='duration'>0.01135s</span></dd>
+  </dl>
+</div>
+<div id="div_group_34" class="example_group passed">
+  <dl style="margin-left: 15px;">
+  <dt id="example_group_34" class="passed">DELETE destroy</dt>
+    <script type="text/javascript">moveProgressBar('25.0');</script>
+    <dd class="example passed"><span class="passed_spec_name">destroys the requested group</span><span class='duration'>0.14339s</span></dd>
+    <script type="text/javascript">moveProgressBar('25.3');</script>
+    <dd class="example passed"><span class="passed_spec_name">redirects to the groups list</span><span class='duration'>0.01188s</span></dd>
+  </dl>
+</div>
+<div id="div_group_35" class="example_group passed">
+  <dl style="margin-left: 0px;">
+  <dt id="example_group_35" class="passed">ReasonsController</dt>
+  </dl>
+</div>
+<div id="div_group_36" class="example_group passed">
+  <dl style="margin-left: 15px;">
+  <dt id="example_group_36" class="passed">GET index</dt>
+    <script type="text/javascript">moveProgressBar('25.7');</script>
+    <dd class="example passed"><span class="passed_spec_name">assigns all reasons as @reasons</span><span class='duration'>0.06650s</span></dd>
+  </dl>
+</div>
+<div id="div_group_37" class="example_group passed">
+  <dl style="margin-left: 15px;">
+  <dt id="example_group_37" class="passed">GET show</dt>
+    <script type="text/javascript">moveProgressBar('26.1');</script>
+    <dd class="example passed"><span class="passed_spec_name">assigns the requested reason as @reason</span><span class='duration'>0.01203s</span></dd>
+  </dl>
+</div>
+<div id="div_group_38" class="example_group passed">
+  <dl style="margin-left: 15px;">
+  <dt id="example_group_38" class="passed">GET new</dt>
+    <script type="text/javascript">moveProgressBar('26.5');</script>
+    <dd class="example passed"><span class="passed_spec_name">assigns a new reason as @reason</span><span class='duration'>0.00736s</span></dd>
+  </dl>
+</div>
+<div id="div_group_39" class="example_group passed">
+  <dl style="margin-left: 15px;">
+  <dt id="example_group_39" class="passed">GET edit</dt>
+    <script type="text/javascript">moveProgressBar('26.8');</script>
+    <dd class="example passed"><span class="passed_spec_name">assigns the requested reason as @reason</span><span class='duration'>0.01164s</span></dd>
+  </dl>
+</div>
+<div id="div_group_40" class="example_group passed">
+  <dl style="margin-left: 15px;">
+  <dt id="example_group_40" class="passed">POST create</dt>
+  </dl>
+</div>
+<div id="div_group_41" class="example_group passed">
+  <dl style="margin-left: 30px;">
+  <dt id="example_group_41" class="passed">with valid params</dt>
+    <script type="text/javascript">moveProgressBar('27.2');</script>
+    <dd class="example passed"><span class="passed_spec_name">creates a new Reason</span><span class='duration'>0.01069s</span></dd>
+    <script type="text/javascript">moveProgressBar('27.6');</script>
+    <dd class="example passed"><span class="passed_spec_name">assigns a newly created reason as @reason</span><span class='duration'>0.00863s</span></dd>
+    <script type="text/javascript">moveProgressBar('28.0');</script>
+    <dd class="example passed"><span class="passed_spec_name">redirects to the created reason</span><span class='duration'>0.00864s</span></dd>
+  </dl>
+</div>
+<div id="div_group_42" class="example_group passed">
+  <dl style="margin-left: 30px;">
+  <dt id="example_group_42" class="passed">with invalid params</dt>
+    <script type="text/javascript">moveProgressBar('28.4');</script>
+    <dd class="example passed"><span class="passed_spec_name">assigns a newly created but unsaved reason as @reason</span><span class='duration'>0.00667s</span></dd>
+    <script type="text/javascript">moveProgressBar('28.7');</script>
+    <dd class="example passed"><span class="passed_spec_name">re-renders the &#x27;new&#x27; template</span><span class='duration'>0.00654s</span></dd>
+  </dl>
+</div>
+<div id="div_group_43" class="example_group passed">
+  <dl style="margin-left: 15px;">
+  <dt id="example_group_43" class="passed">PUT update</dt>
+  </dl>
+</div>
+<div id="div_group_44" class="example_group passed">
+  <dl style="margin-left: 30px;">
+  <dt id="example_group_44" class="passed">with valid params</dt>
+    <script type="text/javascript">moveProgressBar('29.1');</script>
+    <dd class="example passed"><span class="passed_spec_name">updates the requested reason</span><span class='duration'>0.01115s</span></dd>
+    <script type="text/javascript">moveProgressBar('29.5');</script>
+    <dd class="example passed"><span class="passed_spec_name">assigns the requested reason as @reason</span><span class='duration'>0.01114s</span></dd>
+    <script type="text/javascript">moveProgressBar('29.9');</script>
+    <dd class="example passed"><span class="passed_spec_name">redirects to the reason</span><span class='duration'>0.01056s</span></dd>
+  </dl>
+</div>
+<div id="div_group_45" class="example_group passed">
+  <dl style="margin-left: 30px;">
+  <dt id="example_group_45" class="passed">with invalid params</dt>
+    <script type="text/javascript">moveProgressBar('30.3');</script>
+    <dd class="example passed"><span class="passed_spec_name">assigns the reason as @reason</span><span class='duration'>0.01151s</span></dd>
+    <script type="text/javascript">moveProgressBar('30.6');</script>
+    <dd class="example passed"><span class="passed_spec_name">re-renders the &#x27;edit&#x27; template</span><span class='duration'>0.01148s</span></dd>
+  </dl>
+</div>
+<div id="div_group_46" class="example_group passed">
+  <dl style="margin-left: 15px;">
+  <dt id="example_group_46" class="passed">DELETE destroy</dt>
+    <script type="text/javascript">moveProgressBar('31.0');</script>
+    <dd class="example passed"><span class="passed_spec_name">destroys the requested reason</span><span class='duration'>0.01451s</span></dd>
+    <script type="text/javascript">moveProgressBar('31.4');</script>
+    <dd class="example passed"><span class="passed_spec_name">redirects to the reasons list</span><span class='duration'>0.01074s</span></dd>
+  </dl>
+</div>
+<div id="div_group_47" class="example_group passed">
+  <dl style="margin-left: 0px;">
+  <dt id="example_group_47" class="passed">PayMethodsController</dt>
+  </dl>
+</div>
+<div id="div_group_48" class="example_group passed">
+  <dl style="margin-left: 15px;">
+  <dt id="example_group_48" class="passed">GET index</dt>
+    <script type="text/javascript">moveProgressBar('31.8');</script>
+    <dd class="example passed"><span class="passed_spec_name">assigns all pay_methods as @pay_methods</span><span class='duration'>0.01590s</span></dd>
+  </dl>
+</div>
+<div id="div_group_49" class="example_group passed">
+  <dl style="margin-left: 15px;">
+  <dt id="example_group_49" class="passed">GET show</dt>
+    <script type="text/javascript">moveProgressBar('32.1');</script>
+    <dd class="example passed"><span class="passed_spec_name">assigns the requested pay_method as @pay_method</span><span class='duration'>0.01150s</span></dd>
+  </dl>
+</div>
+<div id="div_group_50" class="example_group passed">
+  <dl style="margin-left: 15px;">
+  <dt id="example_group_50" class="passed">GET new</dt>
+    <script type="text/javascript">moveProgressBar('32.5');</script>
+    <dd class="example passed"><span class="passed_spec_name">assigns a new pay_method as @pay_method</span><span class='duration'>0.00710s</span></dd>
+  </dl>
+</div>
+<div id="div_group_51" class="example_group passed">
+  <dl style="margin-left: 15px;">
+  <dt id="example_group_51" class="passed">GET edit</dt>
+    <script type="text/javascript">moveProgressBar('32.9');</script>
+    <dd class="example passed"><span class="passed_spec_name">assigns the requested pay_method as @pay_method</span><span class='duration'>0.01137s</span></dd>
+  </dl>
+</div>
+<div id="div_group_52" class="example_group passed">
+  <dl style="margin-left: 15px;">
+  <dt id="example_group_52" class="passed">POST create</dt>
+  </dl>
+</div>
+<div id="div_group_53" class="example_group passed">
+  <dl style="margin-left: 30px;">
+  <dt id="example_group_53" class="passed">with valid params</dt>
+    <script type="text/javascript">moveProgressBar('33.3');</script>
+    <dd class="example passed"><span class="passed_spec_name">creates a new PayMethod</span><span class='duration'>0.01062s</span></dd>
+    <script type="text/javascript">moveProgressBar('33.7');</script>
+    <dd class="example passed"><span class="passed_spec_name">assigns a newly created pay_method as @pay_method</span><span class='duration'>0.00861s</span></dd>
+    <script type="text/javascript">moveProgressBar('34.0');</script>
+    <dd class="example passed"><span class="passed_spec_name">redirects to the created pay_method</span><span class='duration'>0.00862s</span></dd>
+  </dl>
+</div>
+<div id="div_group_54" class="example_group passed">
+  <dl style="margin-left: 30px;">
+  <dt id="example_group_54" class="passed">with invalid params</dt>
+    <script type="text/javascript">moveProgressBar('34.4');</script>
+    <dd class="example passed"><span class="passed_spec_name">assigns a newly created but unsaved pay_method as @pay_method</span><span class='duration'>0.00655s</span></dd>
+    <script type="text/javascript">moveProgressBar('34.8');</script>
+    <dd class="example passed"><span class="passed_spec_name">re-renders the &#x27;new&#x27; template</span><span class='duration'>0.00651s</span></dd>
+  </dl>
+</div>
+<div id="div_group_55" class="example_group passed">
+  <dl style="margin-left: 15px;">
+  <dt id="example_group_55" class="passed">PUT update</dt>
+  </dl>
+</div>
+<div id="div_group_56" class="example_group passed">
+  <dl style="margin-left: 30px;">
+  <dt id="example_group_56" class="passed">with valid params</dt>
+    <script type="text/javascript">moveProgressBar('35.2');</script>
+    <dd class="example passed"><span class="passed_spec_name">updates the requested pay_method</span><span class='duration'>0.01109s</span></dd>
+    <script type="text/javascript">moveProgressBar('35.6');</script>
+    <dd class="example passed"><span class="passed_spec_name">assigns the requested pay_method as @pay_method</span><span class='duration'>0.01113s</span></dd>
+    <script type="text/javascript">moveProgressBar('35.9');</script>
+    <dd class="example passed"><span class="passed_spec_name">redirects to the pay_method</span><span class='duration'>0.01059s</span></dd>
+  </dl>
+</div>
+<div id="div_group_57" class="example_group passed">
+  <dl style="margin-left: 30px;">
+  <dt id="example_group_57" class="passed">with invalid params</dt>
+    <script type="text/javascript">moveProgressBar('36.3');</script>
+    <dd class="example passed"><span class="passed_spec_name">assigns the pay_method as @pay_method</span><span class='duration'>0.01156s</span></dd>
+    <script type="text/javascript">moveProgressBar('36.7');</script>
+    <dd class="example passed"><span class="passed_spec_name">re-renders the &#x27;edit&#x27; template</span><span class='duration'>0.01177s</span></dd>
+  </dl>
+</div>
+<div id="div_group_58" class="example_group passed">
+  <dl style="margin-left: 15px;">
+  <dt id="example_group_58" class="passed">DELETE destroy</dt>
+    <script type="text/javascript">moveProgressBar('37.1');</script>
+    <dd class="example passed"><span class="passed_spec_name">destroys the requested pay_method</span><span class='duration'>0.01498s</span></dd>
+    <script type="text/javascript">moveProgressBar('37.5');</script>
+    <dd class="example passed"><span class="passed_spec_name">redirects to the pay_methods list</span><span class='duration'>0.07441s</span></dd>
+  </dl>
+</div>
+<div id="div_group_59" class="example_group passed">
+  <dl style="margin-left: 0px;">
+  <dt id="example_group_59" class="passed">UsersController</dt>
+  </dl>
+</div>
+<div id="div_group_60" class="example_group passed">
+  <dl style="margin-left: 15px;">
+  <dt id="example_group_60" class="passed">GET index</dt>
+    <script type="text/javascript">moveProgressBar('37.8');</script>
+    <dd class="example passed"><span class="passed_spec_name">assigns all users as @users</span><span class='duration'>0.11442s</span></dd>
+  </dl>
+</div>
+<div id="div_group_61" class="example_group passed">
+  <dl style="margin-left: 15px;">
+  <dt id="example_group_61" class="passed">GET show</dt>
+    <script type="text/javascript">moveProgressBar('38.2');</script>
+    <dd class="example passed"><span class="passed_spec_name">assigns the requested user as @user</span><span class='duration'>0.10483s</span></dd>
+  </dl>
+</div>
+<div id="div_group_62" class="example_group passed">
+  <dl style="margin-left: 15px;">
+  <dt id="example_group_62" class="passed">GET new</dt>
+    <script type="text/javascript">moveProgressBar('38.6');</script>
+    <dd class="example passed"><span class="passed_spec_name">assigns a new user as @user</span><span class='duration'>0.00692s</span></dd>
+  </dl>
+</div>
+<div id="div_group_63" class="example_group passed">
+  <dl style="margin-left: 15px;">
+  <dt id="example_group_63" class="passed">GET edit</dt>
+    <script type="text/javascript">moveProgressBar('39.0');</script>
+    <dd class="example passed"><span class="passed_spec_name">assigns the requested user as @user</span><span class='duration'>0.10224s</span></dd>
+  </dl>
+</div>
+<div id="div_group_64" class="example_group passed">
+  <dl style="margin-left: 15px;">
+  <dt id="example_group_64" class="passed">POST create</dt>
+  </dl>
+</div>
+<div id="div_group_65" class="example_group passed">
+  <dl style="margin-left: 30px;">
+  <dt id="example_group_65" class="passed">with valid params</dt>
+    <script type="text/javascript">moveProgressBar('39.3');</script>
+    <dd class="example passed"><span class="passed_spec_name">creates a new User</span><span class='duration'>0.10190s</span></dd>
+    <script type="text/javascript">moveProgressBar('39.7');</script>
+    <dd class="example passed"><span class="passed_spec_name">assigns a newly created user as @user</span><span class='duration'>0.09974s</span></dd>
+    <script type="text/javascript">moveProgressBar('40.1');</script>
+    <dd class="example passed"><span class="passed_spec_name">redirects to the created user</span><span class='duration'>0.10171s</span></dd>
+  </dl>
+</div>
+<div id="div_group_66" class="example_group passed">
+  <dl style="margin-left: 30px;">
+  <dt id="example_group_66" class="passed">with invalid params</dt>
+    <script type="text/javascript">moveProgressBar('40.5');</script>
+    <dd class="example passed"><span class="passed_spec_name">assigns a newly created but unsaved user as @user</span><span class='duration'>0.00622s</span></dd>
+    <script type="text/javascript">moveProgressBar('40.9');</script>
+    <dd class="example passed"><span class="passed_spec_name">re-renders the &#x27;new&#x27; template</span><span class='duration'>0.00623s</span></dd>
+  </dl>
+</div>
+<div id="div_group_67" class="example_group passed">
+  <dl style="margin-left: 15px;">
+  <dt id="example_group_67" class="passed">PUT update</dt>
+  </dl>
+</div>
+<div id="div_group_68" class="example_group passed">
+  <dl style="margin-left: 30px;">
+  <dt id="example_group_68" class="passed">with valid params</dt>
+    <script type="text/javascript">moveProgressBar('41.2');</script>
+    <dd class="example passed"><span class="passed_spec_name">updates the requested user</span><span class='duration'>0.10456s</span></dd>
+    <script type="text/javascript">moveProgressBar('41.6');</script>
+    <dd class="example passed"><span class="passed_spec_name">assigns the requested user as @user</span><span class='duration'>0.18037s</span></dd>
+    <script type="text/javascript">moveProgressBar('42.0');</script>
+    <dd class="example passed"><span class="passed_spec_name">redirects to the user</span><span class='duration'>0.18546s</span></dd>
+  </dl>
+</div>
+<div id="div_group_69" class="example_group passed">
+  <dl style="margin-left: 30px;">
+  <dt id="example_group_69" class="passed">with invalid params</dt>
+    <script type="text/javascript">moveProgressBar('42.4');</script>
+    <dd class="example passed"><span class="passed_spec_name">assigns the user as @user</span><span class='duration'>0.20777s</span></dd>
+    <script type="text/javascript">moveProgressBar('42.8');</script>
+    <dd class="example passed"><span class="passed_spec_name">re-renders the &#x27;edit&#x27; template</span><span class='duration'>0.10932s</span></dd>
+  </dl>
+</div>
+<div id="div_group_70" class="example_group passed">
+  <dl style="margin-left: 15px;">
+  <dt id="example_group_70" class="passed">DELETE destroy</dt>
+    <script type="text/javascript">moveProgressBar('43.1');</script>
+    <dd class="example passed"><span class="passed_spec_name">destroys the requested user</span><span class='duration'>0.13168s</span></dd>
+    <script type="text/javascript">moveProgressBar('43.5');</script>
+    <dd class="example passed"><span class="passed_spec_name">redirects to the users list</span><span class='duration'>0.11111s</span></dd>
+  </dl>
+</div>
+<div id="div_group_71" class="example_group passed">
+  <dl style="margin-left: 0px;">
+  <dt id="example_group_71" class="passed">StoresController</dt>
+  </dl>
+</div>
+<div id="div_group_72" class="example_group passed">
+  <dl style="margin-left: 15px;">
+  <dt id="example_group_72" class="passed">GET index</dt>
+    <script type="text/javascript">moveProgressBar('43.9');</script>
+    <dd class="example passed"><span class="passed_spec_name">assigns all stores as @stores</span><span class='duration'>0.01548s</span></dd>
+  </dl>
+</div>
+<div id="div_group_73" class="example_group passed">
+  <dl style="margin-left: 15px;">
+  <dt id="example_group_73" class="passed">GET show</dt>
+    <script type="text/javascript">moveProgressBar('44.3');</script>
+    <dd class="example passed"><span class="passed_spec_name">assigns the requested store as @store</span><span class='duration'>0.01110s</span></dd>
+  </dl>
+</div>
+<div id="div_group_74" class="example_group passed">
+  <dl style="margin-left: 15px;">
+  <dt id="example_group_74" class="passed">GET new</dt>
+    <script type="text/javascript">moveProgressBar('44.6');</script>
+    <dd class="example passed"><span class="passed_spec_name">assigns a new store as @store</span><span class='duration'>0.00690s</span></dd>
+  </dl>
+</div>
+<div id="div_group_75" class="example_group passed">
+  <dl style="margin-left: 15px;">
+  <dt id="example_group_75" class="passed">GET edit</dt>
+    <script type="text/javascript">moveProgressBar('45.0');</script>
+    <dd class="example passed"><span class="passed_spec_name">assigns the requested store as @store</span><span class='duration'>0.01094s</span></dd>
+  </dl>
+</div>
+<div id="div_group_76" class="example_group passed">
+  <dl style="margin-left: 15px;">
+  <dt id="example_group_76" class="passed">POST create</dt>
+  </dl>
+</div>
+<div id="div_group_77" class="example_group passed">
+  <dl style="margin-left: 30px;">
+  <dt id="example_group_77" class="passed">with valid params</dt>
+    <script type="text/javascript">moveProgressBar('45.4');</script>
+    <dd class="example passed"><span class="passed_spec_name">creates a new Store</span><span class='duration'>0.01020s</span></dd>
+    <script type="text/javascript">moveProgressBar('45.8');</script>
+    <dd class="example passed"><span class="passed_spec_name">assigns a newly created store as @store</span><span class='duration'>0.00821s</span></dd>
+    <script type="text/javascript">moveProgressBar('46.2');</script>
+    <dd class="example passed"><span class="passed_spec_name">redirects to the created store</span><span class='duration'>0.00841s</span></dd>
+  </dl>
+</div>
+<div id="div_group_78" class="example_group passed">
+  <dl style="margin-left: 30px;">
+  <dt id="example_group_78" class="passed">with invalid params</dt>
+    <script type="text/javascript">moveProgressBar('46.5');</script>
+    <dd class="example passed"><span class="passed_spec_name">assigns a newly created but unsaved store as @store</span><span class='duration'>0.00639s</span></dd>
+    <script type="text/javascript">moveProgressBar('46.9');</script>
+    <dd class="example passed"><span class="passed_spec_name">re-renders the &#x27;new&#x27; template</span><span class='duration'>0.00624s</span></dd>
+  </dl>
+</div>
+<div id="div_group_79" class="example_group passed">
+  <dl style="margin-left: 15px;">
+  <dt id="example_group_79" class="passed">PUT update</dt>
+  </dl>
+</div>
+<div id="div_group_80" class="example_group passed">
+  <dl style="margin-left: 30px;">
+  <dt id="example_group_80" class="passed">with valid params</dt>
+    <script type="text/javascript">moveProgressBar('47.3');</script>
+    <dd class="example passed"><span class="passed_spec_name">updates the requested store</span><span class='duration'>0.01074s</span></dd>
+    <script type="text/javascript">moveProgressBar('47.7');</script>
+    <dd class="example passed"><span class="passed_spec_name">assigns the requested store as @store</span><span class='duration'>0.01077s</span></dd>
+    <script type="text/javascript">moveProgressBar('48.1');</script>
+    <dd class="example passed"><span class="passed_spec_name">redirects to the store</span><span class='duration'>0.01013s</span></dd>
+  </dl>
+</div>
+<div id="div_group_81" class="example_group passed">
+  <dl style="margin-left: 30px;">
+  <dt id="example_group_81" class="passed">with invalid params</dt>
+    <script type="text/javascript">moveProgressBar('48.4');</script>
+    <dd class="example passed"><span class="passed_spec_name">assigns the store as @store</span><span class='duration'>0.01081s</span></dd>
+    <script type="text/javascript">moveProgressBar('48.8');</script>
+    <dd class="example passed"><span class="passed_spec_name">re-renders the &#x27;edit&#x27; template</span><span class='duration'>0.01096s</span></dd>
+  </dl>
+</div>
+<div id="div_group_82" class="example_group passed">
+  <dl style="margin-left: 15px;">
+  <dt id="example_group_82" class="passed">DELETE destroy</dt>
+    <script type="text/javascript">moveProgressBar('49.2');</script>
+    <dd class="example passed"><span class="passed_spec_name">destroys the requested store</span><span class='duration'>0.01392s</span></dd>
+    <script type="text/javascript">moveProgressBar('49.6');</script>
+    <dd class="example passed"><span class="passed_spec_name">redirects to the stores list</span><span class='duration'>0.01008s</span></dd>
+  </dl>
+</div>
+<div id="div_group_83" class="example_group passed">
+  <dl style="margin-left: 0px;">
+  <dt id="example_group_83" class="passed">Expenses</dt>
+  </dl>
+</div>
+<div id="div_group_84" class="example_group passed">
+  <dl style="margin-left: 15px;">
+  <dt id="example_group_84" class="passed">GET /expenses</dt>
+    <script type="text/javascript">moveProgressBar('50.0');</script>
+    <dd class="example passed"><span class="passed_spec_name">works! (now write some real specs)</span><span class='duration'>0.13467s</span></dd>
+  </dl>
+</div>
+<div id="div_group_85" class="example_group passed">
+  <dl style="margin-left: 0px;">
+  <dt id="example_group_85" class="passed">Stores:</dt>
+  </dl>
+</div>
+<div id="div_group_86" class="example_group passed">
+  <dl style="margin-left: 15px;">
+  <dt id="example_group_86" class="passed">Controller methods:</dt>
+    <script type="text/javascript">moveProgressBar('50.3');</script>
+    <dd class="example passed"><span class="passed_spec_name">index</span><span class='duration'>0.57286s</span></dd>
+    <script type="text/javascript">moveProgressBar('50.7');</script>
+    <dd class="example passed"><span class="passed_spec_name">show</span><span class='duration'>0.02512s</span></dd>
+    <script type="text/javascript">moveProgressBar('51.1');</script>
+    <dd class="example passed"><span class="passed_spec_name">edit</span><span class='duration'>0.19387s</span></dd>
+    <script type="text/javascript">moveProgressBar('51.5');</script>
+    <dd class="example passed"><span class="passed_spec_name">create</span><span class='duration'>0.05374s</span></dd>
+    <script type="text/javascript">moveProgressBar('51.8');</script>
+    <dd class="example passed"><span class="passed_spec_name">destroy</span><span class='duration'>0.06687s</span></dd>
+  </dl>
+</div>
+<div id="div_group_87" class="example_group passed">
+  <dl style="margin-left: 15px;">
+  <dt id="example_group_87" class="passed">custom tests:</dt>
+    <script type="text/javascript">moveProgressBar('52.2');</script>
+    <dd class="example passed"><span class="passed_spec_name">gets the page successfully</span><span class='duration'>0.02799s</span></dd>
+    <script type="text/javascript">moveProgressBar('52.6');</script>
+    <dd class="example passed"><span class="passed_spec_name">should show an error when create a duplicate store</span><span class='duration'>0.11697s</span></dd>
+    <script type="text/javascript">moveProgressBar('53.0');</script>
+    <dd class="example passed"><span class="passed_spec_name">should show an error when renaming to a duplicate store</span><span class='duration'>0.05618s</span></dd>
+  </dl>
+</div>
+<div id="div_group_88" class="example_group passed">
+  <dl style="margin-left: 0px;">
+  <dt id="example_group_88" class="passed">PayMethods</dt>
+  </dl>
+</div>
+<div id="div_group_89" class="example_group passed">
+  <dl style="margin-left: 15px;">
+  <dt id="example_group_89" class="passed">GET /pay_methods</dt>
+    <script type="text/javascript">moveProgressBar('53.4');</script>
+    <dd class="example passed"><span class="passed_spec_name">works! (now write some real specs)</span><span class='duration'>0.01254s</span></dd>
+  </dl>
+</div>
+<div id="div_group_90" class="example_group passed">
+  <dl style="margin-left: 0px;">
+  <dt id="example_group_90" class="passed">Users</dt>
+  </dl>
+</div>
+<div id="div_group_91" class="example_group passed">
+  <dl style="margin-left: 15px;">
+  <dt id="example_group_91" class="passed">GET /users</dt>
+    <script type="text/javascript">moveProgressBar('53.7');</script>
+    <dd class="example passed"><span class="passed_spec_name">works! (now write some real specs)</span><span class='duration'>0.01263s</span></dd>
+  </dl>
+</div>
+<div id="div_group_92" class="example_group passed">
+  <dl style="margin-left: 0px;">
+  <dt id="example_group_92" class="passed">Groups</dt>
+  </dl>
+</div>
+<div id="div_group_93" class="example_group passed">
+  <dl style="margin-left: 15px;">
+  <dt id="example_group_93" class="passed">GET /groups</dt>
+    <script type="text/javascript">moveProgressBar('54.1');</script>
+    <dd class="example passed"><span class="passed_spec_name">works! (now write some real specs)</span><span class='duration'>0.01623s</span></dd>
+  </dl>
+</div>
+<div id="div_group_94" class="example_group passed">
+  <dl style="margin-left: 0px;">
+  <dt id="example_group_94" class="passed">Reasons</dt>
+  </dl>
+</div>
+<div id="div_group_95" class="example_group passed">
+  <dl style="margin-left: 15px;">
+  <dt id="example_group_95" class="passed">GET /reasons</dt>
+    <script type="text/javascript">moveProgressBar('54.5');</script>
+    <dd class="example passed"><span class="passed_spec_name">works! (now write some real specs)</span><span class='duration'>0.01884s</span></dd>
+  </dl>
+</div>
+<div id="div_group_96" class="example_group passed">
+  <dl style="margin-left: 0px;">
+  <dt id="example_group_96" class="passed">PayMethod</dt>
+    <script type="text/javascript">moveProgressBar('54.9');</script>
+    <dd class="example passed"><span class="passed_spec_name">should create a new instance given valid attributes</span><span class='duration'>0.00832s</span></dd>
+    <script type="text/javascript">moveProgressBar('55.3');</script>
+    <dd class="example passed"><span class="passed_spec_name">should require a pay_method</span><span class='duration'>0.00571s</span></dd>
+    <script type="text/javascript">moveProgressBar('55.6');</script>
+    <dd class="example passed"><span class="passed_spec_name">should be unique</span><span class='duration'>0.00523s</span></dd>
+    <script type="text/javascript">moveProgressBar('56.0');</script>
+    <dd class="example passed"><span class="passed_spec_name">should be unique, case insensitive</span><span class='duration'>0.00377s</span></dd>
+    <script type="text/javascript">moveProgressBar('56.4');</script>
+    <dd class="example passed"><span class="passed_spec_name">should have a maximum of characters</span><span class='duration'>0.00293s</span></dd>
+    <script type="text/javascript">moveProgressBar('56.8');</script>
+    <dd class="example passed"><span class="passed_spec_name">should respond to expenses</span><span class='duration'>0.01492s</span></dd>
+    <script type="text/javascript">moveProgressBar('57.1');</script>
+    <dd class="example passed"><span class="passed_spec_name">should have expenses attributes</span><span class='duration'>0.13419s</span></dd>
+    <script type="text/javascript">moveProgressBar('57.5');</script>
+    <dd class="example passed"><span class="passed_spec_name">should have the right associated expense</span><span class='duration'>0.18512s</span></dd>
+    <script type="text/javascript">moveProgressBar('57.9');</script>
+    <dd class="example passed"><span class="passed_spec_name">should not be destroyed if pay_method has expenses</span><span class='duration'>0.12386s</span></dd>
+    <script type="text/javascript">moveProgressBar('58.3');</script>
+    <dd class="example passed"><span class="passed_spec_name">should have an error if it has expenses and destroy is called</span><span class='duration'>0.12250s</span></dd>
+    <script type="text/javascript">moveProgressBar('58.7');</script>
+    <dd class="example passed"><span class="passed_spec_name">should have an error containing model name if it has expenses and destroy is called</span><span class='duration'>0.12191s</span></dd>
+    <script type="text/javascript">moveProgressBar('59.0');</script>
+    <dd class="example passed"><span class="passed_spec_name">should be destroyable if pay_method has no expenses</span><span class='duration'>0.12281s</span></dd>
+  </dl>
+</div>
+<div id="div_group_97" class="example_group passed">
+  <dl style="margin-left: 0px;">
+  <dt id="example_group_97" class="passed">Expense</dt>
+    <script type="text/javascript">moveProgressBar('59.4');</script>
+    <dd class="example passed"><span class="passed_spec_name">should create a record with valid attributes</span><span class='duration'>0.28887s</span></dd>
+    <script type="text/javascript">moveProgressBar('59.8');</script>
+    <dd class="example passed"><span class="passed_spec_name">should have a date_purchased</span><span class='duration'>0.11413s</span></dd>
+    <script type="text/javascript">moveProgressBar('60.2');</script>
+    <dd class="example passed"><span class="passed_spec_name">should accept a date for date_purchased</span><span class='duration'>0.11267s</span></dd>
+    <script type="text/javascript">moveProgressBar('60.6');</script>
+    <dd class="example passed"><span class="passed_spec_name">should refuse invalid dates for date_purchased</span><span class='duration'>0.11682s</span></dd>
+    <script type="text/javascript">moveProgressBar('60.9');</script>
+    <dd class="example passed"><span class="passed_spec_name">should have a store</span><span class='duration'>0.11635s</span></dd>
+    <script type="text/javascript">moveProgressBar('61.3');</script>
+    <dd class="example passed"><span class="passed_spec_name">should have an existing store</span><span class='duration'>0.11272s</span></dd>
+    <script type="text/javascript">moveProgressBar('61.7');</script>
+    <dd class="example passed"><span class="passed_spec_name">should have a pay_method</span><span class='duration'>0.11291s</span></dd>
+    <script type="text/javascript">moveProgressBar('62.1');</script>
+    <dd class="example passed"><span class="passed_spec_name">should have an existing pay_method</span><span class='duration'>0.17851s</span></dd>
+    <script type="text/javascript">moveProgressBar('62.5');</script>
+    <dd class="example passed"><span class="passed_spec_name">should have a reason</span><span class='duration'>0.11316s</span></dd>
+    <script type="text/javascript">moveProgressBar('62.8');</script>
+    <dd class="example passed"><span class="passed_spec_name">should have an existing reason</span><span class='duration'>0.11310s</span></dd>
+    <script type="text/javascript">moveProgressBar('63.2');</script>
+    <dd class="example passed"><span class="passed_spec_name">should have a user_id</span><span class='duration'>0.11267s</span></dd>
+    <script type="text/javascript">moveProgressBar('63.6');</script>
+    <dd class="example passed"><span class="passed_spec_name">should map to an existing user</span><span class='duration'>0.11271s</span></dd>
+    <script type="text/javascript">moveProgressBar('64.0');</script>
+    <dd class="example passed"><span class="passed_spec_name">should have a group_id</span><span class='duration'>0.11243s</span></dd>
+    <script type="text/javascript">moveProgressBar('64.3');</script>
+    <dd class="example passed"><span class="passed_spec_name">should map to an existing group</span><span class='duration'>0.11300s</span></dd>
+    <script type="text/javascript">moveProgressBar('64.7');</script>
+    <dd class="example passed"><span class="passed_spec_name">should have an amount</span><span class='duration'>0.18128s</span></dd>
+    <script type="text/javascript">moveProgressBar('65.1');</script>
+    <dd class="example passed"><span class="passed_spec_name">should allow a float in amount</span><span class='duration'>0.11352s</span></dd>
+    <script type="text/javascript">moveProgressBar('65.5');</script>
+    <dd class="example passed"><span class="passed_spec_name">should not allow letters in amount</span><span class='duration'>0.11364s</span></dd>
+    <script type="text/javascript">moveProgressBar('65.9');</script>
+    <dd class="example passed"><span class="passed_spec_name">should not be created with a process date</span><span class='duration'>0.11286s</span></dd>
+    <script type="text/javascript">moveProgressBar('66.2');</script>
+    <dd class="example passed"><span class="passed_spec_name">should allow a process date once it&#x27;s been saved</span><span class='duration'>0.11700s</span></dd>
+    <script type="text/javascript">moveProgressBar('66.6');</script>
+    <dd class="example passed"><span class="passed_spec_name">should not be created with process flag set to true</span><span class='duration'>0.14976s</span></dd>
+    <script type="text/javascript">moveProgressBar('67.0');</script>
+    <dd class="example passed"><span class="passed_spec_name">should allow to set process_flag once it&#x27;s been saved</span><span class='duration'>0.18300s</span></dd>
+    <script type="text/javascript">moveProgressBar('67.4');</script>
+    <dd class="example passed"><span class="passed_spec_name">should not be destroyable if it&#x27;s been processed</span><span class='duration'>0.11694s</span></dd>
+    <script type="text/javascript">moveProgressBar('67.8');</script>
+    <dd class="example passed"><span class="passed_spec_name">should destroyable if it has not been processed</span><span class='duration'>0.11627s</span></dd>
+  </dl>
+</div>
+<div id="div_group_98" class="example_group passed">
+  <dl style="margin-left: 0px;">
+  <dt id="example_group_98" class="passed">UserRole</dt>
+    <script type="text/javascript">makeYellow('rspec-header');</script>
+    <script type="text/javascript">makeYellow('div_group_98');</script>
+    <script type="text/javascript">makeYellow('example_group_98');</script>
+    <script type="text/javascript">moveProgressBar('68.1');</script>
+    <dd class="example not_implemented"><span class="not_implemented_spec_name">should create a new instance given valid attributes (PENDING: No reason given)</span></dd>
+    <script type="text/javascript">makeYellow('rspec-header');</script>
+    <script type="text/javascript">makeYellow('div_group_98');</script>
+    <script type="text/javascript">makeYellow('example_group_98');</script>
+    <script type="text/javascript">moveProgressBar('68.5');</script>
+    <dd class="example not_implemented"><span class="not_implemented_spec_name">should not allow users to be in the same role more than once (PENDING: No reason given)</span></dd>
+    <script type="text/javascript">makeYellow('rspec-header');</script>
+    <script type="text/javascript">makeYellow('div_group_98');</script>
+    <script type="text/javascript">makeYellow('example_group_98');</script>
+    <script type="text/javascript">moveProgressBar('68.9');</script>
+    <dd class="example not_implemented"><span class="not_implemented_spec_name">should allow users to be in multiple roles (PENDING: No reason given)</span></dd>
+    <script type="text/javascript">makeYellow('rspec-header');</script>
+    <script type="text/javascript">makeYellow('div_group_98');</script>
+    <script type="text/javascript">makeYellow('example_group_98');</script>
+    <script type="text/javascript">moveProgressBar('69.3');</script>
+    <dd class="example not_implemented"><span class="not_implemented_spec_name">should map to a vlide user (PENDING: No reason given)</span></dd>
+    <script type="text/javascript">makeYellow('rspec-header');</script>
+    <script type="text/javascript">makeYellow('div_group_98');</script>
+    <script type="text/javascript">makeYellow('example_group_98');</script>
+    <script type="text/javascript">moveProgressBar('69.6');</script>
+    <dd class="example not_implemented"><span class="not_implemented_spec_name">should map to a vlide role (PENDING: No reason given)</span></dd>
+    <script type="text/javascript">makeYellow('rspec-header');</script>
+    <script type="text/javascript">makeYellow('div_group_98');</script>
+    <script type="text/javascript">makeYellow('example_group_98');</script>
+    <script type="text/javascript">moveProgressBar('70.0');</script>
+    <dd class="example not_implemented"><span class="not_implemented_spec_name">add some examples to (or delete) /home/sly/web_system/expense_rails31/expenses/spec/models/user_role_spec.rb (PENDING: No reason given)</span></dd>
+  </dl>
+</div>
+<div id="div_group_99" class="example_group passed">
+  <dl style="margin-left: 0px;">
+  <dt id="example_group_99" class="passed">GroupMember</dt>
+    <script type="text/javascript">moveProgressBar('70.4');</script>
+    <dd class="example passed"><span class="passed_spec_name">should create a new instance given valid attributes</span><span class='duration'>0.10175s</span></dd>
+    <script type="text/javascript">moveProgressBar('70.8');</script>
+    <dd class="example passed"><span class="passed_spec_name">should require a user_id</span><span class='duration'>0.10157s</span></dd>
+    <script type="text/javascript">moveProgressBar('71.2');</script>
+    <dd class="example passed"><span class="passed_spec_name">should require a group_id</span><span class='duration'>0.10113s</span></dd>
+    <script type="text/javascript">moveProgressBar('71.5');</script>
+    <dd class="example passed"><span class="passed_spec_name">should not allow a user to be in the same group more than once</span><span class='duration'>0.10467s</span></dd>
+    <script type="text/javascript">moveProgressBar('71.9');</script>
+    <dd class="example passed"><span class="passed_spec_name">should allow a user to be in different groups</span><span class='duration'>0.10625s</span></dd>
+    <script type="text/javascript">moveProgressBar('72.3');</script>
+    <dd class="example passed"><span class="passed_spec_name">should map to a valid user</span><span class='duration'>0.10096s</span></dd>
+    <script type="text/javascript">moveProgressBar('72.7');</script>
+    <dd class="example passed"><span class="passed_spec_name">should map to a vlid group</span><span class='duration'>0.10107s</span></dd>
+    <script type="text/javascript">moveProgressBar('73.1');</script>
+    <dd class="example passed"><span class="passed_spec_name">should be destroyable if it is not linked to any expenses</span><span class='duration'>0.17172s</span></dd>
+    <script type="text/javascript">moveProgressBar('73.4');</script>
+    <dd class="example passed"><span class="passed_spec_name">should not be destroyable if it is linked to expenses</span><span class='duration'>0.22236s</span></dd>
+    <script type="text/javascript">moveProgressBar('73.8');</script>
+    <dd class="example passed"><span class="passed_spec_name">should be destroyable even if the user still exists</span><span class='duration'>0.10720s</span></dd>
+  </dl>
+</div>
+<div id="div_group_100" class="example_group passed">
+  <dl style="margin-left: 0px;">
+  <dt id="example_group_100" class="passed">Role</dt>
+    <script type="text/javascript">makeYellow('rspec-header');</script>
+    <script type="text/javascript">makeYellow('div_group_100');</script>
+    <script type="text/javascript">makeYellow('example_group_100');</script>
+    <script type="text/javascript">moveProgressBar('74.2');</script>
+    <dd class="example not_implemented"><span class="not_implemented_spec_name">should create a new instance given valid attributes (PENDING: No reason given)</span></dd>
+    <script type="text/javascript">makeYellow('rspec-header');</script>
+    <script type="text/javascript">makeYellow('div_group_100');</script>
+    <script type="text/javascript">makeYellow('example_group_100');</script>
+    <script type="text/javascript">moveProgressBar('74.6');</script>
+    <dd class="example not_implemented"><span class="not_implemented_spec_name">should require a name (PENDING: No reason given)</span></dd>
+    <script type="text/javascript">makeYellow('rspec-header');</script>
+    <script type="text/javascript">makeYellow('div_group_100');</script>
+    <script type="text/javascript">makeYellow('example_group_100');</script>
+    <script type="text/javascript">moveProgressBar('75.0');</script>
+    <dd class="example not_implemented"><span class="not_implemented_spec_name">should require a description (PENDING: No reason given)</span></dd>
+    <script type="text/javascript">makeYellow('rspec-header');</script>
+    <script type="text/javascript">makeYellow('div_group_100');</script>
+    <script type="text/javascript">makeYellow('example_group_100');</script>
+    <script type="text/javascript">moveProgressBar('75.3');</script>
+    <dd class="example not_implemented"><span class="not_implemented_spec_name">should have a unique name (PENDING: No reason given)</span></dd>
+    <script type="text/javascript">makeYellow('rspec-header');</script>
+    <script type="text/javascript">makeYellow('div_group_100');</script>
+    <script type="text/javascript">makeYellow('example_group_100');</script>
+    <script type="text/javascript">moveProgressBar('75.7');</script>
+    <dd class="example not_implemented"><span class="not_implemented_spec_name">should be destroyable if no users are assigned to it (PENDING: No reason given)</span></dd>
+    <script type="text/javascript">makeYellow('rspec-header');</script>
+    <script type="text/javascript">makeYellow('div_group_100');</script>
+    <script type="text/javascript">makeYellow('example_group_100');</script>
+    <script type="text/javascript">moveProgressBar('76.1');</script>
+    <dd class="example not_implemented"><span class="not_implemented_spec_name">should not be destroyable if users are assigned to it (PENDING: No reason given)</span></dd>
+    <script type="text/javascript">makeYellow('rspec-header');</script>
+    <script type="text/javascript">makeYellow('div_group_100');</script>
+    <script type="text/javascript">makeYellow('example_group_100');</script>
+    <script type="text/javascript">moveProgressBar('76.5');</script>
+    <dd class="example not_implemented"><span class="not_implemented_spec_name">add some examples to (or delete) /home/sly/web_system/expense_rails31/expenses/spec/models/role_spec.rb (PENDING: No reason given)</span></dd>
+  </dl>
+</div>
+<div id="div_group_101" class="example_group passed">
+  <dl style="margin-left: 0px;">
+  <dt id="example_group_101" class="passed">Store</dt>
+    <script type="text/javascript">moveProgressBar('76.8');</script>
+    <dd class="example passed"><span class="passed_spec_name">should create a new instance given valid attributes</span><span class='duration'>0.00919s</span></dd>
+    <script type="text/javascript">moveProgressBar('77.2');</script>
+    <dd class="example passed"><span class="passed_spec_name">should require a store name</span><span class='duration'>0.00358s</span></dd>
+    <script type="text/javascript">moveProgressBar('77.6');</script>
+    <dd class="example passed"><span class="passed_spec_name">should be unique</span><span class='duration'>0.00614s</span></dd>
+    <script type="text/javascript">moveProgressBar('78.0');</script>
+    <dd class="example passed"><span class="passed_spec_name">should be unique, case insensitive</span><span class='duration'>0.00449s</span></dd>
+    <script type="text/javascript">moveProgressBar('78.4');</script>
+    <dd class="example passed"><span class="passed_spec_name">should have a maximum of characters</span><span class='duration'>0.00337s</span></dd>
+    <script type="text/javascript">moveProgressBar('78.7');</script>
+    <dd class="example passed"><span class="passed_spec_name">should respond to expenses</span><span class='duration'>0.00114s</span></dd>
+    <script type="text/javascript">moveProgressBar('79.1');</script>
+    <dd class="example passed"><span class="passed_spec_name">should have expenses attributes</span><span class='duration'>0.13802s</span></dd>
+    <script type="text/javascript">moveProgressBar('79.5');</script>
+    <dd class="example passed"><span class="passed_spec_name">should have the right associated expense</span><span class='duration'>0.12129s</span></dd>
+    <script type="text/javascript">moveProgressBar('79.9');</script>
+    <dd class="example passed"><span class="passed_spec_name">should not be destroyed if store has expenses</span><span class='duration'>0.19317s</span></dd>
+    <script type="text/javascript">moveProgressBar('80.3');</script>
+    <dd class="example passed"><span class="passed_spec_name">should have an error if it has expenses and destroy is called</span><span class='duration'>0.12998s</span></dd>
+    <script type="text/javascript">moveProgressBar('80.6');</script>
+    <dd class="example passed"><span class="passed_spec_name">should have an error containing model name if it has expenses and destroy is called</span><span class='duration'>0.12887s</span></dd>
+    <script type="text/javascript">moveProgressBar('81.0');</script>
+    <dd class="example passed"><span class="passed_spec_name">should be destroyable if store has no expenses</span><span class='duration'>0.17500s</span></dd>
+  </dl>
+</div>
+<div id="div_group_102" class="example_group passed">
+  <dl style="margin-left: 0px;">
+  <dt id="example_group_102" class="passed">User</dt>
+    <script type="text/javascript">moveProgressBar('81.4');</script>
+    <dd class="example passed"><span class="passed_spec_name">should create a new instance given valid attributes</span><span class='duration'>0.09488s</span></dd>
+    <script type="text/javascript">moveProgressBar('81.8');</script>
+    <dd class="example passed"><span class="passed_spec_name">should have a unique user_name</span><span class='duration'>0.18225s</span></dd>
+    <script type="text/javascript">moveProgressBar('82.1');</script>
+    <dd class="example passed"><span class="passed_spec_name">should have a user_name</span><span class='duration'>0.07912s</span></dd>
+    <script type="text/javascript">moveProgressBar('82.5');</script>
+    <dd class="example passed"><span class="passed_spec_name">should have a password</span><span class='duration'>0.00396s</span></dd>
+    <script type="text/javascript">moveProgressBar('82.9');</script>
+    <dd class="example passed"><span class="passed_spec_name">should have a password with minimum 8 characters</span><span class='duration'>0.07923s</span></dd>
+    <script type="text/javascript">moveProgressBar('83.3');</script>
+    <dd class="example passed"><span class="passed_spec_name">should have a default group upon creation</span><span class='duration'>0.16540s</span></dd>
+    <script type="text/javascript">moveProgressBar('83.7');</script>
+    <dd class="example passed"><span class="passed_spec_name">should be in a minimum of groups on creation</span><span class='duration'>0.09685s</span></dd>
+    <script type="text/javascript">moveProgressBar('84.0');</script>
+    <dd class="example passed"><span class="passed_spec_name">should have a User.groups method</span><span class='duration'>0.10140s</span></dd>
+    <script type="text/javascript">moveProgressBar('84.4');</script>
+    <dd class="example passed"><span class="passed_spec_name">should add a new user to the default ALL group</span><span class='duration'>0.10339s</span></dd>
+    <script type="text/javascript">moveProgressBar('84.8');</script>
+    <dd class="example passed"><span class="passed_spec_name">should have a method expenses</span><span class='duration'>0.10104s</span></dd>
+    <script type="text/javascript">moveProgressBar('85.2');</script>
+    <dd class="example passed"><span class="passed_spec_name">should not be destroyable if it has expenses</span><span class='duration'>0.21315s</span></dd>
+    <script type="text/javascript">moveProgressBar('85.6');</script>
+    <dd class="example passed"><span class="passed_spec_name">should not be destroyable if it has expenses through groups other than ALL</span><span class='duration'>0.30837s</span></dd>
+    <script type="text/javascript">moveProgressBar('85.9');</script>
+    <dd class="example passed"><span class="passed_spec_name">should have default group destroyed on destruction</span><span class='duration'>0.10896s</span></dd>
+    <script type="text/javascript">moveProgressBar('86.3');</script>
+    <dd class="example passed"><span class="passed_spec_name">should have all group memberships removed on destruction</span><span class='duration'>0.10224s</span></dd>
+  </dl>
+</div>
+<div id="div_group_103" class="example_group passed">
+  <dl style="margin-left: 0px;">
+  <dt id="example_group_103" class="passed">Backup</dt>
+    <script type="text/javascript">moveProgressBar('86.7');</script>
+    <dd class="example passed"><span class="passed_spec_name">should create a new instance given valid attributes</span><span class='duration'>0.00873s</span></dd>
+    <script type="text/javascript">moveProgressBar('87.1');</script>
+    <dd class="example passed"><span class="passed_spec_name">should require a date</span><span class='duration'>0.00233s</span></dd>
+    <script type="text/javascript">moveProgressBar('87.5');</script>
+    <dd class="example passed"><span class="passed_spec_name">should have backup_date as a Date</span><span class='duration'>0.00203s</span></dd>
+    <script type="text/javascript">moveProgressBar('87.8');</script>
+    <dd class="example passed"><span class="passed_spec_name">should require a size</span><span class='duration'>0.00237s</span></dd>
+    <script type="text/javascript">moveProgressBar('88.2');</script>
+    <dd class="example passed"><span class="passed_spec_name">should not accept characters for the size</span><span class='duration'>0.00180s</span></dd>
+    <script type="text/javascript">moveProgressBar('88.6');</script>
+    <dd class="example passed"><span class="passed_spec_name">should accept an integer for the size</span><span class='duration'>0.00121s</span></dd>
+    <script type="text/javascript">moveProgressBar('89.0');</script>
+    <dd class="example passed"><span class="passed_spec_name">should floor a float for the size</span><span class='duration'>0.00084s</span></dd>
+  </dl>
+</div>
+<div id="div_group_104" class="example_group passed">
+  <dl style="margin-left: 0px;">
+  <dt id="example_group_104" class="passed">Reason</dt>
+    <script type="text/javascript">moveProgressBar('89.3');</script>
+    <dd class="example passed"><span class="passed_spec_name">should create a new instance given valid attributes</span><span class='duration'>0.00365s</span></dd>
+    <script type="text/javascript">moveProgressBar('89.7');</script>
+    <dd class="example passed"><span class="passed_spec_name">should require a reason</span><span class='duration'>0.00283s</span></dd>
+    <script type="text/javascript">moveProgressBar('90.1');</script>
+    <dd class="example passed"><span class="passed_spec_name">should be unique</span><span class='duration'>0.00545s</span></dd>
+    <script type="text/javascript">moveProgressBar('90.5');</script>
+    <dd class="example passed"><span class="passed_spec_name">should be unique, case insensitive</span><span class='duration'>0.00381s</span></dd>
+    <script type="text/javascript">moveProgressBar('90.9');</script>
+    <dd class="example passed"><span class="passed_spec_name">should have a maximum of characters</span><span class='duration'>0.00287s</span></dd>
+    <script type="text/javascript">moveProgressBar('91.2');</script>
+    <dd class="example passed"><span class="passed_spec_name">should respond to expenses</span><span class='duration'>0.00066s</span></dd>
+    <script type="text/javascript">moveProgressBar('91.6');</script>
+    <dd class="example passed"><span class="passed_spec_name">should have expenses attributes</span><span class='duration'>0.13533s</span></dd>
+    <script type="text/javascript">moveProgressBar('92.0');</script>
+    <dd class="example passed"><span class="passed_spec_name">should have the right associated expense</span><span class='duration'>0.12115s</span></dd>
+    <script type="text/javascript">moveProgressBar('92.4');</script>
+    <dd class="example passed"><span class="passed_spec_name">should not be destroyed if reason has expenses</span><span class='duration'>0.19288s</span></dd>
+    <script type="text/javascript">moveProgressBar('92.8');</script>
+    <dd class="example passed"><span class="passed_spec_name">should have an error if it has expenses and destroy is called</span><span class='duration'>0.12417s</span></dd>
+    <script type="text/javascript">moveProgressBar('93.1');</script>
+    <dd class="example passed"><span class="passed_spec_name">should have an error containing model name if it has expenses and destroy is called</span><span class='duration'>0.16002s</span></dd>
+    <script type="text/javascript">moveProgressBar('93.5');</script>
+    <dd class="example passed"><span class="passed_spec_name">should be destroyable if reason has no expenses</span><span class='duration'>0.12332s</span></dd>
+  </dl>
+</div>
+<div id="div_group_105" class="example_group passed">
+  <dl style="margin-left: 0px;">
+  <dt id="example_group_105" class="passed">Group</dt>
+    <script type="text/javascript">moveProgressBar('93.9');</script>
+    <dd class="example passed"><span class="passed_spec_name">should create a new instance given valid attributes</span><span class='duration'>0.00382s</span></dd>
+    <script type="text/javascript">moveProgressBar('94.3');</script>
+    <dd class="example passed"><span class="passed_spec_name">should require a name</span><span class='duration'>0.00283s</span></dd>
+    <script type="text/javascript">moveProgressBar('94.6');</script>
+    <dd class="example passed"><span class="passed_spec_name">should be unique</span><span class='duration'>0.00551s</span></dd>
+    <script type="text/javascript">moveProgressBar('95.0');</script>
+    <dd class="example passed"><span class="passed_spec_name">should be unique, case insensitive</span><span class='duration'>0.00392s</span></dd>
+    <script type="text/javascript">moveProgressBar('95.4');</script>
+    <dd class="example passed"><span class="passed_spec_name">should have a maximum of characters</span><span class='duration'>0.00288s</span></dd>
+    <script type="text/javascript">moveProgressBar('95.8');</script>
+    <dd class="example passed"><span class="passed_spec_name">should respond to expenses</span><span class='duration'>0.00069s</span></dd>
+    <script type="text/javascript">moveProgressBar('96.2');</script>
+    <dd class="example passed"><span class="passed_spec_name">should have expenses attributes</span><span class='duration'>0.13690s</span></dd>
+    <script type="text/javascript">moveProgressBar('96.5');</script>
+    <dd class="example passed"><span class="passed_spec_name">should have the right associated expense</span><span class='duration'>0.19312s</span></dd>
+    <script type="text/javascript">moveProgressBar('96.9');</script>
+    <dd class="example passed"><span class="passed_spec_name">should not be destroyed if group has expenses</span><span class='duration'>0.12590s</span></dd>
+    <script type="text/javascript">moveProgressBar('97.3');</script>
+    <dd class="example passed"><span class="passed_spec_name">should have an error if it has expenses and destroy is called</span><span class='duration'>0.13175s</span></dd>
+    <script type="text/javascript">moveProgressBar('97.7');</script>
+    <dd class="example passed"><span class="passed_spec_name">should have an error containing model name if it has expenses and destroy is called</span><span class='duration'>0.13169s</span></dd>
+    <script type="text/javascript">moveProgressBar('98.1');</script>
+    <dd class="example passed"><span class="passed_spec_name">should be destroyable if group has no expenses</span><span class='duration'>0.20510s</span></dd>
+    <script type="text/javascript">moveProgressBar('98.4');</script>
+    <dd class="example passed"><span class="passed_spec_name">should not be able to destroy default ALL group</span><span class='duration'>0.10309s</span></dd>
+    <script type="text/javascript">moveProgressBar('98.8');</script>
+    <dd class="example passed"><span class="passed_spec_name">should not be able to destroy group with users in it</span><span class='duration'>0.10617s</span></dd>
+    <script type="text/javascript">moveProgressBar('99.2');</script>
+    <dd class="example passed"><span class="passed_spec_name">should be destroyable if it&#x27;s empty</span><span class='duration'>0.00676s</span></dd>
+    <script type="text/javascript">moveProgressBar('99.6');</script>
+    <dd class="example passed"><span class="passed_spec_name">should provide the Group.users function</span><span class='duration'>0.19689s</span></dd>
+    <script type="text/javascript">moveProgressBar('100.0');</script>
+    <dd class="example passed"><span class="passed_spec_name">should have a default ALL group</span><span class='duration'>0.09574s</span></dd>
+  </dl>
+</div>
+<script type="text/javascript">document.getElementById('duration').innerHTML = "Finished in <strong>17.16616 seconds</strong>";</script>
+<script type="text/javascript">document.getElementById('totals').innerHTML = "264 examples, 0 failures, 13 pending";</script>
+</div>
+</div>
+</body>
+</html>

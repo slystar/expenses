@@ -1,0 +1,440 @@
+
+StoresController
+  routing
+[32m    routes to #index[0m
+[32m    routes to #new[0m
+[32m    routes to #show[0m
+[32m    routes to #edit[0m
+[32m    routes to #create[0m
+[32m    routes to #update[0m
+[32m    routes to #destroy[0m
+
+ExpensesController
+  routing
+[32m    routes to #index[0m
+[32m    routes to #new[0m
+[32m    routes to #show[0m
+[32m    routes to #edit[0m
+[32m    routes to #create[0m
+[32m    routes to #update[0m
+[32m    routes to #destroy[0m
+
+PayMethodsController
+  routing
+[32m    routes to #index[0m
+[32m    routes to #new[0m
+[32m    routes to #show[0m
+[32m    routes to #edit[0m
+[32m    routes to #create[0m
+[32m    routes to #update[0m
+[32m    routes to #destroy[0m
+
+UsersController
+  routing
+[32m    routes to #index[0m
+[32m    routes to #new[0m
+[32m    routes to #show[0m
+[32m    routes to #edit[0m
+[32m    routes to #create[0m
+[32m    routes to #update[0m
+[32m    routes to #destroy[0m
+
+ReasonsController
+  routing
+[32m    routes to #index[0m
+[32m    routes to #new[0m
+[32m    routes to #show[0m
+[32m    routes to #edit[0m
+[32m    routes to #create[0m
+[32m    routes to #update[0m
+[32m    routes to #destroy[0m
+
+ExpensesController
+  GET index
+[32m    assigns all expenses as @expenses[0m
+  GET show
+[32m    assigns the requested expense as @expense[0m
+  GET new
+[32m    assigns a new expense as @expense[0m
+  GET edit
+[32m    assigns the requested expense as @expense[0m
+  POST create
+    with valid params
+[32m      creates a new Expense[0m
+[32m      assigns a newly created expense as @expense[0m
+[32m      redirects to the created expense[0m
+    with invalid params
+[32m      assigns a newly created but unsaved expense as @expense[0m
+[32m      re-renders the 'new' template[0m
+  PUT update
+    with valid params
+[32m      updates the requested expense[0m
+[32m      assigns the requested expense as @expense[0m
+[32m      redirects to the expense[0m
+    with invalid params
+[32m      assigns the expense as @expense[0m
+[32m      re-renders the 'edit' template[0m
+  DELETE destroy
+[32m    destroys the requested expense[0m
+[32m    redirects to the expenses list[0m
+
+GroupsController
+  GET index
+[32m    assigns all groups as @groups[0m
+  GET show
+[32m    assigns the requested group as @group[0m
+  GET new
+[32m    assigns a new group as @group[0m
+  GET edit
+[32m    assigns the requested group as @group[0m
+  POST create
+    with valid params
+[32m      creates a new Group[0m
+[32m      assigns a newly created group as @group[0m
+[32m      redirects to the created group[0m
+    with invalid params
+[32m      assigns a newly created but unsaved group as @group[0m
+[32m      re-renders the 'new' template[0m
+  PUT update
+    with valid params
+[32m      updates the requested group[0m
+[32m      assigns the requested group as @group[0m
+[32m      redirects to the group[0m
+    with invalid params
+[32m      assigns the group as @group[0m
+[32m      re-renders the 'edit' template[0m
+  DELETE destroy
+[32m    destroys the requested group[0m
+[32m    redirects to the groups list[0m
+
+ReasonsController
+  GET index
+[32m    assigns all reasons as @reasons[0m
+  GET show
+[32m    assigns the requested reason as @reason[0m
+  GET new
+[32m    assigns a new reason as @reason[0m
+  GET edit
+[32m    assigns the requested reason as @reason[0m
+  POST create
+    with valid params
+[32m      creates a new Reason[0m
+[32m      assigns a newly created reason as @reason[0m
+[32m      redirects to the created reason[0m
+    with invalid params
+[32m      assigns a newly created but unsaved reason as @reason[0m
+[32m      re-renders the 'new' template[0m
+  PUT update
+    with valid params
+[32m      updates the requested reason[0m
+[32m      assigns the requested reason as @reason[0m
+[32m      redirects to the reason[0m
+    with invalid params
+[32m      assigns the reason as @reason[0m
+[32m      re-renders the 'edit' template[0m
+  DELETE destroy
+[32m    destroys the requested reason[0m
+[32m    redirects to the reasons list[0m
+
+PayMethodsController
+  GET index
+[32m    assigns all pay_methods as @pay_methods[0m
+  GET show
+[32m    assigns the requested pay_method as @pay_method[0m
+  GET new
+[32m    assigns a new pay_method as @pay_method[0m
+  GET edit
+[32m    assigns the requested pay_method as @pay_method[0m
+  POST create
+    with valid params
+[32m      creates a new PayMethod[0m
+[32m      assigns a newly created pay_method as @pay_method[0m
+[32m      redirects to the created pay_method[0m
+    with invalid params
+[32m      assigns a newly created but unsaved pay_method as @pay_method[0m
+[32m      re-renders the 'new' template[0m
+  PUT update
+    with valid params
+[32m      updates the requested pay_method[0m
+[32m      assigns the requested pay_method as @pay_method[0m
+[32m      redirects to the pay_method[0m
+    with invalid params
+[32m      assigns the pay_method as @pay_method[0m
+[32m      re-renders the 'edit' template[0m
+  DELETE destroy
+[32m    destroys the requested pay_method[0m
+[32m    redirects to the pay_methods list[0m
+
+UsersController
+  GET index
+[32m    assigns all users as @users[0m
+  GET show
+[32m    assigns the requested user as @user[0m
+  GET new
+[32m    assigns a new user as @user[0m
+  GET edit
+[32m    assigns the requested user as @user[0m
+  POST create
+    with valid params
+[32m      creates a new User[0m
+[32m      assigns a newly created user as @user[0m
+[32m      redirects to the created user[0m
+    with invalid params
+[32m      assigns a newly created but unsaved user as @user[0m
+[32m      re-renders the 'new' template[0m
+  PUT update
+    with valid params
+[32m      updates the requested user[0m
+[32m      assigns the requested user as @user[0m
+[32m      redirects to the user[0m
+    with invalid params
+[32m      assigns the user as @user[0m
+[32m      re-renders the 'edit' template[0m
+  DELETE destroy
+[32m    destroys the requested user[0m
+[32m    redirects to the users list[0m
+
+StoresController
+  GET index
+[32m    assigns all stores as @stores[0m
+  GET show
+[32m    assigns the requested store as @store[0m
+  GET new
+[32m    assigns a new store as @store[0m
+  GET edit
+[32m    assigns the requested store as @store[0m
+  POST create
+    with valid params
+[32m      creates a new Store[0m
+[32m      assigns a newly created store as @store[0m
+[32m      redirects to the created store[0m
+    with invalid params
+[32m      assigns a newly created but unsaved store as @store[0m
+[32m      re-renders the 'new' template[0m
+  PUT update
+    with valid params
+[32m      updates the requested store[0m
+[32m      assigns the requested store as @store[0m
+[32m      redirects to the store[0m
+    with invalid params
+[32m      assigns the store as @store[0m
+[32m      re-renders the 'edit' template[0m
+  DELETE destroy
+[32m    destroys the requested store[0m
+[32m    redirects to the stores list[0m
+
+Expenses
+  GET /expenses
+[32m    works! (now write some real specs)[0m
+
+Stores:
+  Controller methods:
+[32m    index[0m
+[32m    show[0m
+[32m    edit[0m
+[32m    create[0m
+[32m    destroy[0m
+  custom tests:
+[32m    gets the page successfully[0m
+[32m    should show an error when create a duplicate store[0m
+[32m    should show an error when renaming to a duplicate store[0m
+
+PayMethods
+  GET /pay_methods
+[32m    works! (now write some real specs)[0m
+
+Users
+  GET /users
+[32m    works! (now write some real specs)[0m
+
+Groups
+  GET /groups
+[32m    works! (now write some real specs)[0m
+
+Reasons
+  GET /reasons
+[32m    works! (now write some real specs)[0m
+
+PayMethod
+[32m  should create a new instance given valid attributes[0m
+[32m  should require a pay_method[0m
+[32m  should be unique[0m
+[32m  should be unique, case insensitive[0m
+[32m  should have a maximum of characters[0m
+[32m  should respond to expenses[0m
+[32m  should have expenses attributes[0m
+[32m  should have the right associated expense[0m
+[32m  should not be destroyed if pay_method has expenses[0m
+[32m  should have an error if it has expenses and destroy is called[0m
+[32m  should have an error containing model name if it has expenses and destroy is called[0m
+[32m  should be destroyable if pay_method has no expenses[0m
+
+Expense
+[32m  should create a record with valid attributes[0m
+[32m  should have a date_purchased[0m
+[32m  should accept a date for date_purchased[0m
+[32m  should refuse invalid dates for date_purchased[0m
+[32m  should have a store[0m
+[32m  should have an existing store[0m
+[32m  should have a pay_method[0m
+[32m  should have an existing pay_method[0m
+[32m  should have a reason[0m
+[32m  should have an existing reason[0m
+[32m  should have a user_id[0m
+[32m  should map to an existing user[0m
+[32m  should have a group_id[0m
+[32m  should map to an existing group[0m
+[32m  should have an amount[0m
+[32m  should allow a float in amount[0m
+[32m  should not allow letters in amount[0m
+[32m  should not be created with a process date[0m
+[32m  should allow a process date once it's been saved[0m
+[32m  should not be created with process flag set to true[0m
+[32m  should allow to set process_flag once it's been saved[0m
+[32m  should not be destroyable if it's been processed[0m
+[32m  should destroyable if it has not been processed[0m
+
+UserRole
+[33m  should create a new instance given valid attributes (PENDING: No reason given)[0m
+[33m  should not allow users to be in the same role more than once (PENDING: No reason given)[0m
+[33m  should allow users to be in multiple roles (PENDING: No reason given)[0m
+[33m  should map to a vlide user (PENDING: No reason given)[0m
+[33m  should map to a vlide role (PENDING: No reason given)[0m
+[33m  add some examples to (or delete) /home/sly/web_system/expense_rails31/expenses/spec/models/user_role_spec.rb (PENDING: No reason given)[0m
+
+GroupMember
+[32m  should create a new instance given valid attributes[0m
+[32m  should require a user_id[0m
+[32m  should require a group_id[0m
+[32m  should not allow a user to be in the same group more than once[0m
+[32m  should allow a user to be in different groups[0m
+[32m  should map to a valid user[0m
+[32m  should map to a vlid group[0m
+[32m  should be destroyable if it is not linked to any expenses[0m
+[32m  should not be destroyable if it is linked to expenses[0m
+[32m  should be destroyable even if the user still exists[0m
+
+Role
+[33m  should create a new instance given valid attributes (PENDING: No reason given)[0m
+[33m  should require a name (PENDING: No reason given)[0m
+[33m  should require a description (PENDING: No reason given)[0m
+[33m  should have a unique name (PENDING: No reason given)[0m
+[33m  should be destroyable if no users are assigned to it (PENDING: No reason given)[0m
+[33m  should not be destroyable if users are assigned to it (PENDING: No reason given)[0m
+[33m  add some examples to (or delete) /home/sly/web_system/expense_rails31/expenses/spec/models/role_spec.rb (PENDING: No reason given)[0m
+
+Store
+[32m  should create a new instance given valid attributes[0m
+[32m  should require a store name[0m
+[32m  should be unique[0m
+[32m  should be unique, case insensitive[0m
+[32m  should have a maximum of characters[0m
+[32m  should respond to expenses[0m
+[32m  should have expenses attributes[0m
+[32m  should have the right associated expense[0m
+[32m  should not be destroyed if store has expenses[0m
+[32m  should have an error if it has expenses and destroy is called[0m
+[32m  should have an error containing model name if it has expenses and destroy is called[0m
+[32m  should be destroyable if store has no expenses[0m
+
+User
+[32m  should create a new instance given valid attributes[0m
+[32m  should have a unique user_name[0m
+[32m  should have a user_name[0m
+[32m  should have a password[0m
+[32m  should have a password with minimum 8 characters[0m
+[32m  should have a default group upon creation[0m
+[32m  should be in a minimum of groups on creation[0m
+[32m  should have a User.groups method[0m
+[32m  should add a new user to the default ALL group[0m
+[32m  should have a method expenses[0m
+[32m  should not be destroyable if it has expenses[0m
+[32m  should not be destroyable if it has expenses through groups other than ALL[0m
+[32m  should have default group destroyed on destruction[0m
+[32m  should have all group memberships removed on destruction[0m
+
+Backup
+[32m  should create a new instance given valid attributes[0m
+[32m  should require a date[0m
+[32m  should have backup_date as a Date[0m
+[32m  should require a size[0m
+[32m  should not accept characters for the size[0m
+[32m  should accept an integer for the size[0m
+[32m  should floor a float for the size[0m
+
+Reason
+[32m  should create a new instance given valid attributes[0m
+[32m  should require a reason[0m
+[32m  should be unique[0m
+[32m  should be unique, case insensitive[0m
+[32m  should have a maximum of characters[0m
+[32m  should respond to expenses[0m
+[32m  should have expenses attributes[0m
+[32m  should have the right associated expense[0m
+[32m  should not be destroyed if reason has expenses[0m
+[32m  should have an error if it has expenses and destroy is called[0m
+[32m  should have an error containing model name if it has expenses and destroy is called[0m
+[32m  should be destroyable if reason has no expenses[0m
+
+Group
+[32m  should create a new instance given valid attributes[0m
+[32m  should require a name[0m
+[32m  should be unique[0m
+[32m  should be unique, case insensitive[0m
+[32m  should have a maximum of characters[0m
+[32m  should respond to expenses[0m
+[32m  should have expenses attributes[0m
+[32m  should have the right associated expense[0m
+[32m  should not be destroyed if group has expenses[0m
+[32m  should have an error if it has expenses and destroy is called[0m
+[32m  should have an error containing model name if it has expenses and destroy is called[0m
+[32m  should be destroyable if group has no expenses[0m
+[32m  should not be able to destroy default ALL group[0m
+[32m  should not be able to destroy group with users in it[0m
+[32m  should be destroyable if it's empty[0m
+[32m  should provide the Group.users function[0m
+[32m  should have a default ALL group[0m
+
+Pending:
+[33m  UserRole should create a new instance given valid attributes[0m
+[36m    # No reason given[0m
+[36m    # ./spec/models/user_role_spec.rb:11[0m
+[33m  UserRole should not allow users to be in the same role more than once[0m
+[36m    # No reason given[0m
+[36m    # ./spec/models/user_role_spec.rb:13[0m
+[33m  UserRole should allow users to be in multiple roles[0m
+[36m    # No reason given[0m
+[36m    # ./spec/models/user_role_spec.rb:16[0m
+[33m  UserRole should map to a vlide user[0m
+[36m    # No reason given[0m
+[36m    # ./spec/models/user_role_spec.rb:19[0m
+[33m  UserRole should map to a vlide role[0m
+[36m    # No reason given[0m
+[36m    # ./spec/models/user_role_spec.rb:22[0m
+[33m  UserRole add some examples to (or delete) /home/sly/web_system/expense_rails31/expenses/spec/models/user_role_spec.rb[0m
+[36m    # No reason given[0m
+[36m    # ./spec/models/user_role_spec.rb:25[0m
+[33m  Role should create a new instance given valid attributes[0m
+[36m    # No reason given[0m
+[36m    # ./spec/models/role_spec.rb:9[0m
+[33m  Role should require a name[0m
+[36m    # No reason given[0m
+[36m    # ./spec/models/role_spec.rb:12[0m
+[33m  Role should require a description[0m
+[36m    # No reason given[0m
+[36m    # ./spec/models/role_spec.rb:15[0m
+[33m  Role should have a unique name[0m
+[36m    # No reason given[0m
+[36m    # ./spec/models/role_spec.rb:18[0m
+[33m  Role should be destroyable if no users are assigned to it[0m
+[36m    # No reason given[0m
+[36m    # ./spec/models/role_spec.rb:21[0m
+[33m  Role should not be destroyable if users are assigned to it[0m
+[36m    # No reason given[0m
+[36m    # ./spec/models/role_spec.rb:24[0m
+[33m  Role add some examples to (or delete) /home/sly/web_system/expense_rails31/expenses/spec/models/role_spec.rb[0m
+[36m    # No reason given[0m
+[36m    # ./spec/models/role_spec.rb:26[0m
+
+Finished in 18.42 seconds
+[33m264 examples, 0 failures, 13 pending[0m
