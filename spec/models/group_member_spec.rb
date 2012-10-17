@@ -74,6 +74,14 @@ describe GroupMember do
 	gm.errors.size.should == 1
     end
 
-    pending "should be destroyable even if the user still exists" do
+    it "should be destroyable even if the user still exists" do
+	# Create group member
+	gm=GroupMember.create!(@attr)
+	# Get user
+	user=gm.user	
+	# Destroy group membership
+	gm.destroy
+	# Test
+	gm.should be_destroyed
     end
 end
