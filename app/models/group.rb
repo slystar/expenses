@@ -8,7 +8,7 @@ class Group < ActiveRecord::Base
     has_many :users, :through => :group_members
 
     # Validations
-    validates :name, :presence => true, :uniqueness => true, :length => {:maximum => 50}
+    validates :name, :presence => true, :uniqueness => {:case_sensitive => false}, :length => {:maximum => 50}
 
     # Callbacks
     before_destroy :keep_all_group, :check_for_users

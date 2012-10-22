@@ -24,10 +24,18 @@ describe Reason do
 	no_reason.should_not be_valid
     end
 
-    it "should be unique" do
+    it "should require a unique reason" do
 	Reason.create!(@attr)
 	reason=Reason.new(@attr)
 	reason.should_not be_valid
+    end
+
+    it "should require a unique reason, case insensitive" do
+	r1=Reason.create!(@attr)
+	name=r1.name
+	r2=Reason.new(@attr.merge(:name => name.upcase))
+	r1.name.should_not == r2.name
+	r2.should_not be_valid
     end
 
     it "should be unique, case insensitive" do

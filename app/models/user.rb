@@ -11,7 +11,7 @@ class User < ActiveRecord::Base
     has_many :expenses
 
     # Validations
-    validates :user_name, :presence => true, :uniqueness => true
+    validates :user_name, :presence => true, :uniqueness => {:case_sensitive => false}
     validates :password, :presence => true, :length => {:minimum => 8}
 
     # Callbacks

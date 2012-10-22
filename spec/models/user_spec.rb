@@ -11,15 +11,27 @@ describe User do
 	 User.create!(@attr)
      end
 
+    it "should have a user_name" do
+	user=User.new(@attr.merge(:user_name => ""))
+	user.should_not be_valid
+    end
+
     it "should have a unique user_name" do
 	User.create!(@attr)
 	user=User.new(@attr)
 	user.should_not be_valid
     end
 
-    it "should have a user_name" do
-	user=User.new(@attr.merge(:user_name => ""))
-	user.should_not be_valid
+    it "should have a unique user_name, case insensitive" do
+	u1=User.create!(@attr)
+	# Get username
+	name=u1.user_name
+	# Create 2nd user
+	u2=User.new(@attr.merge(:user_name => name.upcase))
+	# Make sure they are not the same
+	u1.user_name.should_not == u2.user_name
+	# Make sure it's unique
+	u2.should_not be_valid
     end
 
     it "should have a password" do

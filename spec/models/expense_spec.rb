@@ -135,9 +135,23 @@ describe Expense do
 	expense.should be_destroyed
     end
 
-    pending "should be modifyable if it has not been processed" do
+    it "should be modifyable if it has not been processed" do
+	# Create expense
+	expense=Expense.create!(@attr)
+	# Modify
+	expense.amount=99.99
+	# Should save
+	expense.save.should == true
     end
 
     pending "should not be modifyable if it has been processed" do
+	# Create expense
+	expense=Expense.create!(@attr)
+	# Modify
+	expense.amount=99.99
+	# Process record
+	expense.process
+	# Should save
+	expense.save.should == false
     end
 end

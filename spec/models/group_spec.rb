@@ -23,9 +23,17 @@ describe Group do
 	group.should_not be_valid
     end
 
-    it "should be unique" do
+    it "should have a unique name" do
 	Group.create!(@attr)
 	group=Group.new(@attr)
+	group.should_not be_valid
+    end
+
+    it "should have a unique name, case insensitive" do
+	g1=Group.create!(@attr)
+	name=g1.name
+	g2=group=Group.new(@attr.merge(:name =>name.upcase))
+	g1.name.should_not == g2.name
 	group.should_not be_valid
     end
 
