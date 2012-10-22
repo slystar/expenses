@@ -48,6 +48,7 @@ group :development do
   gem 'ruby_parser'
   gem 'rb-inotify'
   gem 'libnotify'
+  gem 'rails-erd'
 end
 
 group :test do
