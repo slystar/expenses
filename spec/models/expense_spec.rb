@@ -149,7 +149,7 @@ describe Expense do
 	expense=Expense.create!(@attr)
 	# Modify
 	expense.amount=99.99
-	# Process record
+	# Process record (not decided how to proceed with this yet)
 	expense.process
 	# Should save
 	expense.save.should == false
