@@ -129,9 +129,15 @@ describe Expense do
 	expense.should_not be_destroyed
     end
 
-    it "should destroyable if it has not been processed" do
+    it "should be destroyable if it has not been processed" do
 	expense=Expense.create!(@attr)
 	expense.destroy
 	expense.should be_destroyed
+    end
+
+    pending "should be modifyable if it has not been processed" do
+    end
+
+    pending "should not be modifyable if it has been processed" do
     end
 end
