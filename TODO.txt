@@ -3,6 +3,8 @@ Models:
 - user_charge.rb
 - user_payment.rb
 - check indexes
+- expense history (user_id, expense_id, group_id), could allow group
+  deletion
 
 Backups:
 - put backing up code in model?
