@@ -1,5 +1,4 @@
 Models:
-- user roles + permissions
 - user_charge.rb
 - user_payment.rb
 - check indexes
