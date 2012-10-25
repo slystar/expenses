@@ -42,16 +42,32 @@ describe Role do
 	r2.should_not be_valid	
     end
 
-    pending "should require a description" do
-    end
-
-    pending "should have a unique name" do
+    it "should require a description" do
+	# Create role
+	r=Role.new(@attr.merge(:description => nil))
+	# Should not be valid
+	r.should_not be_valid	
     end
     
-    pending "should be destroyable if no users are assigned to it" do
+    it "should be destroyable if no users are assigned to it" do
+	# Create role
+	r=Role.create!(@attr)
+	# Destroy role
+	r.destroy
+	# Should  be destroyed
+	r.should be_destroyed
     end
 
-    pending "should not be destroyable if users are assigned to it" do
+    it "should not be destroyable if users are assigned to it" do
+	# Create role
+	r=Role.create!(@attr)
+	# Create user
+	u=User.create!(:user_name => Faker::Name.name, :password => 'testrole123')
+	# Add user to role
+	ur=UserRole.create!(:user_id => u.id, :role_id => r.id)
+	# Destroy role
+	r.destroy
+	# Should not be destroyed
+	r.should_not be_destroyed
     end
-  pending "add some examples to (or delete) #{__FILE__}"
 end
