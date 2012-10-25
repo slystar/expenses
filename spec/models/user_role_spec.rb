@@ -8,19 +8,52 @@ describe UserRole do
 	@attr={:user_id => @user.id, :role_id => @role.id}
     end
 
-    pending "should create a new instance given valid attributes" do
+    it "should create a new instance given valid attributes" do
+	UserRole.create!(@attr)
     end
-    pending "should not allow users to be in the same role more than once" do
+
+    it "should not allow users to be in the same role more than once" do
+	# Create user_role
+	ur=UserRole.create!(@attr)
+	# Create duplicate user_role
+	ur2=UserRole.new(@attr)
+	# Check validity
+	ur2.should_not be_valid
     end
     
-    pending "should allow users to be in multiple roles" do
+    it "should allow users to be in multiple roles" do
+	# Create user_role
+	ur=UserRole.create!(@attr)
+	# Create 2nd role
+	role2=Role.create!(:name => Faker::Name.name, :description => 'Test user role tmp')
+	# Create 2nd user_role with new role
+	ur2=UserRole.new(@attr.merge(:role_id => role2.id))
+	# Valid?
+	ur2.should be_valid
     end
 
-    pending "should map to a vlide user" do
+    it "should map to a valid user" do
+	# Create user_role with non existing user
+	ur=UserRole.new(@attr.merge(:user_id => 99999))
+	# Valid?
+	ur.should_not be_valid
     end
 
-    pending "should map to a vlide role" do
+    it "should map to a valid role" do
+	# Create user_role with non existing user
+	ur=UserRole.new(@attr.merge(:role_id => 99999))
+	# Valid?
+	ur.should_not be_valid
     end
 
-  pending "add some examples to (or delete) #{__FILE__}"
+    it "should be destroyable even if the user still exists" do
+	# Create user role
+	ur=UserRole.create!(@attr)
+	# Get user
+	user=ur.user	
+	# Destroy user role
+	ur.destroy
+	# Valid?
+	ur.should be_destroyed
+    end
 end

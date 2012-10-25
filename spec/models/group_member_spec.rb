@@ -43,7 +43,7 @@ describe GroupMember do
 	gm.should_not be_valid
     end
 
-    it "should map to a vlid group" do
+    it "should map to a valid group" do
 	gm=GroupMember.new(@attr.merge(:group_id => 99999))
 	gm.should_not be_valid
     end
