@@ -52,19 +52,12 @@ describe User do
 
     it "should be in a minimum of groups on creation" do
 	user=User.create!(@attr)
-	user.groups.size.should == 2
+	user.groups.size.should == 1
     end
 
     it "should have a User.groups method" do
 	user=User.create!(@attr)
 	user.should respond_to(:groups)
-    end
-
-    it "should add a new user to the default ALL group" do
-	user=User.create!(@attr)
-	group=Group.where(:name => 'ALL').first
-	found_user=group.users.detect{|u| u.user_name == user.user_name}
-	found_user.should == user
     end
 
     it "should have a method expenses" do
@@ -81,7 +74,7 @@ describe User do
 	user.should_not be_destroyed
     end
 
-    it "should not be destroyable if it has expenses through groups other than ALL" do
+    it "should not be destroyable if it has expenses through groups" do
 	puts
 	expense=get_valid_expense
 	user=User.create!(@attr)
@@ -124,8 +117,7 @@ describe User do
 	# Create user
 	user=User.create!(@attr)
 	# Destroy user, should remove following memberships
-	# - group: ALL
 	# - group: User
-	lambda{user.destroy}.should change(GroupMember,:count).by(-2)
+	lambda{user.destroy}.should change(GroupMember,:count).by(-1)
     end
 end

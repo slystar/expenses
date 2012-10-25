@@ -18,7 +18,7 @@ class User < ActiveRecord::Base
     # before_destroy: see observer check_for_expenses_observer.rb
     before_destroy :check_for_expenses_through_groups
     after_destroy :remove_default_group
-    after_create :check_for_default_group, :add_user_group
+    after_create :add_user_group
 
     private
 
@@ -36,8 +36,6 @@ class User < ActiveRecord::Base
 	groups=self.groups
 	# Loop over groups
 	groups.each do |group|
-	    # Skip group all
-	    next if group.name=='ALL'
 	    # Check if group has expenses
 	    if group.expenses.size > 0
 		self.errors.add(:base,"Can't delete #{self.class}: #{self.name} because it has expenses assigned to it through group '#{group.name}'")
@@ -46,23 +44,8 @@ class User < ActiveRecord::Base
 	end
     end
 
-    # Method to check for the default groups
-    def check_for_default_group()
-	# Get all group
-	all=Group.where(:name => 'ALL')
-	# Check if it exists
-	if all.empty?
-	    # Create Group
-	    Group.create!(:name => 'ALL', :description => 'Default ALL group')
-	end
-    end
-
     #Method to add a default user group
     def add_user_group
-	# Get all group
-	all=Group.where(:name => 'ALL').first
-	# Add to all group
-	GroupMember.create!(:user_id => self.id, :group_id => all.id)
 	# Look for user group
 	group=Group.where(:name => self.user_name)
 	# Check if it exists
