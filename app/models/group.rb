@@ -11,19 +11,9 @@ class Group < ActiveRecord::Base
     validates :name, :presence => true, :uniqueness => {:case_sensitive => false}, :length => {:maximum => 50}
 
     # Callbacks
-    before_destroy :keep_all_group, :check_for_users
+    before_destroy :check_for_users
 
     private
-
-    # Method to keep all group
-    def keep_all_group
-	if self.name == 'ALL'
-	    self.errors.add(:base,"Can't delete #{self.class} #{self.name}: because this group is the default group")
-	    return false
-	else
-	    return true
-	end
-    end
 
     # Method to check for users
     def check_for_users
