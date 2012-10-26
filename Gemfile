@@ -20,9 +20,10 @@ gem 'jquery-rails'
 
 # To use ActiveModel has_secure_password
 gem 'bcrypt-ruby', '~> 3.0.0'
-
 # Haml
 gem 'haml-rails'
+# For database backups
+gem 'yaml_db'
 
 # Use unicorn as the web server
 # gem 'unicorn'
