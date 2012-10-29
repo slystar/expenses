@@ -120,4 +120,7 @@ describe User do
 	# - group: User
 	lambda{user.destroy}.should change(GroupMember,:count).by(-1)
     end
+
+    pending "should have a roles method" do
+    end
 end

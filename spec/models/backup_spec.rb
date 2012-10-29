@@ -40,4 +40,36 @@ describe Backup do
       object=Backup.new(@attr.merge(:backup_dir_size_KB => float))
       object.backup_dir_size_KB.should equal float.to_i
   end
+
+  it "should have a dump method" do
+      # Get backup object
+      b=Backup.new()
+      # check
+      b.should respond_to(:dump)
+  end
+
+  it "should be able to dump current data to file" do
+      # WARNING: an external backup method should also be used like mysqldump or "sqlite3 DB.sqlite .dump > backup.bak"
+      # Backup file
+      file='db/data.yml'
+      # Get backup object
+      b=Backup.create!(@attr)
+      # Dump database
+      b.dump('development')
+      # Check if file exist
+      File.exist?(file).should == true
+      # Get modification time
+      mtime=File.mtime(file)
+      # It should have been created in the last 5 seconds
+      (Time.now - mtime).should < 5
+  end
+
+  pending "should keep a maximum number of backup versions" do
+  end
+
+  pending "should have a restore method" do
+  end
+
+  pending "should be able to restore file data to database" do
+  end
 end
