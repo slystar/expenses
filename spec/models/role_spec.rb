@@ -70,4 +70,26 @@ describe Role do
 	# Should not be destroyed
 	r.should_not be_destroyed
     end
+
+    it "should have a users method" do
+	# Create role
+	r=Role.create!(@attr)
+	# Should have users method
+	r.should respond_to(:users)
+    end
+
+    it "should list users in a role" do
+	# Create role
+	r=Role.create!(@attr)
+	# Create user
+	u1=User.create({:user_name => 'test1', :password => 'testpassword'})
+	u2=User.create({:user_name => 'test2', :password => 'testpassword'})
+	# Add users to roles
+	r.users.push(u1)
+	r.users.push(u2)
+	# Reload record
+	r.reload
+	# Should have users
+	r.users.size.should == 2
+    end
 end

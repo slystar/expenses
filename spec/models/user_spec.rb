@@ -121,6 +121,22 @@ describe User do
 	lambda{user.destroy}.should change(GroupMember,:count).by(-1)
     end
 
-    pending "should have a roles method" do
+    it "should have a roles method" do
+	# Create user
+	user=User.create!(@attr)
+	# Should respond to roles
+	user.should respond_to(:roles)
+    end
+
+    it "could have roles" do
+	# Create user
+	user=User.create!(@attr)
+	# Add role to user
+	user.roles.new({:name => "test_user_role", :description => "Test user role"})
+	# Save user should be successfull and add a role
+	lambda{user.save}.should change(UserRole,:count).by(1)
+    end
+
+    pending "should have the first user created be admin" do
     end
 end

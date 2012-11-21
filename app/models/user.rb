@@ -9,6 +9,8 @@ class User < ActiveRecord::Base
     has_many :group_members, :dependent => :delete_all
     has_many :groups, :through => :group_members
     has_many :expenses
+    has_many :user_roles
+    has_many :roles, :through => :user_roles
 
     # Validations
     validates :user_name, :presence => true, :uniqueness => {:case_sensitive => false}
