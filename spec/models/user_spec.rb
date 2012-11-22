@@ -137,6 +137,25 @@ describe User do
 	lambda{user.save}.should change(UserRole,:count).by(1)
     end
 
-    pending "should have the first user created be admin" do
+    it "should have the first user created be admin" do
+	# Create user
+	user=User.create!(@attr)
+	# Get roles
+	roles=user.roles
+	# Should have at least one role
+	roles.size.should > 0
+	# Should have admin role since it's the first user
+	roles.detect{|r| r.name =~ /Admin/i}.should_not be_nil
+    end
+
+    it "should have the second user created not have any default roles" do
+	# Create first user
+	user1=User.create!(@attr)
+	# Create second user
+	user2=User.create!(@attr.merge(:user_name => 'testuser2'))
+	# Get roles
+	roles=user2.roles
+	# Should have 0 roles
+	roles.size.should == 0
     end
 end

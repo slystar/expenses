@@ -20,7 +20,7 @@ class User < ActiveRecord::Base
     # before_destroy: see observer check_for_expenses_observer.rb
     before_destroy :check_for_expenses_through_groups
     after_destroy :remove_default_group
-    after_create :add_user_group
+    after_create :add_user_group, :add_role_to_first_user
 
     private
 
@@ -46,7 +46,7 @@ class User < ActiveRecord::Base
 	end
     end
 
-    #Method to add a default user group
+    # Method to add a default user group
     def add_user_group
 	# Look for user group
 	group=Group.where(:name => self.user_name)
@@ -56,6 +56,17 @@ class User < ActiveRecord::Base
 	    group=Group.create!(:name => self.user_name, :description => "Default group for user #{self.user_name}")
 	    # Add user to group
 	    GroupMember.create!(:user_id => self, :group_id => group.id)
+	end
+    end
+
+    # Method to add the first user to admin role
+    def add_role_to_first_user
+	# Get count of users
+	count=User.all.size
+	# Check count
+	if count == 1
+	    # Add admin role
+	    self.roles.create({:name => 'Admin', :description => 'Administrator'})
 	end
     end
 end
