@@ -86,10 +86,16 @@ describe Expense do
 	expense.should_not be_valid
     end
 
-    it "should allow a float in amount" do
+    it "should allow a single decimal in amount" do
+	expense=Expense.new(@attr)
+	expense.amount="1.5"
+	expense.should be_valid
+    end
+
+    it "should not allow more than 2 decimal places in amount" do
 	expense=Expense.new(@attr)
 	expense.amount="1.567"
-	expense.should be_valid
+	expense.should_not be_valid
     end
 
     it "should not allow letters in amount" do

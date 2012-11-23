@@ -24,7 +24,7 @@ describe UserPaymentsController do
   # UserPayment. As you add validations to UserPayment, be sure to
   # update the return value of this method accordingly.
   def valid_attributes
-    {}
+    {:from_user_id => 1, :to_user_id => 2, :amount => 12.34}
   end
 
   # This should return the minimal set of values that should be in the session
