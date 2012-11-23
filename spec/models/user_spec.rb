@@ -158,4 +158,19 @@ describe User do
 	# Should have 0 roles
 	roles.size.should == 0
     end
+
+    pending "should respond to a 'user_payments' method" do
+    end
+
+    pending "should respond to a 'user_depts' method" do
+    end
+
+    pending "should respond to a 'user_balances' method" do
+    end
+
+    pending "should have a 'depts' method" do
+    end
+
+    pending "should have a 'credits' method" do
+    end
 end
