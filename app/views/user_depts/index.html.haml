@@ -1,0 +1,23 @@
+%h1 Listing user_depts
+
+%table
+  %tr
+    %th From user
+    %th To user
+    %th Amount
+    %th
+    %th
+    %th
+
+  - @user_depts.each do |user_dept|
+    %tr
+      %td= user_dept.from_user_id
+      %td= user_dept.to_user_id
+      %td= user_dept.amount
+      %td= link_to 'Show', user_dept
+      %td= link_to 'Edit', edit_user_dept_path(user_dept)
+      %td= link_to 'Destroy', user_dept, method: :delete, data: { confirm: 'Are you sure?' }
+
+%br
+
+= link_to 'New User dept', new_user_dept_path

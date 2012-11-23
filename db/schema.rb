@@ -11,7 +11,7 @@
 #
 # It's strongly recommended to check this file into your version control system.
 
-ActiveRecord::Schema.define(:version => 20121017165806) do
+ActiveRecord::Schema.define(:version => 20121123173540) do
 
   create_table "backups", :force => true do |t|
     t.datetime "backup_date"
@@ -56,6 +56,14 @@ ActiveRecord::Schema.define(:version => 20121017165806) do
     t.datetime "updated_at"
   end
 
+  create_table "payment_notes", :force => true do |t|
+    t.integer  "user_payment_id"
+    t.integer  "user_id"
+    t.text     "note"
+    t.datetime "created_at"
+    t.datetime "updated_at"
+  end
+
   create_table "reasons", :force => true do |t|
     t.string   "name"
     t.datetime "created_at"
@@ -71,6 +79,32 @@ ActiveRecord::Schema.define(:version => 20121017165806) do
 
   create_table "stores", :force => true do |t|
     t.string   "name",       :null => false
+    t.datetime "created_at"
+    t.datetime "updated_at"
+  end
+
+  create_table "user_balances", :force => true do |t|
+    t.integer  "from_user_id"
+    t.integer  "to_user_id"
+    t.decimal  "amount"
+    t.datetime "created_at"
+    t.datetime "updated_at"
+  end
+
+  create_table "user_depts", :force => true do |t|
+    t.integer  "from_user_id"
+    t.integer  "to_user_id"
+    t.decimal  "amount"
+    t.datetime "created_at"
+    t.datetime "updated_at"
+  end
+
+  create_table "user_payments", :force => true do |t|
+    t.integer  "from_user_id"
+    t.integer  "to_user_id"
+    t.decimal  "amount"
+    t.boolean  "approved"
+    t.datetime "approved_date"
     t.datetime "created_at"
     t.datetime "updated_at"
   end

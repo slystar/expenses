@@ -1,0 +1,27 @@
+%h1 Listing user_payments
+
+%table
+  %tr
+    %th From user
+    %th To user
+    %th Amount
+    %th Approved
+    %th Approved date
+    %th
+    %th
+    %th
+
+  - @user_payments.each do |user_payment|
+    %tr
+      %td= user_payment.from_user_id
+      %td= user_payment.to_user_id
+      %td= user_payment.amount
+      %td= user_payment.approved
+      %td= user_payment.approved_date
+      %td= link_to 'Show', user_payment
+      %td= link_to 'Edit', edit_user_payment_path(user_payment)
+      %td= link_to 'Destroy', user_payment, method: :delete, data: { confirm: 'Are you sure?' }
+
+%br
+
+= link_to 'New User payment', new_user_payment_path

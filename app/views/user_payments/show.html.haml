@@ -1,0 +1,21 @@
+%p#notice= notice
+
+%p
+  %b From user:
+  = @user_payment.from_user_id
+%p
+  %b To user:
+  = @user_payment.to_user_id
+%p
+  %b Amount:
+  = @user_payment.amount
+%p
+  %b Approved:
+  = @user_payment.approved
+%p
+  %b Approved date:
+  = @user_payment.approved_date
+
+= link_to 'Edit', edit_user_payment_path(@user_payment)
+\|
+= link_to 'Back', user_payments_path
