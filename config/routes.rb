@@ -1,8 +1,6 @@
 Expenses::Application.routes.draw do
   resources :user_payments
 
-  resources :user_depts
-
   resources :groups
 
   resources :pay_methods
