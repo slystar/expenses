@@ -11,6 +11,8 @@ class User < ActiveRecord::Base
     has_many :expenses
     has_many :user_roles
     has_many :roles, :through => :user_roles
+    has_many :user_depts_from, :class_name => 'UserDept', :foreign_key => 'from_user_id'
+    has_many :user_depts_to, :class_name => 'UserDept', :foreign_key => 'to_user_id'
 
     # Validations
     validates :user_name, :presence => true, :uniqueness => {:case_sensitive => false}
