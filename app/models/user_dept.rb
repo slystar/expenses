@@ -5,4 +5,14 @@ class UserDept < ActiveRecord::Base
 
     # Validations
     validates :from_user, :presence => true
+    validates :to_user, :presence => true
+    validates :amount, :presence => true, :numericality => true
+    # Custom validation
+    validate :check_from_and_to
+
+    def check_from_and_to
+	if from_user_id == to_user_id
+	    errors.add(:to_user, "can't be the same as from_user")
+	end
+    end
 end

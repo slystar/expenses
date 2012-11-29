@@ -9,11 +9,12 @@ describe UserDept do
     def get_new_user_dept
 	# Create user
 	u1=User.create!(:user_name => 'user1', :password => 'testpassworduserdept')
+	u2=User.create!(:user_name => 'user2', :password => 'testpassworduserdept')
 	# No methods are mass assignable
 	ud=UserDept.new()
 	# Add attributes
 	ud.from_user_id=u1.id
-	ud.to_user_id=@attr[:to_user_id]
+	ud.to_user_id=u2.id
 	ud.amount=@attr[:amount]
 	# Return object
 	return ud
@@ -41,25 +42,74 @@ describe UserDept do
 	ud2.should_not be_valid
     end
 
-    pending "should require a valid to_user_id" do
+    it "should require a valid to_user_id" do
+	# Variables
+	invalid_user_id=99999
+	invalid_user_id=1
+	# Create records
+	ud1=UserDept.new(@attr.merge(:to_user_id => nil))
+	ud2=UserDept.new(@attr.merge(:to_user_id => invalid_user_id))
+	# Make sure user does not exist
+	User.where(:id =>invalid_user_id).should be_empty
 	# Should not allow an empty value
+	ud1.should_not be_valid
 	# Should require a valid user
+	ud2.should_not be_valid
     end
 
-    pending "should require an amount" do
+    it "should not have the same from_user and to_user" do
+	# get object
+	ud=get_new_user_dept
+	# Set to_user
+	ud.to_user_id=ud.from_user_id
+	# Test
+	ud.should_not be_valid
     end
 
-    pending "should not accept more than 2 decimal places in amount" do
+    it "should require an amount" do
+	# get object
+	ud=get_new_user_dept
+	# Set amount to nil
+	ud.amount=nil
+	# Test
+	ud.should_not be_valid
     end
 
-    pending "should not accept negative amounts" do
+    it "should accept more than 2 decimal places in amount" do
+	# get object
+	ud=get_new_user_dept
+	# Set amount
+	ud.amount=11.12345
+	# Test
+	ud.should be_valid
     end
 
-    pending "should not allow mass asignment" do
+    it "should not accept negative amounts" do
+	# get object
+	ud=get_new_user_dept
+	# Set amount
+	ud.amount="1abc"
+	# Test
+	ud.should_not be_valid
     end
 
-    pending "should have an entry date" do
+    it "should not allow mass asignment" do
+	# Create Object with mass assignment
+	ud1=UserDept.new(@attr)
+	# Try to save
+	ud1.save.should == false
+    end
+
+    it "should have an entry date" do
+	# Get today's date
+	today=Date.today.strftime("%Y-%m-%d")
+	# get object
+	ud=get_new_user_dept
+	# Save object
+	ud.save!
 	# Could be created date
+	d1=ud.created_at.strftime("%Y-%m-%d")
+	# Test
+	today.should == d1
     end
-  pending "add some examples to (or delete) #{__FILE__}"
 end
