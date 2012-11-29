@@ -160,4 +160,13 @@ describe Expense do
 	# Should save
 	expense.save.should == false
     end
+
+    pending "should have a user dept method" do
+    end
+
+    pending "should have a user credit method" do
+    end
+
+    pending "should have a balances method" do
+    end
 end
