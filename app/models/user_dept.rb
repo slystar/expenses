@@ -10,6 +10,13 @@ class UserDept < ActiveRecord::Base
     # Custom validation
     validate :check_from_and_to
 
+    # Callbacks
+    before_validation(:on => :create) do
+	# Check for negative amount
+	self.errors.add(:base,"Amount cannot be negative") if not self.amount.nil? and self.amount < 0
+    end
+
+    # Methods
     def check_from_and_to
 	if from_user_id == to_user_id
 	    errors.add(:to_user, "can't be the same as from_user")

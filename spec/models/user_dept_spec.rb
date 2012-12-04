@@ -88,6 +88,15 @@ describe UserDept do
 	# get object
 	ud=get_new_user_dept
 	# Set amount
+	ud.amount="-10.5"
+	# Test
+	ud.should_not be_valid
+    end
+
+    it "should not accept letters for amount" do
+	# get object
+	ud=get_new_user_dept
+	# Set amount
 	ud.amount="1abc"
 	# Test
 	ud.should_not be_valid
