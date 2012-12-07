@@ -120,7 +120,7 @@ describe UserPayment do
 
     it "should have an entry date" do
 	# Get today's date
-	today=Date.today.strftime("%Y-%m-%d")
+	today=Time.now.utc.strftime("%Y-%m-%d")
 	# get object
 	up=get_new_user_payment
 	# Save object
@@ -199,7 +199,7 @@ describe UserPayment do
 	# Date format
 	date_format='%Y-%m-%d'
 	# Get date
-	today=Time.now.strftime(date_format)
+	today=Time.now.utc.strftime(date_format)
 	# get object
 	up=get_new_user_payment
 	# Save record

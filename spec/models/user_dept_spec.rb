@@ -111,7 +111,7 @@ describe UserDept do
 
     it "should have an entry date" do
 	# Get today's date
-	today=Date.today.strftime("%Y-%m-%d")
+	today=Time.now.utc.strftime("%Y-%m-%d")
 	# get object
 	ud=get_new_user_dept
 	# Save object

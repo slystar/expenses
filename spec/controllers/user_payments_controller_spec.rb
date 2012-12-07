@@ -20,6 +20,12 @@ require 'spec_helper'
 
 describe UserPaymentsController do
 
+    before(:each) do
+	# Create user
+	u1=User.create!(:user_name => 'user_cont1', :password => 'testpassworduserdept')
+	u2=User.create!(:user_name => 'user_cont2', :password => 'testpassworduserdept')
+    end
+
   # This should return the minimal set of attributes required to create a valid
   # UserPayment. As you add validations to UserPayment, be sure to
   # update the return value of this method accordingly.

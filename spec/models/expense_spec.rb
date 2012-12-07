@@ -98,6 +98,12 @@ describe Expense do
 	expense.should_not be_valid
     end
 
+    it "should not accept negative amounts" do
+	expense=Expense.new(@attr)
+	expense.amount="-1.567"
+	expense.should_not be_valid
+    end
+
     it "should not allow letters in amount" do
 	expense=Expense.new(@attr)
 	expense.amount="aa15"
