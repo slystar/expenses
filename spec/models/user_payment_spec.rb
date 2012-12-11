@@ -6,10 +6,17 @@ describe UserPayment do
 	@attr={:from_user_id => 1, :to_user_id => 1, :amount => 11.23}
     end
 
+    def get_new_user(name)
+	# Create new user
+	u1=User.create!(:user_name => name, :password => 'testpassworduserdept')
+	# Return user object
+	return u1
+    end
+
     def get_new_user_payment
 	# Create user
-	u1=User.create!(:user_name => 'user1', :password => 'testpassworduserdept')
-	u2=User.create!(:user_name => 'user2', :password => 'testpassworduserdept')
+	u1=get_new_user('user1')
+	u2=get_new_user('user2')
 	# No methods are mass assignable
 	up=UserPayment.new()
 	# Add attributes
@@ -139,8 +146,10 @@ describe UserPayment do
     it "should be able to list all related notes" do
 	# get object
 	up=get_new_user_payment
-	# Add note
-	up.payment_notes.new({:user_payment_id => 1, :user_id => 1, :note => "This is a note1"})
+	# Save upser_payment
+	up.save!
+	# Add notes
+	up.payment_notes.new({:user_id => 1, :note => "This is a note1"})
 	up.payment_notes.new({:user_payment_id => 1, :user_id => 1, :note => "This is a note2"})
 	# Save object
 	up.save.should == true
