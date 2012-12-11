@@ -175,4 +175,6 @@ describe Expense do
 
     pending "should have a balances method" do
     end
+
+    pending "should notify user about updates"
 end
