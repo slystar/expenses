@@ -30,7 +30,6 @@ describe UserBalance do
     it "should require a valid from_user_id" do
 	# Variables
 	invalid_user_id=99999
-	invalid_user_id=1
 	# Create records
 	ub1=UserBalance.new(@attr.merge(:from_user_id => nil))
 	ub2=UserBalance.new(@attr.merge(:from_user_id => invalid_user_id))
@@ -45,7 +44,6 @@ describe UserBalance do
     it "should require a valid to_user_id" do
 	# Variables
 	invalid_user_id=99999
-	invalid_user_id=1
 	# Create records
 	ub1=UserBalance.new(@attr.merge(:to_user_id => nil))
 	ub2=UserBalance.new(@attr.merge(:to_user_id => invalid_user_id))
