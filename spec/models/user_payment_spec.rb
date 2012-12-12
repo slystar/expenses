@@ -164,6 +164,7 @@ describe UserPayment do
 	up.save.should == true
 	# Set approved
 	up.approved=true
+	up.approved_date=Time.now
 	# Test
 	up.save.should == true
     end
@@ -223,11 +224,31 @@ describe UserPayment do
 	approved_date_date.should == today
     end
 
-    pending "should not allow approved to be set without approved_date" do
+    it "should not allow approved to be set without approved_date" do
+	# get object
+	up=get_new_user_payment
+	# Save record
+	up.save!
+	# Set approved
+	up.approved=true
+	# Set aproved date
+	up.approved_date=nil
+	# Test
+	up.save.should == false
+	up.errors.messages.size.should > 0
     end
 
-    pending "should not allow approved_date to be set without approved set to true" do
+    it "should not allow approved_date to be set without approved set to true" do
+	# get object
+	up=get_new_user_payment
+	# Save record
+	up.save!
+	# Set approved
+	up.approved=nil
+	# Set aproved date
+	up.approved_date=Time.now
+	# Test
+	up.save.should == false
+	up.errors.messages.size.should > 0
     end
-
-  pending "add some examples to (or delete) #{__FILE__}"
 end

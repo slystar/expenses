@@ -13,9 +13,31 @@ class UserPayment < ActiveRecord::Base
     validates :amount, :presence => true, :numericality => true
     # Custom validation
     validate :check_from_and_to
+    validate :check_approve_fields
+    validate :check_for_negative_amount
 
     # Callbacks
-    before_validation(:on => :create) do
+    before_create :check_approved, :check_approved_date
+
+    # Method to make sure from and to are not the same
+    def check_from_and_to
+	if from_user_id == to_user_id
+	    errors.add(:to_user, "can't be the same as from_user")
+	end
+    end
+
+    # Method to make sure all approved fields are filled in
+    def check_approve_fields
+	# Get data
+	approved_date_blank=approved_date.blank?
+	# Make sure both approve fields are set
+	if (approved == true and approved_date_blank == true) or (approved != true and not approved_date_blank)
+	    errors.add(:base,"All approve fields must be filled")
+	end
+    end
+
+    # Method to check for a negative amount
+    def check_for_negative_amount
 	# Check for negative amount
 	self.errors.add(:base,"Amount cannot be negative") if not self.amount.nil? and self.amount < 0
 	# Check for more than 2 decimals
@@ -29,14 +51,6 @@ class UserPayment < ActiveRecord::Base
 	    if difference > 3
 		self.errors.add(:base,"Amount cannot have more than 2 decimals")
 	    end
-	end
-    end
-    before_create :check_approved, :check_approved_date
-
-    # Method to make sure from and to are not the same
-    def check_from_and_to
-	if from_user_id == to_user_id
-	    errors.add(:to_user, "can't be the same as from_user")
 	end
     end
 
