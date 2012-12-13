@@ -159,18 +159,65 @@ describe User do
 	roles.size.should == 0
     end
 
-    pending "should respond to a 'user_payments' method" do
+    it "should respond to a 'user_payments_from' method" do
+	# Create user
+	user=User.create!(@attr)
+	# Should respond to roles
+	user.should respond_to(:user_payments_from)
     end
 
-    pending "should respond to a 'user_depts' method" do
+    it "should respond to a 'user_payments_to' method" do
+	# Create user
+	user=User.create!(@attr)
+	# Should respond to roles
+	user.should respond_to(:user_payments_to)
     end
 
-    pending "should respond to a 'user_balances' method" do
+    it "should respond to a 'user_depts_from' method" do
+	# Create user
+	user=User.create!(@attr)
+	# Should respond to roles
+	user.should respond_to(:user_depts_from)
     end
 
-    pending "should have a 'depts' method" do
+    it "should respond to a 'user_depts_to' method" do
+	# Create user
+	user=User.create!(@attr)
+	# Should respond to roles
+	user.should respond_to(:user_depts_to)
     end
 
-    pending "should have a 'credits' method" do
+    it "should respond to a 'user_balances_from' method" do
+	# Create user
+	user=User.create!(@attr)
+	# Should respond to roles
+	user.should respond_to(:user_balances_from)
+    end
+
+    it "should respond to a 'user_balances_to' method" do
+	# Create user
+	user=User.create!(@attr)
+	# Should respond to roles
+	user.should respond_to(:user_balances_to)
+    end
+
+    pending "should respond to a 'depts' method" do
+	# Create user
+	user=User.create!(@attr)
+	# Should respond to roles
+	user.should respond_to(:depts)
+    end
+
+    pending "should have a 'depts' method list depts" do
+    end
+
+    pending "should respond to a 'credits' method" do
+	# Create user
+	user=User.create!(@attr)
+	# Should respond to roles
+	user.should respond_to(:credits)
+    end
+
+    pending "should have a 'credits' method list credits" do
     end
 end
