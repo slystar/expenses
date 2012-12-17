@@ -28,6 +28,15 @@ class User < ActiveRecord::Base
     after_destroy :remove_default_group
     after_create :add_user_group, :add_role_to_first_user
 
+    # Method to get user's current depts
+    def depts
+    end
+
+    # Method to get user's current credits (what others owe them)
+    def credits
+    end
+
+    # Below methods are private
     private
 
     # Method to remove default group
