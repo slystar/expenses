@@ -120,4 +120,40 @@ describe Group do
 	group.users << u2
 	group.users.size.should == 2
     end
+
+    it "should respond to 'add_user' method" do
+	group=Group.new(@attr)
+	group.should respond_to(:add_user)
+    end
+
+    it "should be able to add a user to group" do
+	# Create new user
+	u1=User.create!(:user_name => 'user10', :password => 'testpasswordgroup')
+	# Create group
+	group=Group.create!(@attr)
+	lambda{
+	    # Add user
+	    group.add_user(u1)
+	}.should change(GroupMember,:count).by(1)
+    end
+
+    it "should not allow a duplicate add_user entry" do
+	# Create new user
+	u1=User.create!(:user_name => 'user10', :password => 'testpasswordgroup')
+	# Create group
+	group=Group.create!(@attr)
+	lambda{
+	    # Add user
+	    group.add_user(u1)
+	}.should change(GroupMember,:count).by(1)
+	# Refresh user
+	u1.reload
+	# Add duplicate entry
+	lambda{
+	# Add user
+	    group.add_user(u1)
+	}.should change(GroupMember,:count).by(0)
+	# There should be an error
+	group.errors.size.should > 0
+    end
 end

@@ -13,6 +13,22 @@ class Group < ActiveRecord::Base
     # Callbacks
     before_destroy :check_for_users
 
+    # Method to add user to group
+    def add_user(user)
+	# Get user groups
+	user_groups=user.groups
+	# check if user already a member
+	if user_groups.detect{|g| g.name == self.name}
+	    self.errors.add(:base,"User #{user.user_name} is already a member of group #{self.name}")
+	else
+	    # Prepare group_membership attributes
+	    attr={:user_id => user.id, :group_id => self.id}
+	    # Create a group_membership entry
+	    GroupMember.create!(attr)
+	end
+    end
+
+    # Methods below are private
     private
 
     # Method to check for users

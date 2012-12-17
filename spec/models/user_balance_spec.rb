@@ -6,7 +6,7 @@ describe UserBalance do
 	@attr={:from_user_id => 1, :to_user_id => 1, :amount => 11.23}
     end
 
-    def get_new_user_dept
+    def get_new_user_balance
 	# Create user
 	u1=User.create!(:user_name => 'user1', :password => 'testpassworduserbalance')
 	u2=User.create!(:user_name => 'user2', :password => 'testpassworduserbalance')
@@ -22,7 +22,7 @@ describe UserBalance do
 
     it "should create a new instance given valid attributes" do
 	# get object
-	ub=get_new_user_dept
+	ub=get_new_user_balance
 	# Save object
 	ub.save.should == true
     end
@@ -57,7 +57,7 @@ describe UserBalance do
 
     it "should not have the same from_user and to_user" do
 	# get object
-	ub=get_new_user_dept
+	ub=get_new_user_balance
 	# Set to_user
 	ub.to_user_id=ub.from_user_id
 	# Test
@@ -66,7 +66,7 @@ describe UserBalance do
 
     it "should require an amount" do
 	# get object
-	ub=get_new_user_dept
+	ub=get_new_user_balance
 	# Set amount to nil
 	ub.amount=nil
 	# Test
@@ -75,7 +75,7 @@ describe UserBalance do
 
     it "should accept more than 2 decimal places in amount" do
 	# get object
-	ub=get_new_user_dept
+	ub=get_new_user_balance
 	# Set amount
 	ub.amount=11.12345
 	# Test
@@ -84,7 +84,7 @@ describe UserBalance do
 
     it "should not accept negative amounts" do
 	# get object
-	ub=get_new_user_dept
+	ub=get_new_user_balance
 	# Set amount
 	ub.amount="-10.5"
 	# Test
@@ -93,7 +93,7 @@ describe UserBalance do
 
     it "should not accept letters for amount" do
 	# get object
-	ub=get_new_user_dept
+	ub=get_new_user_balance
 	# Set amount
 	ub.amount="1abc"
 	# Test
@@ -111,7 +111,7 @@ describe UserBalance do
 	# Get today's date
 	today=Time.now.utc.strftime("%Y-%m-%d")
 	# get object
-	ub=get_new_user_dept
+	ub=get_new_user_balance
 	# Save object
 	ub.save!
 	# Could be created date

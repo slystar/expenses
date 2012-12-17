@@ -50,6 +50,13 @@ class Expense < ActiveRecord::Base
     # Check on destruction
     before_destroy :check_for_processed_record
 
+    # Method to process expense
+    def process
+	# Get group members
+	members=group.users
+	p members
+    end
+
     private
 
     def check_for_processed_record()

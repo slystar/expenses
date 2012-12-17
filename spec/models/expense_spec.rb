@@ -156,9 +156,33 @@ describe Expense do
 	expense.save.should == true
     end
 
-    pending "should not be modifyable if it has been processed" do
+    it "should respond to a 'process' method" do
 	# Create expense
 	expense=Expense.create!(@attr)
+	# Test
+	expense.should respond_to(:process)
+    end
+
+    pending "should be able to process itself" do
+	# Create group
+	# Create user
+	# Add user to group
+	# Create expense
+	expense=Expense.create!(@attr)
+	# Process and test UserDept created
+	lambda{
+	    # Process record
+	    expense.process
+	}.should change(UserDept,:count).by(1)
+	# Test: UserBalance Created
+	ub=UserBalance.where(:from_user_id => expense.user_id)
+	ub.amount.should == expense.amount
+    end
+
+    pending "should not be modifyable if it has been processed" do
+	# Create new group
+	# Create expense
+	expense=Expense.new!(@attr)
 	# Modify
 	expense.amount=99.99
 	# Process record (not decided how to proceed with this yet)
