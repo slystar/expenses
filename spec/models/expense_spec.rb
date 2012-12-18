@@ -163,20 +163,41 @@ describe Expense do
 	expense.should respond_to(:process)
     end
 
-    pending "should be able to process itself" do
-	# Create group
+    it "should be able to process itself" do
+	# Get today
+	today=Time.now.utc.strftime("%Y-%m-%d")
 	# Create user
+	u1=User.create!({:user_name => 'test90', :password => 'testpassword'})
+	u2=User.create!({:user_name => 'test91', :password => 'testpassword'})
+	u3=User.create!({:user_name => 'test92', :password => 'testpassword'})
+	# Create group
+	group=Group.create!({:name => "Group test", :description => 'group 1 desc'})
 	# Add user to group
+	group.add_user(u1)
+	group.add_user(u2)
+	group.add_user(u3)
 	# Create expense
-	expense=Expense.create!(@attr)
+	expense=Expense.new(@attr)
+	# Set group
+	expense.group_id=group.id
+	# Set amount
+	expense.amount=22.88
+	# Save expense
+	expense.save!
 	# Process and test UserDept created
 	lambda{
 	    # Process record
 	    expense.process
-	}.should change(UserDept,:count).by(1)
+	}.should change(UserDept,:count).by(3)
 	# Test: UserBalance Created
 	ub=UserBalance.where(:from_user_id => expense.user_id)
+	p ub
 	ub.amount.should == expense.amount
+	# Reload expense
+	expense.reload
+	# Test process fields
+	expense.process_flag.should == true
+	expense.process_date.strftime("%Y-%m-%d").should == today
     end
 
     pending "should not be modifyable if it has been processed" do

@@ -54,7 +54,27 @@ class Expense < ActiveRecord::Base
     def process
 	# Get group members
 	members=group.users
-	p members
+	# Get count of members
+	member_count=members.size
+	# Get dept amount
+	dept_amount=self.amount / member_count.to_f
+	# Loop over members
+	members.each do |member|
+	    # Skip self
+	    next if member.id == self.user_id
+	    # Create new UserDept
+	    ud=UserDept.new()
+	    # Add attributes
+	    ud.from_user_id=self.user_id
+	    ud.to_user_id=member.id
+	    ud.amount=dept_amount
+	    # Save record
+	    ud.save!
+	end
+	# Set process fields
+	self.process_date=Time.now
+	self.process_flag=true
+	self.save!
     end
 
     private
