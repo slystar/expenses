@@ -19,12 +19,17 @@ class Group < ActiveRecord::Base
 	user_groups=user.groups
 	# check if user already a member
 	if user_groups.detect{|g| g.name == self.name}
+	    # Add error
 	    self.errors.add(:base,"User #{user.user_name} is already a member of group #{self.name}")
+	    # Return value
+	    return false
 	else
 	    # Prepare group_membership attributes
 	    attr={:user_id => user.id, :group_id => self.id}
 	    # Create a group_membership entry
 	    GroupMember.create!(attr)
+	    # Return value
+	    return true
 	end
     end
 

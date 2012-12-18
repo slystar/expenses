@@ -137,6 +137,19 @@ describe Group do
 	}.should change(GroupMember,:count).by(1)
     end
 
+    it "should be able to add multiple users to group" do
+	# Create new user
+	u1=User.create!(:user_name => 'user10', :password => 'testpasswordgroup')
+	u2=User.create!(:user_name => 'user11', :password => 'testpasswordgroup')
+	# Create group
+	group=Group.create!(@attr)
+	lambda{
+	    # Add user
+	    group.add_user(u1)
+	    group.add_user(u2)
+	}.should change(GroupMember,:count).by(2)
+    end
+
     it "should not allow a duplicate add_user entry" do
 	# Create new user
 	u1=User.create!(:user_name => 'user10', :password => 'testpasswordgroup')
