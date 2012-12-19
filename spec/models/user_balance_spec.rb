@@ -119,4 +119,46 @@ describe UserBalance do
 	# Test
 	today.should == d1
     end
+
+    it "should have an 'update_balances' method" do
+	UserBalance.should respond_to(:update_balances)
+    end
+
+    def get_user_dept(u1,u2,amount)
+	# Create new UserDept
+	ud=UserDept.new()
+	# Add attributes
+	ud.from_user_id=u1.id
+	ud.to_user_id=u2.id
+	ud.amount=amount
+	# Save UserDept
+	ud.save!
+    end
+
+    it "should update balance with single dept" do
+	# Set amount
+	money=12.50
+	# Create user
+	u1=User.create!(:user_name => 'user1', :password => 'testpassuserbalance')
+	u2=User.create!(:user_name => 'user2', :password => 'testpassuserbalance')
+	# Create new UserDept
+	ud=get_user_dept(u1,u2,money)
+	# Test: UserBalance created
+	lambda {
+	    # Update balances
+	    UserBalance.update_balances
+	}.should change(UserBalance,:count).by(1)
+	# Test: UserBalance amount
+	p ub=UserBalance.last
+	ub.amount.should == money
+    end
+
+    pending "should update balance with multiple dept" do
+    end
+
+    pending "should update balance with credit" do
+    end
+
+    pending "should update balance with dept and credit" do
+    end
 end

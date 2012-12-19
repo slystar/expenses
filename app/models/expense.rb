@@ -71,6 +71,8 @@ class Expense < ActiveRecord::Base
 	    # Save record
 	    ud.save!
 	end
+	# Update Balance
+	UserBalance.update_balances()
 	# Set process fields
 	self.process_date=Time.now
 	self.process_flag=true

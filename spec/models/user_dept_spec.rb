@@ -119,4 +119,10 @@ describe UserDept do
 	# Test
 	today.should == d1
     end
+
+    pending "should respond to 'expense'" do
+    end
+
+    pending "should link to expense" do
+    end
 end

@@ -184,14 +184,13 @@ describe Expense do
 	expense.amount=22.88
 	# Save expense
 	expense.save!
-	# Process and test UserDept created
+	# Test: UserDept created
 	lambda{
 	    # Process record
 	    expense.process
 	}.should change(UserDept,:count).by(3)
 	# Test: UserBalance Created
 	ub=UserBalance.where(:from_user_id => expense.user_id)
-	p ub
 	ub.amount.should == expense.amount
 	# Reload expense
 	expense.reload
