@@ -125,4 +125,10 @@ describe UserDept do
 
     pending "should link to expense" do
     end
+
+    pending "should have all new records with process_flag set to false" do
+    end
+
+    pending "should not have a new record with process_flag set to true" do
+    end
 end
