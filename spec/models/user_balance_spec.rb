@@ -4,12 +4,13 @@ describe UserBalance do
 
     before(:each) do
 	@attr={:from_user_id => 1, :to_user_id => 1, :amount => 11.23}
+	@new_user_id=1
     end
 
     def get_new_user_balance
 	# Create user
-	u1=User.create!(:user_name => 'user1', :password => 'testpassworduserbalance')
-	u2=User.create!(:user_name => 'user2', :password => 'testpassworduserbalance')
+	u1=get_next_user
+	u2=get_next_user
 	# No methods are mass assignable
 	ub=UserBalance.new()
 	# Add attributes
@@ -18,6 +19,26 @@ describe UserBalance do
 	ub.amount=@attr[:amount]
 	# Return object
 	return ub
+    end
+
+    def get_user_dept(u1,u2,amount)
+	# Create new UserDept
+	ud=UserDept.new()
+	# Add attributes
+	ud.from_user_id=u1.id
+	ud.to_user_id=u2.id
+	ud.amount=amount
+	# Save UserDept
+	ud.save!
+    end
+
+    def get_next_user()
+	# Get next user id
+	@new_user_id += 1
+	# Create user object
+	u=User.create!(:user_name => "user#{@new_user_id}", :password => 'testpassuserbalance')
+	# Return user object
+	return u
     end
 
     it "should create a new instance given valid attributes" do
@@ -82,13 +103,13 @@ describe UserBalance do
 	ub.should be_valid
     end
 
-    it "should not accept negative amounts" do
+    it "should accept negative amounts" do
 	# get object
 	ub=get_new_user_balance
 	# Set amount
 	ub.amount="-10.5"
 	# Test
-	ub.should_not be_valid
+	ub.should be_valid
     end
 
     it "should not accept letters for amount" do
@@ -124,33 +145,36 @@ describe UserBalance do
 	UserBalance.should respond_to(:update_balances)
     end
 
-    def get_user_dept(u1,u2,amount)
-	# Create new UserDept
-	ud=UserDept.new()
-	# Add attributes
-	ud.from_user_id=u1.id
-	ud.to_user_id=u2.id
-	ud.amount=amount
-	# Save UserDept
-	ud.save!
-    end
-
     it "should update balance with single dept" do
 	# Set amount
 	money=12.50
-	# Create user
-	u1=User.create!(:user_name => 'user1', :password => 'testpassuserbalance')
-	u2=User.create!(:user_name => 'user2', :password => 'testpassuserbalance')
+	existing_balance=5.25
+	# Create users
+	u1=get_next_user
+	u2=get_next_user
 	# Create new UserDept
 	ud=get_user_dept(u1,u2,money)
+	# Get a UserBalance object
+	ub=UserBalance.new()
+	# Set attributes
+	ub.from_user_id=u1.id
+	ub.to_user_id=u2.id
+	ub.amount=existing_balance
+	# Save UserBalance
+	ub.save!
 	# Test: UserBalance created
 	lambda {
 	    # Update balances
 	    UserBalance.update_balances
-	}.should change(UserBalance,:count).by(1)
+	}.should change(UserBalance,:count).by(2)
+	# Get most recent UserBalance for u1 to u2
+	ub=UserBalance.where(:from_user_id => u1.id, :to_user_id => u2.id).last
 	# Test: UserBalance amount
-	p ub=UserBalance.last
-	ub.amount.should == money
+	ub.amount.should == money + existing_balance
+	# Get most recent UserBalance for u2 to u1
+	ub=UserBalance.where(:from_user_id => u2.id, :to_user_id => u1.id).last
+	# Test: UserBalance amount
+	ub.amount.should == -(money + existing_balance)
     end
 
     pending "should update balance with multiple dept" do
