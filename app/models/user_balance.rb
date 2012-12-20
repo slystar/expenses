@@ -12,10 +12,13 @@ class UserBalance < ActiveRecord::Base
 
     # Method to update balance
     def self.update_balances
+	puts('clean me +++++')
 	# Variables
 	depts={}
 	payments={}
 	user_ids=[]
+	pre_finals={}
+	records_to_save=[]
 	# Get all UserDept
 	dept_rows=UserDept.where(:process_flag => false)
 	# Calculate depts
@@ -83,28 +86,61 @@ class UserBalance < ActiveRecord::Base
 		total_they_owe_me=they_owe_me - they_paid_me
 		# Resulting global value
 		pre_final_balance=total_i_owe_them - total_they_owe_me
-		# Get Current balance
-		current_balance=UserBalance.where(:from_user_id => user_id, :to_user_id => other_user_id).last
-		# Prepare amount
-		if current_balance.nil?
-		    balance_amount=0
-		else
-		    balance_amount=current_balance.amount.to_f
-		end
-		# Final total including previous balance
-		final_balance=pre_final_balance + balance_amount
+		# Prepare hash for this user
+		pre_finals[user_id]={} if pre_finals[user_id].nil?
 		# Check if an entry needs to be created
-		if final_balance != 0
-		    # Get a UserBalance object
-		    ub=UserBalance.new()
-		    # Set attributes
-		    ub.from_user_id=user_id
-		    ub.to_user_id=other_user_id
-		    ub.amount=final_balance
-		    # Save UserBalance
-		    ub.save!
+		if pre_final_balance > 0
+		    pre_finals[user_id][other_user_id]=pre_final_balance
+		else
+		    pre_finals[user_id][other_user_id]=0
 		end
 	    end
+	end
+	# Loop over pre_finals
+	pre_finals.each do |user_id, hash|
+	    # Loop over hash
+	    hash.each do |other_user_id, amount|
+		i_owe_them=pre_finals[user_id][other_user_id].to_f
+		they_owe_me=pre_finals[other_user_id][user_id].to_f
+		total_owe=i_owe_them - they_owe_me
+		# Get Current balance to
+		current_balance_to=UserBalance.where(:from_user_id => user_id, :to_user_id => other_user_id).last
+		# Prepare amount
+		if current_balance_to.nil?
+		    balance_amount_to=0
+		else
+		    balance_amount_to=current_balance_to.amount.to_f
+		end
+		# Get Current balance from
+		current_balance_from=UserBalance.where(:from_user_id => other_user_id, :to_user_id => user_id).last
+		# Prepare amount
+		if current_balance_from.nil?
+		    balance_amount_from=0
+		else
+		    balance_amount_from=current_balance_from.amount.to_f
+		end
+		# Get total balance
+		total_balance=balance_amount_to - balance_amount_from
+		# Calculate overall total
+		overall_total=total_owe + total_balance
+		puts("#{user_id} -> #{other_user_id}:\tiot: #{i_owe_them},\ttom: #{they_owe_me},\tt: #{total_owe},\ttb: #{total_balance},\tot: #{overall_total}")
+		# Check if overall_total is not 0
+		if overall_total != 0
+		    # Keep track of records to save
+		    records_to_save.push([user_id,other_user_id,overall_total])
+		end
+	    end
+	end
+	# Loop over records to save
+	records_to_save.each do |row|
+	    # Get a UserBalance object
+	    ub=UserBalance.new()
+	    # Set attributes
+	    ub.from_user_id=row[0]
+	    ub.to_user_id=row[1]
+	    ub.amount=row[2]
+	    # Save UserBalance
+	    ub.save!
 	end
     end
 

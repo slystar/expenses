@@ -169,6 +169,7 @@ describe UserBalance do
 	}.should change(UserBalance,:count).by(2)
 	# Get most recent UserBalance for u1 to u2
 	ub=UserBalance.where(:from_user_id => u1.id, :to_user_id => u2.id).last
+	p ub.amount.to_f
 	# Test: UserBalance amount
 	ub.amount.should == money + existing_balance
 	# Get most recent UserBalance for u2 to u1
