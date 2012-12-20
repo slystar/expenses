@@ -14,10 +14,23 @@ class UserPayment < ActiveRecord::Base
     # Custom validation
     validate :check_from_and_to
     validate :check_approve_fields
-    validate :check_for_negative_amount
+    validate :check_amount
 
     # Callbacks
     before_create :check_approved, :check_approved_date
+
+    # Method to approve this user payment
+    def approve
+	# Set approved to true
+	self.approved=true
+	# Set approved_date
+	self.approved_date=Time.now
+	# Save record
+	self.save!
+    end
+
+    # Private methods
+    private
 
     # Method to make sure from and to are not the same
     def check_from_and_to
@@ -37,7 +50,7 @@ class UserPayment < ActiveRecord::Base
     end
 
     # Method to check for a negative amount
-    def check_for_negative_amount
+    def check_amount
 	# Check for negative amount
 	self.errors.add(:base,"Amount cannot be negative") if not self.amount.nil? and self.amount < 0
 	# Check for more than 2 decimals
@@ -72,15 +85,5 @@ class UserPayment < ActiveRecord::Base
 	else
 	    return true
 	end
-    end
-
-    # Method to approve this user payment
-    def approve
-	# Set approved to true
-	self.approved=true
-	# Set approved_date
-	self.approved_date=Time.now
-	# Save record
-	self.save!
     end
 end

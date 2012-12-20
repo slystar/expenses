@@ -11,5 +11,4 @@ class UserRole < ActiveRecord::Base
     validates :role_id, :presence => true, :uniqueness => {:scope => :user_id}
     validates_presence_of :user
     validates_presence_of :role
-
 end

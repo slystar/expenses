@@ -9,12 +9,7 @@ class UserBalance < ActiveRecord::Base
     validates :amount, :presence => true, :numericality => true
     # Custom validation
     validate :check_from_and_to
-
-    # Callbacks
-    before_validation(:on => :create) do
-	# Check for negative amount
-	self.errors.add(:base,"Amount cannot be negative") if not self.amount.nil? and self.amount < 0
-    end
+    validate :check_amount
 
     # Method to update balance
     def self.update_balances
@@ -97,5 +92,11 @@ class UserBalance < ActiveRecord::Base
 	if from_user_id == to_user_id
 	    errors.add(:to_user, "can't be the same as from_user")
 	end
+    end
+
+    # Method to check for a negative amount
+    def check_amount
+	# Check for negative amount
+	self.errors.add(:base,"Amount cannot be negative") if not self.amount.nil? and self.amount < 0
     end
 end
