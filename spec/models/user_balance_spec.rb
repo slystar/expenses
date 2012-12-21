@@ -21,7 +21,7 @@ describe UserBalance do
 	return ub
     end
 
-    def get_user_dept(u1,u2,amount)
+    def add_user_dept(u1,u2,amount)
 	# Create new UserDept
 	ud=UserDept.new()
 	# Add attributes
@@ -32,6 +32,19 @@ describe UserBalance do
 	ud.save!
     end
 
+    def add_user_payment(u1,u2,amount)
+	# Create new UserPayment
+	ud=UserPayment.new()
+	# Add attributes
+	ud.from_user_id=u1.id
+	ud.to_user_id=u2.id
+	ud.amount=amount
+	# Save UserDept
+	ud.save!
+	# Approve payment
+	ud.approve
+    end
+
     def get_next_user()
 	# Get next user id
 	@new_user_id += 1
@@ -39,6 +52,24 @@ describe UserBalance do
 	u=User.create!(:user_name => "user#{@new_user_id}", :password => 'testpassuserbalance')
 	# Return user object
 	return u
+    end
+
+    def add_balance(u1,u2,amount)
+	# Get a UserBalance object
+	ub=UserBalance.new()
+	# Set attributes
+	ub.from_user_id=u1.id
+	ub.to_user_id=u2.id
+	ub.amount=amount
+	# Save UserBalance
+	ub.save!
+    end
+
+    def test_balance(u1,u2,amount)
+	    # Get most recent UserBalance for u1 to u2
+	    ub=UserBalance.where(:from_user_id => u1.id, :to_user_id => u2.id).last
+	    # Test: UserBalance amount
+	    ub.amount.should == amount
     end
 
     it "should create a new instance given valid attributes" do
@@ -145,45 +176,171 @@ describe UserBalance do
 	UserBalance.should respond_to(:update_balances)
     end
 
-    it "should update balance with single dept" do
-	# Set amount
-	money=12.50
-	existing_balance=5.25
-	# Create users
-	u1=get_next_user
-	u2=get_next_user
-	# Create new UserDept
-	ud=get_user_dept(u1,u2,money)
-	# Get a UserBalance object
-	ub=UserBalance.new()
-	# Set attributes
-	ub.from_user_id=u1.id
-	ub.to_user_id=u2.id
-	ub.amount=existing_balance
-	# Save UserBalance
-	ub.save!
-	# Test: UserBalance created
-	lambda {
-	    # Update balances
-	    UserBalance.update_balances
-	}.should change(UserBalance,:count).by(2)
-	# Get most recent UserBalance for u1 to u2
-	ub=UserBalance.where(:from_user_id => u1.id, :to_user_id => u2.id).last
-	p ub.amount.to_f
-	# Test: UserBalance amount
-	ub.amount.should == money + existing_balance
-	# Get most recent UserBalance for u2 to u1
-	ub=UserBalance.where(:from_user_id => u2.id, :to_user_id => u1.id).last
-	# Test: UserBalance amount
-	ub.amount.should == -(money + existing_balance)
-    end
+    describe "update balances" do
+	context "with UserDept and UserBalance" do
+	    it "with single dept" do
+		# Set amount
+		money=12.50
+		existing_balance=5.25
+		# Get expected balance
+		expected_balance=money + existing_balance
+		# Create users
+		u1=get_next_user
+		u2=get_next_user
+		# Create new UserDept
+		add_user_dept(u1,u2,money)
+		# Create new UserBalance
+		add_balance(u1,u2,existing_balance)
+		# Test: UserBalance created
+		lambda {
+		    # Update balances
+		    UserBalance.update_balances
+		}.should change(UserBalance,:count).by(2)
+		# Test balances
+		test_balance(u1,u2,expected_balance)
+		test_balance(u2,u1,-(expected_balance))
+	    end
 
-    pending "should update balance with multiple dept" do
-    end
+	    it "with multiple dept for a single user" do
+		# Set amount
+		money1=12.50
+		money2=30.20
+		money3=2.00
+		existing_balance=5.25
+		# Get expected balance
+		expected_balance=money1 + money2 + money3 + existing_balance
+		# Create users
+		u1=get_next_user
+		u2=get_next_user
+		# Create new UserDept
+		add_user_dept(u1,u2,money1)
+		add_user_dept(u1,u2,money2)
+		add_user_dept(u1,u2,money3)
+		# Create new UserBalance
+		add_balance(u1,u2,existing_balance)
+		# Test: UserBalance created
+		lambda {
+		    # Update balances
+		    UserBalance.update_balances
+		}.should change(UserBalance,:count).by(2)
+		# Test balances
+		test_balance(u1,u2,expected_balance)
+		test_balance(u2,u1,-(expected_balance))
+	    end
 
-    pending "should update balance with credit" do
-    end
+	    it "with multiple dept for multiple users" do
+		# Set amount
+		money1=12.50
+		money2=30.20
+		money3=2.00
+		existing_balance=5.25
+		# Get expected balance
+		expected_balance=(money1 + money2 + existing_balance) - money3
+		# Create users
+		u1=get_next_user
+		u2=get_next_user
+		# Create new UserDept
+		add_user_dept(u1,u2,money1)
+		add_user_dept(u1,u2,money2)
+		add_user_dept(u2,u1,money3)
+		# Create new UserBalance
+		add_balance(u1,u2,existing_balance)
+		# Test: UserBalance created
+		lambda {
+		    # Update balances
+		    UserBalance.update_balances
+		}.should change(UserBalance,:count).by(2)
+		# Test balances
+		test_balance(u1,u2,expected_balance)
+		test_balance(u2,u1,-(expected_balance))
+	    end
+	end
 
-    pending "should update balance with dept and credit" do
+	context "with UsePayment and UserBalance" do
+	    it "with single credit" do
+		# Set amount
+		money=12.50
+		existing_balance=5.25
+		# Get expected balance
+		expected_balance=existing_balance - money
+		# Create users
+		u1=get_next_user
+		u2=get_next_user
+		# Create new UserPayment
+		add_user_payment(u1,u2,money)
+		# Create new UserBalance
+		add_balance(u1,u2,existing_balance)
+		# Test: UserBalance created
+		lambda {
+		    # Update balances
+		    UserBalance.update_balances
+		}.should change(UserBalance,:count).by(2)
+		# Test balances
+		test_balance(u1,u2,expected_balance)
+		test_balance(u2,u1,-(expected_balance))
+	    end
+
+	    it "with multiple credit for a single user" do
+		# Set amount
+		money1=BigDecimal('2.50')
+		money2=BigDecimal('1.20')
+		money3=BigDecimal('0.40')
+		existing_balance=5.25
+		# Get expected balance
+		expected_balance=existing_balance - (money1 + money2 + money3)
+		# Create users
+		u1=get_next_user
+		u2=get_next_user
+		# Create new UserPayment
+		add_user_payment(u1,u2,money1)
+		add_user_payment(u1,u2,money2)
+		add_user_payment(u1,u2,money3)
+		# Create new UserBalance
+		add_balance(u1,u2,existing_balance)
+		# Test: UserBalance created
+		lambda {
+		    # Update balances
+		    UserBalance.update_balances
+		}.should change(UserBalance,:count).by(2)
+		# Test balances
+		test_balance(u1,u2,expected_balance)
+		test_balance(u2,u1,-(expected_balance))
+	    end
+
+	    it "with multiple credit for multiple users" do
+		# Set amount
+		money1=BigDecimal('2.50')
+		money2=BigDecimal('1.20')
+		money3=BigDecimal('0.40')
+		existing_balance=BigDecimal('5.25')
+		# Get expected balance
+		expected_balance=(existing_balance + money2) - (money1 + money3)
+		# Create users
+		u1=get_next_user
+		u2=get_next_user
+		# Create new UserPayment
+		add_user_payment(u1,u2,money1)
+		add_user_payment(u2,u1,money2)
+		add_user_payment(u1,u2,money3)
+		# Create new UserBalance
+		add_balance(u1,u2,existing_balance)
+		# Test: UserBalance created
+		lambda {
+		    # Update balances
+		    UserBalance.update_balances
+		}.should change(UserBalance,:count).by(2)
+		# Test balances
+		test_balance(u1,u2,expected_balance)
+		test_balance(u2,u1,-(expected_balance))
+	    end
+	end
+
+	context "with UserDept, UserPayment" do
+	    pending 'need tests'
+	end
+
+	context "with userDept, UserPayment and UserBalance" do
+	    pending 'need tests'
+	end
     end
 end

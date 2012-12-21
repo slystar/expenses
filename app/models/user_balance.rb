@@ -12,7 +12,6 @@ class UserBalance < ActiveRecord::Base
 
     # Method to update balance
     def self.update_balances
-	puts('clean me +++++')
 	# Variables
 	depts={}
 	payments={}
@@ -44,7 +43,7 @@ class UserBalance < ActiveRecord::Base
 	    user_ids.push(to_user_id) if not user_ids.include?(to_user_id)
 	end
 	# Get all Payments
-	payment_rows=UserPayment.where(:process_flag => false)
+	payment_rows=UserPayment.where(:process_flag => false, :approved=> true)
 	# Calculate payments
 	payment_rows.each do |row|
 	    # Extract data
@@ -123,7 +122,6 @@ class UserBalance < ActiveRecord::Base
 		total_balance=balance_amount_to - balance_amount_from
 		# Calculate overall total
 		overall_total=total_owe + total_balance
-		puts("#{user_id} -> #{other_user_id}:\tiot: #{i_owe_them},\ttom: #{they_owe_me},\tt: #{total_owe},\ttb: #{total_balance},\tot: #{overall_total}")
 		# Check if overall_total is not 0
 		if overall_total != 0
 		    # Keep track of records to save

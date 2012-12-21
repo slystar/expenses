@@ -252,9 +252,38 @@ describe UserPayment do
 	up.errors.messages.size.should > 0
     end
 
-    pending "should have all new records with process_flag set to false" do
+    it "should have all new records with process_flag set to false" do
+	# get object
+	ud=get_new_user_payment
+	# Create record
+	ud.save!
+	# Reload data
+	ud.reload
+	# Test
+	ud.process_flag.should == false
     end
 
-    pending "should not have a new record with process_flag set to true" do
+    it "should not have a new record with process_flag set to true" do
+	# get object
+	ud=get_new_user_payment
+	# Set amount
+	ud.process_flag=true
+	# Test
+	ud.should_not be_valid
+    end
+
+    it "should be able to set process_flag of an existing record" do
+	# get object
+	ud=get_new_user_payment
+	# Create record
+	ud.save!
+	# Set process_flag
+	ud.process_flag=true
+	# Save modification
+	ud.save!
+	# Reload data
+	ud.reload
+	# Test
+	ud.process_flag.should == true
     end
 end

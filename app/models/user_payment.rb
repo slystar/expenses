@@ -15,6 +15,7 @@ class UserPayment < ActiveRecord::Base
     validate :check_from_and_to
     validate :check_approve_fields
     validate :check_amount
+    validate :check_process_flag, :on => :create
 
     # Callbacks
     before_create :check_approved, :check_approved_date
@@ -85,5 +86,11 @@ class UserPayment < ActiveRecord::Base
 	else
 	    return true
 	end
+    end
+
+    # Method to check process flag
+    def check_process_flag
+	# Add error if process_flag is true
+	self.errors.add(:base,"Process_flag cannot be set to true on record creation") if self.process_flag == true
     end
 end

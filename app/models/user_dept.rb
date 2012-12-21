@@ -10,6 +10,7 @@ class UserDept < ActiveRecord::Base
     # Custom validation
     validate :check_from_and_to
     validate :check_amount
+    validate :check_process_flag, :on => :create
 
     # Private methods
     private
@@ -25,5 +26,11 @@ class UserDept < ActiveRecord::Base
     def check_amount
 	# Check for negative amount
 	self.errors.add(:base,"Amount cannot be negative") if not self.amount.nil? and self.amount < 0
+    end
+
+    # Method to check process flag
+    def check_process_flag
+	# Add error if process_flag is true
+	self.errors.add(:base,"Process_flag cannot be set to true on record creation") if self.process_flag == true
     end
 end
