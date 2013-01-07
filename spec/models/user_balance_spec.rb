@@ -183,6 +183,7 @@ describe UserBalance do
 		money=12.50
 		existing_balance=5.25
 		# Get expected balance
+		# 12.50(new dept) + 5.25(existing dept)
 		expected_balance=money + existing_balance
 		# Create users
 		u1=get_next_user
@@ -208,6 +209,7 @@ describe UserBalance do
 		money3=2.00
 		existing_balance=5.25
 		# Get expected balance
+		# existing dept + existing balance
 		expected_balance=money1 + money2 + money3 + existing_balance
 		# Create users
 		u1=get_next_user
@@ -257,7 +259,7 @@ describe UserBalance do
 	end
 
 	context "with UsePayment and UserBalance" do
-	    it "with single credit" do
+	    it "with single payment" do
 		# Set amount
 		money=12.50
 		existing_balance=5.25
@@ -280,7 +282,7 @@ describe UserBalance do
 		test_balance(u2,u1,-(expected_balance))
 	    end
 
-	    it "with multiple credit for a single user" do
+	    it "with multiple payment for a single user" do
 		# Set amount
 		money1=BigDecimal('2.50')
 		money2=BigDecimal('1.20')
@@ -307,7 +309,7 @@ describe UserBalance do
 		test_balance(u2,u1,-(expected_balance))
 	    end
 
-	    it "with multiple credit for multiple users" do
+	    it "with multiple payment for multiple users" do
 		# Set amount
 		money1=BigDecimal('2.50')
 		money2=BigDecimal('1.20')
@@ -336,11 +338,182 @@ describe UserBalance do
 	end
 
 	context "with UserDept, UserPayment" do
-	    pending 'need tests'
+	    it "with single dept" do
+		# Set amount
+		money=12.50
+		payment=5.25
+		# Get expected balance
+		expected_balance=money - payment
+		# Create users
+		u1=get_next_user
+		u2=get_next_user
+		# Create new UserDept
+		add_user_dept(u1,u2,money)
+		# Create new UserPayment
+		add_user_payment(u1,u2,payment)
+		# Test: UserBalance created
+		lambda {
+		    # Update balances
+		    UserBalance.update_balances
+		}.should change(UserBalance,:count).by(2)
+		# Test balances
+		test_balance(u1,u2,expected_balance)
+		test_balance(u2,u1,-(expected_balance))
+	    end
+
+	    it "with multiple dept for a single user" do
+		# Set amount
+		money1=12.50
+		money2=30.20
+		money3=2.00
+		payment=5.25
+		# Get expected balance
+		expected_balance=money1 + money2 + money3 - payment
+		# Create users
+		u1=get_next_user
+		u2=get_next_user
+		# Create new UserDept
+		add_user_dept(u1,u2,money1)
+		add_user_dept(u1,u2,money2)
+		add_user_dept(u1,u2,money3)
+		# Create new UserPayment
+		add_user_payment(u1,u2,payment)
+		# Test: UserBalance created
+		lambda {
+		    # Update balances
+		    UserBalance.update_balances
+		}.should change(UserBalance,:count).by(2)
+		# Test balances
+		test_balance(u1,u2,expected_balance)
+		test_balance(u2,u1,-(expected_balance))
+	    end
+
+	    it "with multiple dept for multiple users" do
+		# Set amount
+		money1=12.50
+		money2=30.20
+		money3=2.00
+		payment=5.25
+		# Get expected balance
+		expected_balance=(money1 + money2 - payment) - money3
+		# Create users
+		u1=get_next_user
+		u2=get_next_user
+		# Create new UserDept
+		add_user_dept(u1,u2,money1)
+		add_user_dept(u1,u2,money2)
+		add_user_dept(u2,u1,money3)
+		# Create new UserPayment
+		add_user_payment(u1,u2,payment)
+		# Test: UserBalance created
+		lambda {
+		    # Update balances
+		    UserBalance.update_balances
+		}.should change(UserBalance,:count).by(2)
+		# Test balances
+		test_balance(u1,u2,expected_balance)
+		test_balance(u2,u1,-(expected_balance))
+	    end
 	end
 
 	context "with userDept, UserPayment and UserBalance" do
-	    pending 'need tests'
+	    it "with single dept and single payment" do
+		# Set amount
+		dept1=12.50
+		payment1=7.30
+		existing_balance=5.25
+		# Get expected balance
+		expected_balance=dept1 - payment1 + existing_balance
+		# Create users
+		u1=get_next_user
+		u2=get_next_user
+		# Create new UserDept
+		add_user_dept(u1,u2,dept1)
+		# Create new UserPayment
+		add_user_payment(u1,u2,payment1)
+		# Create new UserBalance
+		add_balance(u1,u2,existing_balance)
+		# Test: UserBalance created
+		lambda {
+		    # Update balances
+		    UserBalance.update_balances
+		}.should change(UserBalance,:count).by(2)
+		# Test balances
+		test_balance(u1,u2,expected_balance)
+		test_balance(u2,u1,-(expected_balance))
+	    end
+
+	    it "with multiple dept and multiple payment for a single user" do
+		# Set amount
+		dept1=12.50
+		dept2=14.50
+		dept3=1634.50
+		payment1=3.30
+		payment2=1.30
+		payment3=0.95
+		existing_balance=5.25
+		# Get expected balance
+		expected_balance=(dept1 + dept2 + dept3) - (payment1 + payment2 + payment3) + existing_balance
+		# Create users
+		u1=get_next_user
+		u2=get_next_user
+		# Create new UserDept
+		add_user_dept(u1,u2,dept1)
+		add_user_dept(u1,u2,dept2)
+		add_user_dept(u1,u2,dept3)
+		# Create new UserPayment
+		add_user_payment(u1,u2,payment1)
+		add_user_payment(u1,u2,payment2)
+		add_user_payment(u1,u2,payment3)
+		# Create new UserBalance
+		add_balance(u1,u2,existing_balance)
+		# Test: UserBalance created
+		lambda {
+		    # Update balances
+		    UserBalance.update_balances
+		}.should change(UserBalance,:count).by(2)
+		# Test balances
+		test_balance(u1,u2,expected_balance)
+		test_balance(u2,u1,-(expected_balance))
+	    end
+
+	    it "with multiple payment for multiple users" do
+		# Set amount
+		dept1=12.50
+		dept2=14.50
+		dept3=1634.50
+		payment1=3.30
+		payment2=1.30
+		payment3=220.95
+		existing_balance1=5.25
+		existing_balance2=500.25
+		# Get expected balances
+		u1_balance=(dept1 + dept2) - (payment1 + payment3) + existing_balance1
+		u2_balance=(dept3) - (payment2) + existing_balance2
+		expected_balance=u1_balance - u2_balance
+		# Create users
+		u1=get_next_user
+		u2=get_next_user
+		# Create new UserDept
+		add_user_dept(u1,u2,dept1)
+		add_user_dept(u1,u2,dept2)
+		add_user_dept(u2,u1,dept3)
+		# Create new UserPayment
+		add_user_payment(u1,u2,payment1)
+		add_user_payment(u2,u1,payment2)
+		add_user_payment(u1,u2,payment3)
+		# Create new UserBalance
+		add_balance(u1,u2,existing_balance1)
+		add_balance(u2,u1,existing_balance2)
+		# Test: UserBalance created
+		lambda {
+		    # Update balances
+		    UserBalance.update_balances
+		}.should change(UserBalance,:count).by(2)
+		# Test balances
+		test_balance(u1,u2,expected_balance)
+		test_balance(u2,u1,-(expected_balance))
+	    end
 	end
     end
 end
