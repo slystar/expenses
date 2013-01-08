@@ -8,6 +8,7 @@ class Expense < ActiveRecord::Base
     belongs_to :reason
     belongs_to :user
     belongs_to :group
+    has_one :user_dept
 
     # Validations
     validates :date_purchased, :presence => true, :custom_valid_datetime => true
@@ -28,7 +29,8 @@ class Expense < ActiveRecord::Base
     validate :check_process_flag, :on => :create
 
     # Check on destruction
-    before_destroy :check_for_processed_record
+    before_destroy :check_for_processed_record_delete
+    before_update :check_for_processed_record_update
 
     # Method to process expense
     def process
@@ -48,6 +50,7 @@ class Expense < ActiveRecord::Base
 	    ud.from_user_id=self.user_id
 	    ud.to_user_id=member.id
 	    ud.amount=dept_amount
+	    ud.expense_id=self.id
 	    # Save record
 	    ud.save!
 	end
@@ -61,7 +64,7 @@ class Expense < ActiveRecord::Base
 
     private
 
-    def check_for_processed_record()
+    def check_for_processed_record_delete
 	# Set default flag
 	if self.process_flag
 	    self.errors.add(:base,"Can't delete #{self.class}: because this expense has been processed")
@@ -69,6 +72,20 @@ class Expense < ActiveRecord::Base
 	end
 	if not self.process_date.nil?
 	    self.errors.add(:base,"Can't delete #{self.class}: because this expense has a process date")
+	    return false
+	end
+	# Ok
+	return true
+    end
+
+    def check_for_processed_record_update
+	# Set default flag
+	if self.process_flag
+	    self.errors.add(:base,"Can't update #{self.class}: because this expense has been processed")
+	    return false
+	end
+	if not self.process_date.nil?
+	    self.errors.add(:base,"Can't update #{self.class}: because this expense has a process date")
 	    return false
 	end
 	# Ok

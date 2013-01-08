@@ -164,12 +164,15 @@ describe Expense do
     end
 
     it "should be able to process itself" do
+	# Variables
+	amount=22.00
 	# Get today
 	today=Time.now.utc.strftime("%Y-%m-%d")
-	# Create user
+	# Create users
 	u1=User.create!({:user_name => 'test90', :password => 'testpassword'})
 	u2=User.create!({:user_name => 'test91', :password => 'testpassword'})
 	u3=User.create!({:user_name => 'test92', :password => 'testpassword'})
+	users=[u1,u2,u3]
 	# Create group
 	group=Group.create!({:name => "Group test", :description => 'group 1 desc'})
 	# Add user to group
@@ -181,7 +184,7 @@ describe Expense do
 	# Set group
 	expense.group_id=group.id
 	# Set amount
-	expense.amount=22.88
+	expense.amount=amount
 	# Save expense
 	expense.save!
 	# Test: UserDept created
@@ -189,26 +192,45 @@ describe Expense do
 	    # Process record
 	    expense.process
 	}.should change(UserDept,:count).by(3)
-	# Test: UserBalance Created
-	ub=UserBalance.where(:from_user_id => expense.user_id)
-	ub.amount.should == expense.amount
 	# Reload expense
 	expense.reload
+	# Test: Check UserDept
+	users.each do |u|
+	    # Get UserDept
+	    ud=UserDept.where(:from_user_id => expense.user_id).where(:to_user_id => u.id).last
+	    # Test
+	    ud.amount.should == amount / users.size
+	end
+	# Test: UserBalance Created
+	users.each do |u|
+	    # Get UserDept
+	    ub=UserBalance.where(:from_user_id => expense.user_id).where(:to_user_id => u.id).last
+	    # Test
+	    ub.amount.should == amount / users.size
+	end
 	# Test process fields
 	expense.process_flag.should == true
 	expense.process_date.strftime("%Y-%m-%d").should == today
     end
 
-    pending "should not be modifyable if it has been processed" do
-	# Create new group
+    it "should not be modifyable if it has been processed" do
 	# Create expense
-	expense=Expense.new!(@attr)
-	# Modify
-	expense.amount=99.99
+	expense=Expense.create!(@attr)
 	# Process record (not decided how to proceed with this yet)
 	expense.process
+	# Reload
+	expense.reload
+	# Modify
+	expense.amount=99.99
 	# Should save
 	expense.save.should == false
+    end
+
+    it "should respond to user_dept" do
+	# Create expense
+	expense=Expense.create!(@attr)
+	# Test
+	expense.should respond_to(:user_dept)
     end
 
     pending "should have a user dept method" do
@@ -221,4 +243,6 @@ describe Expense do
     end
 
     pending "should notify user about updates"
+    pending "should process floats correctly"
+    pending "should process integers correctly"
 end
