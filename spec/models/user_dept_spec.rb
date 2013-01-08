@@ -10,12 +10,15 @@ describe UserDept do
 	# Create user
 	u1=User.create!(:user_name => 'user1', :password => 'testpassworduserdept')
 	u2=User.create!(:user_name => 'user2', :password => 'testpassworduserdept')
+	# Create expense
+	@expense=get_valid_expense
 	# No methods are mass assignable
 	ud=UserDept.new()
 	# Add attributes
 	ud.from_user_id=u1.id
 	ud.to_user_id=u2.id
 	ud.amount=@attr[:amount]
+	ud.expense_id=@expense.id
 	# Return object
 	return ud
     end
@@ -120,10 +123,31 @@ describe UserDept do
 	today.should == d1
     end
 
-    pending "should respond to 'expense'" do
+    it "should respond to 'expense'" do
+	# get object
+	ud=get_new_user_dept
+	# Test
+	ud.should respond_to(:expense)
     end
 
-    pending "should link to expense" do
+    it "should require an expense_id" do
+	# get object
+	ud=get_new_user_dept
+	# Set expense_id
+	ud.expense_id=nil
+	# Test
+	ud.should_not be_valid
+    end
+
+    it "should link to expense" do
+	# get object
+	ud=get_new_user_dept
+	# Create record
+	ud.save!
+	# Reload data
+	ud.reload
+	# Test
+	ud.expense_id.should == @expense.id
     end
 
     it "should have all new records with process_flag set to false" do
