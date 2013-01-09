@@ -86,6 +86,12 @@ describe Expense do
 	expense.should_not be_valid
     end
 
+    it "should user the proper rspec helper amount" do
+	expense=Expense.new(@attr)
+	# Test helper
+	expense.amount.to_f.should == 10.50
+    end
+
     it "should allow a single decimal in amount" do
 	expense=Expense.new(@attr)
 	expense.amount="1.5"
@@ -218,51 +224,266 @@ describe Expense do
 	expense=Expense.create!(@attr)
 	# Get amount
 	amount=expense.amount
-	# Process record (not decided how to proceed with this yet)
+	# Process record
 	expense.process
 	# Reload
 	expense.reload
 	# Modify
 	expense.amount=amount + 10
-	# Should save
+	# Test: not valid
+	expense.should_not be_valid
+	# Test: should not save
 	expense.save.should == false
+	# Test: should have an error message
+	expense.errors.size.should >  0
     end
 
-    pending "should not allow user_id to be modified if it has been processed" do
+    it "should not allow user_id to be modified if it has been processed" do
+	# Create expense
+	expense=Expense.create!(@attr)
+	# Get new user
+	new_user=User.create!(:user_name => 'test_expense', :password => 'abcd1234')
+	# Process record
+	expense.process
+	# Reload
+	expense.reload
+	# Modify
+	expense.user_id=new_user.id
+	# Test: not valid
+	expense.should_not be_valid
+	# Test: should not save
+	expense.save.should == false
+	# Test: should have an error message
+	expense.errors.size.should >  0
     end
 
-    pending "should not allow group to be modified if it has been processed" do
+    it "should not allow group to be modified if it has been processed" do
+	# Create expense
+	expense=Expense.create!(@attr)
+	# Get new Group
+	new_group=Group.create!(:name => "Expense Group 1", :description => 'group 1 desc')
+	# Process record
+	expense.process
+	# Reload
+	expense.reload
+	# Modify
+	expense.group_id=new_group.id
+	# Test: not valid
+	expense.should_not be_valid
+	# Test: should not save
+	expense.save.should == false
+	# Test: should have an error message
+	expense.errors.size.should >  0
     end
 
-    pending "should allow reason to be modified if it has been processed" do
+    it "should allow reason to be modified if it has been processed" do
+	# Create expense
+	expense=Expense.create!(@attr)
+	# Get new Group
+	new_reason=Reason.create!(:name => "expense_test")
+	# Process record
+	expense.process
+	# Reload
+	expense.reload
+	# Modify
+	expense.reason_id=new_reason.id
+	# Test:valid
+	expense.should be_valid
+	# Test: should save
+	expense.save!
     end
 
-    pending "should allow pay_method to be modified if it has been processed" do
+    it "should allow pay_method to be modified if it has been processed" do
+	# Create expense
+	expense=Expense.create!(@attr)
+	# Get new Group
+	new_pay_method=PayMethod.create!(:name => "expense_test")
+	# Process record
+	expense.process
+	# Reload
+	expense.reload
+	# Modify
+	expense.pay_method_id=new_pay_method.id
+	# Test:valid
+	expense.should be_valid
+	# Test: should save
+	expense.save!
     end
 
-    pending "should allow store to be modified if it has been processed" do
+    it "should allow store to be modified if it has been processed" do
+	# Create expense
+	expense=Expense.create!(@attr)
+	# Get new Group
+	new_store=Store.create!(:name => "expense_test")
+	# Process record
+	expense.process
+	# Reload
+	expense.reload
+	# Modify
+	expense.store_id=new_store.id
+	# Test:valid
+	expense.should be_valid
+	# Test: should save
+	expense.save!
     end
 
-    pending "should allow description to be modified if it has been processed" do
+    it "should allow description to be modified if it has been processed" do
+	# Create expense
+	expense=Expense.create!(@attr)
+	# Get new Group
+	new_desc=expense.description.to_s + 'aaaaaa'
+	# Process record
+	expense.process
+	# Reload
+	expense.reload
+	# Test: not the same description
+	expense.description.should_not == new_desc
+	# Modify
+	expense.description=new_desc
+	# Test:valid
+	expense.should be_valid
+	# Test: should save
+	expense.save!
     end
 
-    it "should respond to user_dept" do
+    it "should respond to user_depts" do
 	# Create expense
 	expense=Expense.create!(@attr)
 	# Test
-	expense.should respond_to(:user_dept)
+	expense.should respond_to(:user_depts)
     end
 
-    pending "should have a user dept method" do
+    it "should be able to get it's associated user_depts" do
+	# Set amount
+	amount=12.50
+	# Create users
+	u1=User.create!({:user_name => 'test90', :password => 'testpassword'})
+	u2=User.create!({:user_name => 'test91', :password => 'testpassword'})
+	# Create group
+	group=Group.create!({:name => "Group test", :description => 'group 1 desc'})
+	# Add user to group
+	group.add_user(u1)
+	group.add_user(u2)
+	# Create expense
+	expense=Expense.new(@attr)
+	# Set amount
+	expense.amount=amount
+	# Set group
+	expense.group_id=group.id
+	# Save expense
+	expense.save!
+	# Test: UserDept created
+	lambda{
+	    # Process record
+	    expense.process
+	}.should change(UserDept,:count).by(2)
+	# Reload expense
+	expense.reload
+	# Test
+	expense.user_depts.size.should == 2
+	# Test amount
+	expense.user_depts.first.amount.should == amount / 2.0
     end
 
-    pending "should have a user credit method" do
+    it "should process floats correctly" do
+	# Variables
+	amount=22.11
+	# Get today
+	today=Time.now.utc.strftime("%Y-%m-%d")
+	# Create users
+	u1=User.create!({:user_name => 'test90', :password => 'testpassword'})
+	u2=User.create!({:user_name => 'test91', :password => 'testpassword'})
+	u3=User.create!({:user_name => 'test92', :password => 'testpassword'})
+	users=[u1,u2,u3]
+	# Create group
+	group=Group.create!({:name => "Group test", :description => 'group 1 desc'})
+	# Add user to group
+	group.add_user(u1)
+	group.add_user(u2)
+	group.add_user(u3)
+	# Create expense
+	expense=Expense.new(@attr)
+	# Set group
+	expense.group_id=group.id
+	# Set amount
+	expense.amount=amount
+	# Save expense
+	expense.save!
+	# Test: UserDept created
+	lambda{
+	    # Process record
+	    expense.process
+	}.should change(UserDept,:count).by(3)
+	# Reload expense
+	expense.reload
+	# Test: Check UserDept
+	users.each do |u|
+	    # Get UserDept
+	    ud=UserDept.where(:from_user_id => expense.user_id).where(:to_user_id => u.id).last
+	    # Test
+	    ud.amount.should == amount / users.size
+	end
+	# Test: UserBalance Created
+	users.each do |u|
+	    # Get UserDept
+	    ub=UserBalance.where(:from_user_id => expense.user_id).where(:to_user_id => u.id).last
+	    # Test
+	    ub.amount.should == amount / users.size
+	end
+	# Test process fields
+	expense.process_flag.should == true
+	expense.process_date.strftime("%Y-%m-%d").should == today
     end
 
-    pending "should have a balances method" do
+    it "should process integers correctly" do
+	# Variables
+	amount=5
+	# Get today
+	today=Time.now.utc.strftime("%Y-%m-%d")
+	# Create users
+	u1=User.create!({:user_name => 'test90', :password => 'testpassword'})
+	u2=User.create!({:user_name => 'test91', :password => 'testpassword'})
+	u3=User.create!({:user_name => 'test92', :password => 'testpassword'})
+	users=[u1,u2,u3]
+	# Create group
+	group=Group.create!({:name => "Group test", :description => 'group 1 desc'})
+	# Add user to group
+	group.add_user(u1)
+	group.add_user(u2)
+	group.add_user(u3)
+	# Create expense
+	expense=Expense.new(@attr)
+	# Set group
+	expense.group_id=group.id
+	# Set amount
+	expense.amount=amount
+	# Save expense
+	expense.save!
+	# Test: UserDept created
+	lambda{
+	    # Process record
+	    expense.process
+	}.should change(UserDept,:count).by(3)
+	# Reload expense
+	expense.reload
+	# Test: Check UserDept
+	users.each do |u|
+	    # Get UserDept
+	    ud=UserDept.where(:from_user_id => expense.user_id).where(:to_user_id => u.id).last
+	    # Test
+	    ud.amount.should == amount / users.size.to_f
+	end
+	# Test: UserBalance Created
+	users.each do |u|
+	    # Get UserDept
+	    ub=UserBalance.where(:from_user_id => expense.user_id).where(:to_user_id => u.id).last
+	    # Test
+	    ub.amount.should == amount / users.size.to_f
+	end
+	# Test process fields
+	expense.process_flag.should == true
+	expense.process_date.strftime("%Y-%m-%d").should == today
     end
 
     pending "should notify user about updates"
-    pending "should process floats correctly"
-    pending "should process integers correctly"
 end

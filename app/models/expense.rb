@@ -1,6 +1,6 @@
 class Expense < ActiveRecord::Base
     # Accessible attributes
-    attr_accessible :date_purchased, :store_id, :pay_method_id, :reason_id, :user_id, :group_id
+    attr_accessible :date_purchased, :store_id, :pay_method_id, :reason_id, :user_id, :group_id, :amount
 
     # Relationshipts
     belongs_to :store
@@ -8,7 +8,7 @@ class Expense < ActiveRecord::Base
     belongs_to :reason
     belongs_to :user
     belongs_to :group
-    has_one :user_dept
+    has_many :user_depts
 
     # Validations
     validates :date_purchased, :presence => true, :custom_valid_datetime => true
@@ -27,10 +27,10 @@ class Expense < ActiveRecord::Base
     validate :check_amount
     validate :check_process_date, :on => :create
     validate :check_process_flag, :on => :create
+    validate :check_for_processed_record_update, :on => :update
 
     # Check on destruction
     before_destroy :check_for_processed_record_delete
-    before_update :check_for_processed_record_update
 
     # Method to process expense
     def process

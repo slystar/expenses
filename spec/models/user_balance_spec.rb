@@ -21,13 +21,14 @@ describe UserBalance do
 	return ub
     end
 
-    def add_user_dept(u1,u2,amount)
+    def add_user_dept(u1,u2,amount,expense_id)
 	# Create new UserDept
 	ud=UserDept.new()
 	# Add attributes
 	ud.from_user_id=u1.id
 	ud.to_user_id=u2.id
 	ud.amount=amount
+	ud.expense_id=expense_id
 	# Save UserDept
 	ud.save!
     end
@@ -182,6 +183,8 @@ describe UserBalance do
 		# Set amount
 		money=12.50
 		existing_balance=5.25
+		# Get an expense record
+		expense=get_valid_expense
 		# Get expected balance
 		# 12.50(new dept) + 5.25(existing dept)
 		expected_balance=money + existing_balance
@@ -189,7 +192,7 @@ describe UserBalance do
 		u1=get_next_user
 		u2=get_next_user
 		# Create new UserDept
-		add_user_dept(u1,u2,money)
+		add_user_dept(u1,u2,money,expense.id)
 		# Create new UserBalance
 		add_balance(u1,u2,existing_balance)
 		# Test: UserBalance created
@@ -208,6 +211,8 @@ describe UserBalance do
 		money2=30.20
 		money3=2.00
 		existing_balance=5.25
+		# Get an expense record
+		expense=get_valid_expense
 		# Get expected balance
 		# existing dept + existing balance
 		expected_balance=money1 + money2 + money3 + existing_balance
@@ -215,9 +220,9 @@ describe UserBalance do
 		u1=get_next_user
 		u2=get_next_user
 		# Create new UserDept
-		add_user_dept(u1,u2,money1)
-		add_user_dept(u1,u2,money2)
-		add_user_dept(u1,u2,money3)
+		add_user_dept(u1,u2,money1,expense.id)
+		add_user_dept(u1,u2,money2,expense.id)
+		add_user_dept(u1,u2,money3,expense.id)
 		# Create new UserBalance
 		add_balance(u1,u2,existing_balance)
 		# Test: UserBalance created
@@ -236,15 +241,17 @@ describe UserBalance do
 		money2=30.20
 		money3=2.00
 		existing_balance=5.25
+		# Get an expense record
+		expense=get_valid_expense
 		# Get expected balance
 		expected_balance=(money1 + money2 + existing_balance) - money3
 		# Create users
 		u1=get_next_user
 		u2=get_next_user
 		# Create new UserDept
-		add_user_dept(u1,u2,money1)
-		add_user_dept(u1,u2,money2)
-		add_user_dept(u2,u1,money3)
+		add_user_dept(u1,u2,money1,expense.id)
+		add_user_dept(u1,u2,money2,expense.id)
+		add_user_dept(u2,u1,money3,expense.id)
 		# Create new UserBalance
 		add_balance(u1,u2,existing_balance)
 		# Test: UserBalance created
@@ -342,13 +349,15 @@ describe UserBalance do
 		# Set amount
 		money=12.50
 		payment=5.25
+		# Get an expense record
+		expense=get_valid_expense
 		# Get expected balance
 		expected_balance=money - payment
 		# Create users
 		u1=get_next_user
 		u2=get_next_user
 		# Create new UserDept
-		add_user_dept(u1,u2,money)
+		add_user_dept(u1,u2,money,expense.id)
 		# Create new UserPayment
 		add_user_payment(u1,u2,payment)
 		# Test: UserBalance created
@@ -367,15 +376,17 @@ describe UserBalance do
 		money2=30.20
 		money3=2.00
 		payment=5.25
+		# Get an expense record
+		expense=get_valid_expense
 		# Get expected balance
 		expected_balance=money1 + money2 + money3 - payment
 		# Create users
 		u1=get_next_user
 		u2=get_next_user
 		# Create new UserDept
-		add_user_dept(u1,u2,money1)
-		add_user_dept(u1,u2,money2)
-		add_user_dept(u1,u2,money3)
+		add_user_dept(u1,u2,money1,expense.id)
+		add_user_dept(u1,u2,money2,expense.id)
+		add_user_dept(u1,u2,money3,expense.id)
 		# Create new UserPayment
 		add_user_payment(u1,u2,payment)
 		# Test: UserBalance created
@@ -394,15 +405,17 @@ describe UserBalance do
 		money2=30.20
 		money3=2.00
 		payment=5.25
+		# Get an expense record
+		expense=get_valid_expense
 		# Get expected balance
 		expected_balance=(money1 + money2 - payment) - money3
 		# Create users
 		u1=get_next_user
 		u2=get_next_user
 		# Create new UserDept
-		add_user_dept(u1,u2,money1)
-		add_user_dept(u1,u2,money2)
-		add_user_dept(u2,u1,money3)
+		add_user_dept(u1,u2,money1,expense.id)
+		add_user_dept(u1,u2,money2,expense.id)
+		add_user_dept(u2,u1,money3,expense.id)
 		# Create new UserPayment
 		add_user_payment(u1,u2,payment)
 		# Test: UserBalance created
@@ -422,13 +435,15 @@ describe UserBalance do
 		dept1=12.50
 		payment1=7.30
 		existing_balance=5.25
+		# Get an expense record
+		expense=get_valid_expense
 		# Get expected balance
 		expected_balance=dept1 - payment1 + existing_balance
 		# Create users
 		u1=get_next_user
 		u2=get_next_user
 		# Create new UserDept
-		add_user_dept(u1,u2,dept1)
+		add_user_dept(u1,u2,dept1,expense.id)
 		# Create new UserPayment
 		add_user_payment(u1,u2,payment1)
 		# Create new UserBalance
@@ -452,15 +467,17 @@ describe UserBalance do
 		payment2=1.30
 		payment3=0.95
 		existing_balance=5.25
+		# Get an expense record
+		expense=get_valid_expense
 		# Get expected balance
 		expected_balance=(dept1 + dept2 + dept3) - (payment1 + payment2 + payment3) + existing_balance
 		# Create users
 		u1=get_next_user
 		u2=get_next_user
 		# Create new UserDept
-		add_user_dept(u1,u2,dept1)
-		add_user_dept(u1,u2,dept2)
-		add_user_dept(u1,u2,dept3)
+		add_user_dept(u1,u2,dept1,expense.id)
+		add_user_dept(u1,u2,dept2,expense.id)
+		add_user_dept(u1,u2,dept3,expense.id)
 		# Create new UserPayment
 		add_user_payment(u1,u2,payment1)
 		add_user_payment(u1,u2,payment2)
@@ -487,6 +504,8 @@ describe UserBalance do
 		payment3=220.95
 		existing_balance1=5.25
 		existing_balance2=500.25
+		# Get an expense record
+		expense=get_valid_expense
 		# Get expected balances
 		u1_balance=(dept1 + dept2) - (payment1 + payment3) + existing_balance1
 		u2_balance=(dept3) - (payment2) + existing_balance2
@@ -495,9 +514,9 @@ describe UserBalance do
 		u1=get_next_user
 		u2=get_next_user
 		# Create new UserDept
-		add_user_dept(u1,u2,dept1)
-		add_user_dept(u1,u2,dept2)
-		add_user_dept(u2,u1,dept3)
+		add_user_dept(u1,u2,dept1,expense.id)
+		add_user_dept(u1,u2,dept2,expense.id)
+		add_user_dept(u2,u1,dept3,expense.id)
 		# Create new UserPayment
 		add_user_payment(u1,u2,payment1)
 		add_user_payment(u2,u1,payment2)

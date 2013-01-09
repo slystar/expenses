@@ -208,13 +208,6 @@ describe User do
 	user.should respond_to(:depts)
     end
 
-    pending "should have a 'depts' method list depts" do
-	# Create users
-	u1=User.create!(@attr)
-	u2=User.create!(:user_name => 'user2', :password => 'testpassworduserdept')
-	u3=User.create!(:user_name => 'user3', :password => 'testpassworduserdept')
-    end
-
     it "should respond to a 'credits' method" do
 	# Create user
 	user=User.create!(@attr)
@@ -222,6 +215,19 @@ describe User do
 	user.should respond_to(:credits)
     end
 
+    pending "should respond to a 'balances' method" do
+    end
+
+    pending "should have a 'depts' method list depts" do
+	# Create users
+	u1=User.create!(@attr)
+	u2=User.create!(:user_name => 'user2', :password => 'testpassworduserdept')
+	u3=User.create!(:user_name => 'user3', :password => 'testpassworduserdept')
+    end
+
     pending "should have a 'credits' method list credits" do
+    end
+
+    pending "should have a 'balances' method list balances" do
     end
 end
