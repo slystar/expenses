@@ -213,17 +213,37 @@ describe Expense do
 	expense.process_date.strftime("%Y-%m-%d").should == today
     end
 
-    it "should not be modifyable if it has been processed" do
+    it "should not allow amount to be modified if it has been processed" do
 	# Create expense
 	expense=Expense.create!(@attr)
+	# Get amount
+	amount=expense.amount
 	# Process record (not decided how to proceed with this yet)
 	expense.process
 	# Reload
 	expense.reload
 	# Modify
-	expense.amount=99.99
+	expense.amount=amount + 10
 	# Should save
 	expense.save.should == false
+    end
+
+    pending "should not allow user_id to be modified if it has been processed" do
+    end
+
+    pending "should not allow group to be modified if it has been processed" do
+    end
+
+    pending "should allow reason to be modified if it has been processed" do
+    end
+
+    pending "should allow pay_method to be modified if it has been processed" do
+    end
+
+    pending "should allow store to be modified if it has been processed" do
+    end
+
+    pending "should allow description to be modified if it has been processed" do
     end
 
     it "should respond to user_dept" do

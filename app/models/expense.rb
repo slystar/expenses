@@ -79,17 +79,28 @@ class Expense < ActiveRecord::Base
     end
 
     def check_for_processed_record_update
-	# Set default flag
-	if self.process_flag
-	    self.errors.add(:base,"Can't update #{self.class}: because this expense has been processed")
-	    return false
+	# Fields that can be modified
+	modifyable_fields=[:store_id, :reason_id, :pay_method_id, :description]
+	# Get database version
+	db_expense=Expense.find(self.id)
+	# Get database process flag
+	db_process_flag=db_expense.process_flag
+	db_process_date=db_expense.process_date
+	# Ok to update if no process info
+	if (not db_process_flag) and (db_process_date.nil?)
+	    # Good to go
+	    return true
 	end
-	if not self.process_date.nil?
-	    self.errors.add(:base,"Can't update #{self.class}: because this expense has a process date")
-	    return false
+	# Loop over attributes
+	db_expense.attribute_names.each do |a|
+	    # Skip modifyable attributes
+	    next if modifyable_fields.include?(a.to_sym)
+	    # Check if value has changed
+	    if not self[a] == db_expense[a]
+		self.errors.add(:base,"Can't update #{self.class} #{a}: because this expense has been processed")
+		return false
+	    end
 	end
-	# Ok
-	return true
     end
 
     # Method to check for a negative amount
