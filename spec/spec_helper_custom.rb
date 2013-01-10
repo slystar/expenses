@@ -37,6 +37,8 @@ module SpecHelpFunctions
 	ud.expense_id=expense_id
 	# Save UserDept
 	ud.save!
+	# Return object
+	ud.reload
     end
 
     # Add and approve a UserPayment entry
@@ -51,6 +53,8 @@ module SpecHelpFunctions
 	ud.save!
 	# Approve payment
 	ud.approve
+	# Return object
+	ud.reload
     end
 
     # Add a UserBalance entry
@@ -63,5 +67,7 @@ module SpecHelpFunctions
 	ub.amount=amount
 	# Save UserBalance
 	ub.save!
+	# Return object
+	ub.reload
     end
 end
