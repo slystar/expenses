@@ -533,6 +533,50 @@ describe UserBalance do
 		test_balance(u1,u2,expected_balance)
 		test_balance(u2,u1,-(expected_balance))
 	    end
+
+	    it "with multiple balances for multiple users" do
+		# Set amount
+		dept1=12.50
+		dept2=14.50
+		dept3=1634.50
+		payment1=3.30
+		payment2=1.30
+		payment3=220.95
+		existing_balance1_1=15.25
+		existing_balance1_2=5.25
+		existing_balance1_3=35.25
+		existing_balance2=500.25
+		# Get an expense record
+		expense=get_valid_expense
+		# Get expected balances
+		u1_balance=(dept1 + dept2) - (payment1 + payment3) + existing_balance1_3
+		u2_balance=(dept3) - (payment2) + existing_balance2
+		expected_balance=u1_balance - u2_balance
+		# Create users
+		u1=get_next_user
+		u2=get_next_user
+		# Create new UserDept
+		add_user_dept(u1,u2,dept1,expense.id)
+		add_user_dept(u1,u2,dept2,expense.id)
+		add_user_dept(u2,u1,dept3,expense.id)
+		# Create new UserPayment
+		add_user_payment(u1,u2,payment1)
+		add_user_payment(u2,u1,payment2)
+		add_user_payment(u1,u2,payment3)
+		# Create new UserBalance
+		add_balance(u1,u2,existing_balance1_1)
+		add_balance(u1,u2,existing_balance1_2)
+		add_balance(u1,u2,existing_balance1_3)
+		add_balance(u2,u1,existing_balance2)
+		# Test: UserBalance created
+		lambda {
+		    # Update balances
+		    UserBalance.update_balances
+		}.should change(UserBalance,:count).by(2)
+		# Test balances
+		test_balance(u1,u2,expected_balance)
+		test_balance(u2,u1,-(expected_balance))
+	    end
 	end
     end
 end
