@@ -31,7 +31,7 @@ class User < ActiveRecord::Base
     # Method to get user's current depts (what they owe others)
     def depts
 	# Get balances where user owes money
-	pp UserBalance.where(:from_user_id => self.id)
+	pp UserBalance.where(:from_user_id => self.id).to_a
     end
 
     # Method to get user's current credits (what others owe them)
