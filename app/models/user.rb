@@ -28,12 +28,18 @@ class User < ActiveRecord::Base
     after_destroy :remove_default_group
     after_create :add_user_group, :add_role_to_first_user
 
-    # Method to get user's current depts
+    # Method to get user's current depts (what they owe others)
     def depts
+	# Get balances where user owes money
+	pp UserBalance.where(:from_user_id => self.id)
     end
 
     # Method to get user's current credits (what others owe them)
     def credits
+    end
+
+    # Method to get user's current balances (what they owe others and what others owe them)
+    def balances
     end
 
     # Below methods are private

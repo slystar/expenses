@@ -5,6 +5,7 @@ describe User do
     before(:each) do
 	@attr={:user_name => 'test', :password => 'testpassword'}
 	@attr_group={:name => "Group user spec", :description => 'group used in user spec tests'}
+	@new_user_id=1
     end
 
      it "should create a new instance given valid attributes" do
@@ -75,7 +76,6 @@ describe User do
     end
 
     it "should not be destroyable if it has expenses through groups" do
-	puts
 	expense=get_valid_expense
 	user=User.create!(@attr)
 	group=Group.create!(@attr_group)
@@ -215,14 +215,48 @@ describe User do
 	user.should respond_to(:credits)
     end
 
-    pending "should respond to a 'balances' method" do
+    it "should respond to a 'balances' method" do
+	# Create user
+	user=User.create!(@attr)
+	# Should respond to roles
+	user.should respond_to(:balances)
     end
 
-    pending "should have a 'depts' method list depts" do
+    it "should have a 'depts' method list depts" do
+	# Variables
+	dept1=4.00
+	dept2=5.0
+	dept3=22.00
+	existing_balance=3.50
+	# Expected depts
+	expected_dept_1_2=dept1 + dept2 + existing_balance
+	expected_dept_1_3=dept3
+	# Get an expense record
+	expense=get_valid_expense
 	# Create users
-	u1=User.create!(@attr)
-	u2=User.create!(:user_name => 'user2', :password => 'testpassworduserdept')
-	u3=User.create!(:user_name => 'user3', :password => 'testpassworduserdept')
+	u1=get_next_user
+	u2=get_next_user
+	u3=get_next_user
+	# Create new UserBalance just to add more rows
+	add_balance(u1,u2,existing_balance)
+	# Create new UserDept
+	add_user_dept(u1,u2,dept1,expense.id)
+	add_user_dept(u1,u2,dept2,expense.id)
+	add_user_dept(u1,u3,dept3,expense.id)
+	# Test: UserBalance created
+	lambda {
+	    # Update balances
+	    UserBalance.update_balances
+	}.should change(UserBalance,:count).by(4)
+	# Get u1 depts
+	u1_depts=u1.depts
+	# Test: get depts
+	u1_depts.size.should == 2
+	u2.depts.size.should == 0
+	u3.depts.size.should == 0
+	# Test: dept amounts
+	u1_dpets.select{|row| row[:to_user_id] == u2.id}[:amount].should == expected_dept_1_2
+	u1_dpets.select{|row| row[:to_user_id] == u3.id}[:amount].should == expected_dept_1_3
     end
 
     pending "should have a 'credits' method list credits" do
