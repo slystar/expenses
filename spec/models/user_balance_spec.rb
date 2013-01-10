@@ -36,6 +36,24 @@ describe UserBalance do
 	ub.save.should == true
     end
 
+    it "should create a new instance with previous_user_balance_id = 0" do
+	# get object
+	ub=get_new_user_balance
+	# Save object
+	ub.save.should == true
+	# Test: column
+	ub.previous_user_balance_id.should == 0
+    end
+
+    it "should not allow previous_user_balance_id to be set on creation" do
+	# get object
+	ub=get_new_user_balance
+	# Set column
+	ub.previous_user_balance_id=1
+	# Test
+	ub.should_not be_valid
+    end
+
     it "should require a valid from_user_id" do
 	# Variables
 	invalid_user_id=99999

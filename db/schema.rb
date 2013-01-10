@@ -11,7 +11,7 @@
 #
 # It's strongly recommended to check this file into your version control system.
 
-ActiveRecord::Schema.define(:version => 20121218182425) do
+ActiveRecord::Schema.define(:version => 20130110181112) do
 
   create_table "backups", :force => true do |t|
     t.datetime "backup_date"
@@ -89,6 +89,7 @@ ActiveRecord::Schema.define(:version => 20121218182425) do
     t.decimal  "amount"
     t.datetime "created_at"
     t.datetime "updated_at"
+    t.integer  "previous_user_balance_id", :default => 0
   end
 
   create_table "user_depts", :force => true do |t|

@@ -9,6 +9,7 @@ class UserBalance < ActiveRecord::Base
     validates :amount, :presence => true, :numericality => true
     # Custom validation
     validate :check_from_and_to
+    validate :check_previous_user_balance_id, :on => :create
 
     # Method to update balance
     def self.update_balances
@@ -145,10 +146,17 @@ class UserBalance < ActiveRecord::Base
     # Private methods
     private
 
-    # Methods
+    # Check to and from fields
     def check_from_and_to
 	if from_user_id == to_user_id
 	    errors.add(:to_user, "can't be the same as from_user")
+	end
+    end
+
+    # Check previous_user_balance_id
+    def check_previous_user_balance_id
+	if previous_user_balance_id != 0
+	    errors.add(:previous_user_balance_id, "cannot be set on creation")
 	end
     end
 end
