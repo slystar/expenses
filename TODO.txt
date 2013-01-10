@@ -1,12 +1,12 @@
 Models:
-- user_charge.rb
-- user_payment.rb
+- add previous_user_balance_id column to user_balance model and track history
+- add a user_balance_history table that would tack each "update_balances",
+  that id could be kept in expenses, user_dept, user_payment and user_balance
+  to group them by "update_balances"
+- import csv from bank
 - check indexes
 - expense history (user_id, expense_id, group_id), could allow group
   deletion
 
 Backups:
 - put backing up code in model?
-
-Bonus:
-- import csv from bank
