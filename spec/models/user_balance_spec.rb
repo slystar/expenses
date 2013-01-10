@@ -553,4 +553,39 @@ describe UserBalance do
 	    end
 	end
     end
+
+    it "should set the previous_user_balance_id when processing" do
+	# Set amount
+	money=12.50
+	existing_balance1_1=15.25
+	existing_balance1_2=5.25
+	existing_balance1_3=35.25
+	existing_balance2=8.25
+	# Get an expense record
+	expense=get_valid_expense
+	# Get expected balance
+	expected_balance=money + existing_balance1_3 - existing_balance2
+	# Create users
+	u1=get_next_user
+	u2=get_next_user
+	# Create new UserDept
+	add_user_dept(u1,u2,money,expense.id)
+	# Create new UserBalance
+	ub1=add_balance(u1,u2,existing_balance1_1)
+	ub2=add_balance(u1,u2,existing_balance1_2)
+	ub3=add_balance(u1,u2,existing_balance1_3)
+	ub4=add_balance(u2,u1,existing_balance2)
+	# Test: UserBalance created
+	lambda {
+	    # Update balances
+	    UserBalance.update_balances
+	}.should change(UserBalance,:count).by(2)
+	# Test balances
+	test_balance(u1,u2,expected_balance)
+	test_balance(u2,u1,-(expected_balance))
+	# Check previous balance
+	ub1.previous_user_balance_id.should == 0
+	UserBalance.where(:from_user_id => u1, :to_user_id => u2).last.previous_user_balance_id.should == ub3.id
+	UserBalance.where(:from_user_id => u2, :to_user_id => u1).last.previous_user_balance_id.should == ub4.id
+    end
 end

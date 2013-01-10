@@ -19,6 +19,7 @@ class UserBalance < ActiveRecord::Base
 	user_ids=[]
 	pre_finals={}
 	records_to_save=[]
+	old_user_balances={}
 	# Get all UserDept
 	dept_rows=UserDept.where(:process_flag => false)
 	# Calculate depts
@@ -110,6 +111,10 @@ class UserBalance < ActiveRecord::Base
 		    balance_amount_to=0
 		else
 		    balance_amount_to=current_balance_to.amount.to_f
+		    # Create hash entry if it does not exist
+		    old_user_balances[user_id]={} if old_user_balances[user_id].nil?
+		    # Keep track of UserBalances that need to be updated
+		    old_user_balances[user_id][other_user_id]=current_balance_to
 		end
 		# Get Current balance from
 		current_balance_from=UserBalance.where(:from_user_id => other_user_id, :to_user_id => user_id).last
@@ -118,6 +123,10 @@ class UserBalance < ActiveRecord::Base
 		    balance_amount_from=0
 		else
 		    balance_amount_from=current_balance_from.amount.to_f
+		    # Create hash entry if it does not exist
+		    old_user_balances[other_user_id]={} if old_user_balances[other_user_id].nil?
+		    # Keep track of UserBalances that need to be updated
+		    old_user_balances[other_user_id][user_id]=current_balance_from
 		end
 		# Get total balance
 		total_balance=balance_amount_to - balance_amount_from
@@ -132,14 +141,29 @@ class UserBalance < ActiveRecord::Base
 	end
 	# Loop over records to save
 	records_to_save.each do |row|
+	    # Get fields
+	    from_user_id=row[0]
+	    to_user_id=row[1]
 	    # Get a UserBalance object
 	    ub=UserBalance.new()
 	    # Set attributes
-	    ub.from_user_id=row[0]
-	    ub.to_user_id=row[1]
+	    ub.from_user_id=from_user_id
+	    ub.to_user_id=to_user_id
 	    ub.amount=row[2]
 	    # Save UserBalance
 	    ub.save!
+	    # Check if record available for from_user_id
+	    if not old_user_balances[from_user_id].nil?
+		# Get old balance
+		old_ub=old_user_balances[from_user_id][to_user_id]
+		# Check if record available
+		if not old_ub.nil?
+		    # Update balance
+		    ub.previous_user_balance_id=old_ub.id
+		    # Save record
+		    ub.save
+		end
+	    end
 	end
     end
 
