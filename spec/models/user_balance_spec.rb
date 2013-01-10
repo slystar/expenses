@@ -21,51 +21,7 @@ describe UserBalance do
 	return ub
     end
 
-    def add_user_dept(u1,u2,amount,expense_id)
-	# Create new UserDept
-	ud=UserDept.new()
-	# Add attributes
-	ud.from_user_id=u1.id
-	ud.to_user_id=u2.id
-	ud.amount=amount
-	ud.expense_id=expense_id
-	# Save UserDept
-	ud.save!
-    end
-
-    def add_user_payment(u1,u2,amount)
-	# Create new UserPayment
-	ud=UserPayment.new()
-	# Add attributes
-	ud.from_user_id=u1.id
-	ud.to_user_id=u2.id
-	ud.amount=amount
-	# Save UserDept
-	ud.save!
-	# Approve payment
-	ud.approve
-    end
-
-    def get_next_user()
-	# Get next user id
-	@new_user_id += 1
-	# Create user object
-	u=User.create!(:user_name => "user#{@new_user_id}", :password => 'testpassuserbalance')
-	# Return user object
-	return u
-    end
-
-    def add_balance(u1,u2,amount)
-	# Get a UserBalance object
-	ub=UserBalance.new()
-	# Set attributes
-	ub.from_user_id=u1.id
-	ub.to_user_id=u2.id
-	ub.amount=amount
-	# Save UserBalance
-	ub.save!
-    end
-
+    # Test balance
     def test_balance(u1,u2,amount)
 	    # Get most recent UserBalance for u1 to u2
 	    ub=UserBalance.where(:from_user_id => u1.id, :to_user_id => u2.id).last
