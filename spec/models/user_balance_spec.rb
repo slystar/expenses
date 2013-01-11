@@ -45,13 +45,13 @@ describe UserBalance do
 	ub.previous_user_balance_id.should == 0
     end
 
-    it "should not allow previous_user_balance_id to be set on creation" do
+    it "should allow previous_user_balance_id to be set on creation" do
 	# get object
 	ub=get_new_user_balance
 	# Set column
 	ub.previous_user_balance_id=1
 	# Test
-	ub.should_not be_valid
+	ub.should be_valid
     end
 
     it "should require a valid from_user_id" do
@@ -552,6 +552,42 @@ describe UserBalance do
 		test_balance(u2,u1,-(expected_balance))
 	    end
 	end
+
+	it "double process should not create new balances" do
+	    # Set amount
+	    money=12.50
+	    existing_balance1_1=15.25
+	    existing_balance1_2=5.25
+	    existing_balance1_3=35.25
+	    existing_balance2=8.25
+	    # Get an expense record
+	    expense=get_valid_expense
+	    # Get expected balance
+	    expected_balance=money + existing_balance1_3 - existing_balance2
+	    # Create users
+	    u1=get_next_user
+	    u2=get_next_user
+	    # Create new UserDept
+	    add_user_dept(u1,u2,money,expense.id)
+	    # Create new UserBalance
+	    ub1=add_balance(u1,u2,existing_balance1_1)
+	    ub2=add_balance(u1,u2,existing_balance1_2)
+	    ub3=add_balance(u1,u2,existing_balance1_3)
+	    ub4=add_balance(u2,u1,existing_balance2)
+	    # Test: UserBalance created
+	    lambda {
+		# Update balances
+		UserBalance.update_balances
+	    }.should change(UserBalance,:count).by(2)
+	    # Test balances
+	    test_balance(u1,u2,expected_balance)
+	    test_balance(u2,u1,-(expected_balance))
+	    # Test: UserBalance created
+	    lambda {
+		# Update balances
+		UserBalance.update_balances
+	    }.should change(UserBalance,:count).by(0)
+	end
     end
 
     it "should set the previous_user_balance_id when processing" do
@@ -587,5 +623,96 @@ describe UserBalance do
 	ub1.previous_user_balance_id.should == 0
 	UserBalance.where(:from_user_id => u1, :to_user_id => u2).last.previous_user_balance_id.should == ub3.id
 	UserBalance.where(:from_user_id => u2, :to_user_id => u1).last.previous_user_balance_id.should == ub4.id
+    end
+
+    context "current column" do
+	it "should be created with a default value = false" do
+	    # get object
+	    ub=get_new_user_balance
+	    # Save object
+	    ub.save!
+	    # Test: column
+	    ub.current.should == false
+	end
+
+	context "update_balances" do
+	    it "should mark recent balances as current" do
+		# Set amount
+		money=12.50
+		existing_balance1_1=15.25
+		existing_balance1_2=5.25
+		existing_balance1_3=35.25
+		existing_balance2=8.25
+		# Get an expense record
+		expense=get_valid_expense
+		# Create users
+		u1=get_next_user
+		u2=get_next_user
+		# Create new UserDept
+		add_user_dept(u1,u2,money,expense.id)
+		# Create new UserBalance
+		ub1=add_balance(u1,u2,existing_balance1_1)
+		ub2=add_balance(u1,u2,existing_balance1_2)
+		ub3=add_balance(u1,u2,existing_balance1_3)
+		ub4=add_balance(u2,u1,existing_balance2)
+		# Test: UserBalance created
+		lambda {
+		    # Update balances
+		    UserBalance.update_balances
+		}.should change(UserBalance,:count).by(2)
+		# Test: current records
+		UserBalance.where(:current => true).size.should == 2
+	    end
+
+	    it "should mark old balances as not current" do
+		# Set amount
+		money=12.50
+		existing_balance1=15.25
+		existing_balance2=5.25
+		existing_balance3=35.25
+		existing_balance4=8.25
+		# Get an expense record
+		expense=get_valid_expense
+		# Create users
+		u1=get_next_user
+		u2=get_next_user
+		u3=get_next_user
+		# Create new UserDept
+		add_user_dept(u1,u2,money,expense.id)
+		# Create new UserBalance
+		ub1=add_balance(u1,u2,existing_balance1)
+		ub2=add_balance(u1,u2,existing_balance2)
+		ub3=add_balance(u1,u3,existing_balance3)
+		ub4=add_balance(u2,u1,existing_balance4)
+		# Test: UserBalance created
+		lambda {
+		    # Update balances
+		    UserBalance.update_balances
+		}.should change(UserBalance,:count).by(2)
+		# Test: current records
+		UserBalance.where(:current => true).size.should == 2
+		UserBalance.where(:current => false).size.should == 4
+		# Add another dept
+		add_user_dept(u1,u3,money,expense.id)
+		# Test: UserBalance created
+		lambda {
+		    # Update balances
+		    UserBalance.update_balances
+		}.should change(UserBalance,:count).by(2)
+		# Test: current records
+		UserBalance.where(:current => true).size.should == 4
+		UserBalance.where(:current => false).size.should == 4
+		# Add another dept
+		add_user_dept(u1,u2,money,expense.id)
+		# Test: UserBalance created
+		lambda {
+		    # Update balances
+		    UserBalance.update_balances
+		}.should change(UserBalance,:count).by(2)
+		# Test: current records
+		UserBalance.where(:current => true).size.should == 4
+		UserBalance.where(:current => false).size.should == 6
+	    end
+	end
     end
 end

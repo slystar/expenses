@@ -9,7 +9,6 @@ class UserBalance < ActiveRecord::Base
     validates :amount, :presence => true, :numericality => true
     # Custom validation
     validate :check_from_and_to
-    validate :check_previous_user_balance_id, :on => :create
 
     # Method to update balance
     def self.update_balances
@@ -150,8 +149,7 @@ class UserBalance < ActiveRecord::Base
 	    ub.from_user_id=from_user_id
 	    ub.to_user_id=to_user_id
 	    ub.amount=row[2]
-	    # Save UserBalance
-	    ub.save!
+	    ub.current=true
 	    # Check if record available for from_user_id
 	    if not old_user_balances[from_user_id].nil?
 		# Get old balance
@@ -160,9 +158,15 @@ class UserBalance < ActiveRecord::Base
 		if not old_ub.nil?
 		    # Update balance
 		    ub.previous_user_balance_id=old_ub.id
-		    # Save record
-		    ub.save
 		end
+	    end
+	    # Save UserBalance
+	    if ub.save
+		# Update process_flags
+		UserPayment.where(:process_flag => false, :approved=> true).update_all(process_flag: true)
+		UserDept.where(:process_flag => false).update_all(process_flag: true)
+		# Set old balances to not current
+		UserBalance.where('id != ?',ub.id).where(:from_user_id => from_user_id, :to_user_id => to_user_id, :current => true).update_all(current: false)
 	    end
 	end
     end
@@ -174,13 +178,6 @@ class UserBalance < ActiveRecord::Base
     def check_from_and_to
 	if from_user_id == to_user_id
 	    errors.add(:to_user, "can't be the same as from_user")
-	end
-    end
-
-    # Check previous_user_balance_id
-    def check_previous_user_balance_id
-	if previous_user_balance_id != 0
-	    errors.add(:previous_user_balance_id, "cannot be set on creation")
 	end
     end
 end
