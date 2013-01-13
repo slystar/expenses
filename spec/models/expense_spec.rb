@@ -485,5 +485,24 @@ describe Expense do
 	expense.process_date.strftime("%Y-%m-%d").should == today
     end
 
+    pending "should pass the master check of update_balances" do
+	# Add users
+	# Add dept
+	# Add payment
+	# Update balances
+	# Test
+	# Add dept
+	# Update balances
+	# Test
+	# Update balances
+	# Test
+	# Add payment
+	# Update balances
+	# Test
+	# Add dept
+	# Add payment
+	# Update balances
+	# Test
+    end
     pending "should notify user about updates"
 end
