@@ -31,15 +31,19 @@ class User < ActiveRecord::Base
     # Method to get user's current depts (what they owe others)
     def depts
 	# Get balances where user owes money
-	pp UserBalance.where(:from_user_id => self.id).to_a
+	UserBalance.where(:from_user_id => self.id, :current => true).where('amount > ?', 0)
     end
 
     # Method to get user's current credits (what others owe them)
     def credits
+	# Get balances where user owes money
+	UserBalance.where(:to_user_id => self.id, :current => true).where('amount > ?', 0)
     end
 
     # Method to get user's current balances (what they owe others and what others owe them)
     def balances
+	# Get balances where user owes money
+	UserBalance.where('to_user_id = ? or from_user_id = ?',self.id,self.id).where(:current => true)
     end
 
     # Below methods are private

@@ -254,14 +254,109 @@ describe User do
 	u1_depts.size.should == 2
 	u2.depts.size.should == 0
 	u3.depts.size.should == 0
+	# Get depts per users
+	u1_u2=u1_depts.select{|row| row[:to_user_id] == u2.id}
+	u1_u3=u1_depts.select{|row| row[:to_user_id] == u3.id}
 	# Test: dept amounts
-	u1_dpets.select{|row| row[:to_user_id] == u2.id}[:amount].should == expected_dept_1_2
-	u1_dpets.select{|row| row[:to_user_id] == u3.id}[:amount].should == expected_dept_1_3
+	u1_u2.size.should == 1
+	u1_u2.first[:amount].to_f.should == expected_dept_1_2
+	u1_u3.size.should == 1
+	u1_u3.first[:amount].to_f.should == expected_dept_1_3
     end
 
-    pending "should have a 'credits' method list credits" do
+    it "should have a 'credits' method list credits" do
+	# Variables
+	dept1=4.00
+	dept2=5.0
+	dept3=22.00
+	existing_balance=3.50
+	# Expected depts
+	expected_credit_2_1=dept1 + dept2 + existing_balance
+	expected_credit_3_1=dept3
+	# Get an expense record
+	expense=get_valid_expense
+	# Create users
+	u1=get_next_user
+	u2=get_next_user
+	u3=get_next_user
+	# Create new UserBalance just to add more rows
+	add_balance(u1,u2,existing_balance)
+	# Create new UserDept
+	add_user_dept(u1,u2,dept1,expense.id)
+	add_user_dept(u1,u2,dept2,expense.id)
+	add_user_dept(u1,u3,dept3,expense.id)
+	# Test: UserBalance created
+	lambda {
+	    # Update balances
+	    UserBalance.update_balances
+	}.should change(UserBalance,:count).by(4)
+	# Test: get credits
+	u1.credits.size.should == 0
+	u2.credits.size.should == 1
+	u3.credits.size.should == 1
+	# Get credits per users
+	u2_u1=u2.credits.select{|row| row[:to_user_id] == u2.id}
+	u3_u1=u3.credits.select{|row| row[:to_user_id] == u3.id}
+	# Test: credits amounts
+	u2_u1.size.should == 1
+	u2_u1.first[:amount].to_f.should == expected_credit_2_1
+	u3_u1.size.should == 1
+	u3_u1.first[:amount].to_f.should == expected_credit_3_1
     end
 
-    pending "should have a 'balances' method list balances" do
+    it "should have a 'balances' method list balances" do
+	# Variables
+	dept1=4.00
+	dept2=5.0
+	dept3=22.00
+	existing_balance=3.50
+	# Expected depts
+	expected_credit_2_1=dept1 + dept2 + existing_balance
+	expected_credit_3_1=dept3
+	# Get an expense record
+	expense=get_valid_expense
+	# Create users
+	u1=get_next_user
+	u2=get_next_user
+	u3=get_next_user
+	# Create new UserBalance just to add more rows
+	add_balance(u1,u2,existing_balance)
+	# Create new UserDept
+	add_user_dept(u1,u2,dept1,expense.id)
+	add_user_dept(u1,u2,dept2,expense.id)
+	add_user_dept(u1,u3,dept3,expense.id)
+	# Test: UserBalance created
+	lambda {
+	    # Update balances
+	    UserBalance.update_balances
+	}.should change(UserBalance,:count).by(4)
+	# Test: get balances
+	u1.balances.size.should == 4
+	u2.balances.size.should == 2
+	u3.balances.size.should == 2
+	# Get depts per users
+	u1_u2=u1.balances.select{|row| row[:to_user_id] == u2.id}
+	u1_u3=u1.balances.select{|row| row[:to_user_id] == u3.id}
+	# Get opposit depts per users
+	u1_u2_o=u1.balances.select{|row| row[:from_user_id] == u2.id}
+	u1_u3_o=u1.balances.select{|row| row[:from_user_id] == u3.id}
+	# Get credits per users
+	u2_u1=u2.balances.select{|row| row[:to_user_id] == u2.id}
+	u3_u1=u3.balances.select{|row| row[:to_user_id] == u3.id}
+	# Test: credit amounts
+	u2_u1.size.should == 1
+	u2_u1.first[:amount].to_f.should == expected_credit_2_1
+	u3_u1.size.should == 1
+	u3_u1.first[:amount].to_f.should == expected_credit_3_1
+	# Test: dept amounts
+	u1_u2.size.should == 1
+	u1_u2.first[:amount].to_f.should == expected_credit_2_1
+	u1_u3.size.should == 1
+	u1_u3.first[:amount].to_f.should == expected_credit_3_1
+	# Test oposite balances
+	u1_u2_o.size.should == 1
+	u1_u2_o.first[:amount].to_f.should == (expected_credit_2_1 * -1)
+	u1_u3_o.size.should == 1
+	u1_u3_o.first[:amount].to_f.should == (expected_credit_3_1 * -1)
     end
 end
