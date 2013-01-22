@@ -286,4 +286,26 @@ describe UserPayment do
 	# Test
 	ud.process_flag.should == true
     end
+
+    it "should link to UpdateBalanceHistory" do
+	# Get user
+	u1=get_new_user('user5')
+	# get object
+	ud=get_new_user_payment
+	# Create record
+	ud.save!
+	# Approve payment
+	ud.approve
+	# Test: UserBalance created
+	lambda {
+	    # Update balances
+	    UserBalance.update_balances(u1.id)
+	}.should change(UserBalance,:count).by(2)
+	# Get last UpdateBalanceHistory
+	ubh=UpdateBalanceHistory.last
+	# Reload
+	ud.reload
+	# Test
+	ud.update_balance_history.should == ubh
+    end
 end

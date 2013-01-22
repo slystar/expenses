@@ -6,6 +6,7 @@ class UserPayment < ActiveRecord::Base
     has_many :payment_notes
     belongs_to :from_user, :class_name => 'User'
     belongs_to :to_user, :class_name => 'User' 
+    belongs_to :update_balance_history
 
     # Validations
     validates :from_user, :presence => true

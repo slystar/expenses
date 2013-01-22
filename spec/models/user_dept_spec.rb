@@ -4,6 +4,7 @@ describe UserDept do
 
     before(:each) do
 	@attr={:from_user_id => 1, :to_user_id => 1, :amount => 11.23}
+	@new_user_id=5
     end
 
     def get_new_user_dept
@@ -183,5 +184,25 @@ describe UserDept do
 	ud.reload
 	# Test
 	ud.process_flag.should == true
+    end
+
+    it "should link to UpdateBalanceHistory" do
+	# Get user
+	u1=get_next_user
+	# get object
+	ud=get_new_user_dept
+	# Create record
+	ud.save!
+	# Test: UserBalance created
+	lambda {
+	    # Update balances
+	    UserBalance.update_balances(u1.id)
+	}.should change(UserBalance,:count).by(2)
+	# Get last UpdateBalanceHistory
+	ubh=UpdateBalanceHistory.last
+	# Reload
+	ud.reload
+	# Test
+	ud.update_balance_history.should == ubh
     end
 end

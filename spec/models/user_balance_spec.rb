@@ -727,4 +727,33 @@ describe UserBalance do
 	    end
 	end
     end
+
+    it "should link to UpdateBalanceHistory" do
+	# Set amount
+	money=12.50
+	existing_balance=5.25
+	# Get an expense record
+	expense=get_valid_expense
+	# Get expected balance
+	# 12.50(new dept) + 5.25(existing dept)
+	expected_balance=money + existing_balance
+	# Create users
+	u1=get_next_user
+	u2=get_next_user
+	# Create new UserDept
+	add_user_dept(u1,u2,money,expense.id)
+	# Create new UserBalance
+	b1=add_balance(u1,u2,existing_balance)
+	# Test: UserBalance created
+	lambda {
+	    # Update balances
+	    UserBalance.update_balances(u1.id)
+	}.should change(UserBalance,:count).by(2)
+	# Get last UpdateBalanceHistory
+	ubh=UpdateBalanceHistory.last
+	# Reload
+	b1.reload
+	# Test
+	b1.update_balance_history.should == ubh
+    end
 end
