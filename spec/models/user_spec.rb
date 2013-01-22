@@ -246,7 +246,7 @@ describe User do
 	# Test: UserBalance created
 	lambda {
 	    # Update balances
-	    UserBalance.update_balances
+	    UserBalance.update_balances(u1.id)
 	}.should change(UserBalance,:count).by(4)
 	# Get u1 depts
 	u1_depts=u1.depts
@@ -288,7 +288,7 @@ describe User do
 	# Test: UserBalance created
 	lambda {
 	    # Update balances
-	    UserBalance.update_balances
+	    UserBalance.update_balances(u1.id)
 	}.should change(UserBalance,:count).by(4)
 	# Test: get credits
 	u1.credits.size.should == 0
@@ -328,7 +328,7 @@ describe User do
 	# Test: UserBalance created
 	lambda {
 	    # Update balances
-	    UserBalance.update_balances
+	    UserBalance.update_balances(u1.id)
 	}.should change(UserBalance,:count).by(4)
 	# Test: get balances
 	u1.balances.size.should == 4

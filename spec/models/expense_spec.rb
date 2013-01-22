@@ -169,6 +169,31 @@ describe Expense do
 	expense.should respond_to(:process)
     end
 
+    it "should return false if invalid user given to process method" do
+	# Variables
+	amount=22.00
+	# Get today
+	today=Time.now.utc.strftime("%Y-%m-%d")
+	# Create users
+	u1=User.create!({:user_name => 'test90', :password => 'testpassword'})
+	u2=User.create!({:user_name => 'test91', :password => 'testpassword'})
+	# Create group
+	group=Group.create!({:name => "Group test", :description => 'group 1 desc'})
+	# Add user to group
+	group.add_user(u1)
+	group.add_user(u2)
+	# Create expense
+	expense=Expense.new(@attr)
+	# Set group
+	expense.group_id=group.id
+	# Set amount
+	expense.amount=amount
+	# Save expense
+	expense.save!
+	# Test
+	expense.process(999999).should == false
+    end
+
     it "should be able to process itself" do
 	# Variables
 	amount=22.00
@@ -196,7 +221,7 @@ describe Expense do
 	# Test: UserDept created
 	lambda{
 	    # Process record
-	    expense.process
+	    expense.process(u1.id)
 	}.should change(UserDept,:count).by(3)
 	# Reload expense
 	expense.reload
@@ -225,7 +250,7 @@ describe Expense do
 	# Get amount
 	amount=expense.amount
 	# Process record
-	expense.process
+	expense.process(expense.user_id)
 	# Reload
 	expense.reload
 	# Modify
@@ -244,7 +269,7 @@ describe Expense do
 	# Get new user
 	new_user=User.create!(:user_name => 'test_expense', :password => 'abcd1234')
 	# Process record
-	expense.process
+	expense.process(expense.user_id)
 	# Reload
 	expense.reload
 	# Modify
@@ -263,7 +288,7 @@ describe Expense do
 	# Get new Group
 	new_group=Group.create!(:name => "Expense Group 1", :description => 'group 1 desc')
 	# Process record
-	expense.process
+	expense.process(expense.user_id)
 	# Reload
 	expense.reload
 	# Modify
@@ -282,7 +307,7 @@ describe Expense do
 	# Get new Group
 	new_reason=Reason.create!(:name => "expense_test")
 	# Process record
-	expense.process
+	expense.process(expense.user_id)
 	# Reload
 	expense.reload
 	# Modify
@@ -299,7 +324,7 @@ describe Expense do
 	# Get new Group
 	new_pay_method=PayMethod.create!(:name => "expense_test")
 	# Process record
-	expense.process
+	expense.process(expense.user_id)
 	# Reload
 	expense.reload
 	# Modify
@@ -316,7 +341,7 @@ describe Expense do
 	# Get new Group
 	new_store=Store.create!(:name => "expense_test")
 	# Process record
-	expense.process
+	expense.process(expense.user_id)
 	# Reload
 	expense.reload
 	# Modify
@@ -333,7 +358,7 @@ describe Expense do
 	# Get new Group
 	new_desc=expense.description.to_s + 'aaaaaa'
 	# Process record
-	expense.process
+	expense.process(expense.user_id)
 	# Reload
 	expense.reload
 	# Test: not the same description
@@ -375,7 +400,7 @@ describe Expense do
 	# Test: UserDept created
 	lambda{
 	    # Process record
-	    expense.process
+	    expense.process(expense.user_id)
 	}.should change(UserDept,:count).by(2)
 	# Reload expense
 	expense.reload
@@ -412,7 +437,7 @@ describe Expense do
 	# Test: UserDept created
 	lambda{
 	    # Process record
-	    expense.process
+	    expense.process(expense.user_id)
 	}.should change(UserDept,:count).by(3)
 	# Reload expense
 	expense.reload
@@ -462,7 +487,7 @@ describe Expense do
 	# Test: UserDept created
 	lambda{
 	    # Process record
-	    expense.process
+	    expense.process(expense.user_id)
 	}.should change(UserDept,:count).by(3)
 	# Reload expense
 	expense.reload

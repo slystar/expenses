@@ -33,7 +33,12 @@ class Expense < ActiveRecord::Base
     before_destroy :check_for_processed_record_delete
 
     # Method to process expense
-    def process
+    def process(user_id)
+	# Verify user
+	if User.where(:id => user_id).first.nil?
+	    # Not a valid user, return false
+	    return false
+	end
 	# Get group members
 	members=group.users
 	# Get count of members
@@ -55,7 +60,7 @@ class Expense < ActiveRecord::Base
 	    ud.save!
 	end
 	# Update Balance
-	UserBalance.update_balances()
+	UserBalance.update_balances(user_id)
 	# Set process fields
 	self.process_date=Time.now
 	self.process_flag=true
