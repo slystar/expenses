@@ -11,7 +11,12 @@ class UserBalance < ActiveRecord::Base
     validate :check_from_and_to
 
     # Method to update balance
-    def self.update_balances
+    def self.update_balances(user_id)
+	# Verify user
+	if User.where(:id => user_id).first.nil?
+	    # Not a valid user, return false
+	    return false
+	end
 	# Variables
 	depts={}
 	payments={}
@@ -138,6 +143,8 @@ class UserBalance < ActiveRecord::Base
 		end
 	    end
 	end
+	# Get new UpdateBalanceHistory
+	ubh=UpdateBalanceHistory.create!(:user_id => user_id)
 	# Loop over records to save
 	records_to_save.each do |row|
 	    # Get fields
@@ -163,12 +170,16 @@ class UserBalance < ActiveRecord::Base
 	    # Save UserBalance
 	    if ub.save
 		# Update process_flags
-		UserPayment.where(:process_flag => false, :approved=> true).update_all(process_flag: true)
-		UserDept.where(:process_flag => false).update_all(process_flag: true)
+		UserPayment.where(:process_flag => false, :approved=> true).update_all(process_flag: true, update_balance_history_id: ubh.id)
+		UserDept.where(:process_flag => false).update_all(process_flag: true, update_balance_history_id: ubh.id)
 		# Set old balances to not current
-		UserBalance.where('id != ?',ub.id).where(:from_user_id => from_user_id, :to_user_id => to_user_id, :current => true).update_all(current: false)
+		UserBalance.where('id != ?',ub.id).where(:from_user_id => from_user_id, :to_user_id => to_user_id, :current => true).update_all(current: false, update_balance_history_id: ubh.id)
+		# Set UpdateBalanceHistory
+		UserBalance.where('id != ?',ub.id).where(:from_user_id => from_user_id, :to_user_id => to_user_id, :current => false).update_all(update_balance_history_id: ubh.id)
 	    end
 	end
+	# Return true
+	return true
     end
 
     # Private methods

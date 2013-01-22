@@ -152,6 +152,18 @@ describe UserBalance do
     end
 
     describe "update balances" do
+
+	it "should return true on success" do
+	    # Get user
+	    u=get_next_user
+	    # Process
+	    UserBalance.update_balances(u.id).should == true
+	end
+
+	it "should return false on invalid user" do
+	    UserBalance.update_balances(99999999).should == false
+	end
+
 	context "with UserDept and UserBalance" do
 	    it "with single dept" do
 		# Set amount
@@ -172,7 +184,7 @@ describe UserBalance do
 		# Test: UserBalance created
 		lambda {
 		    # Update balances
-		    UserBalance.update_balances
+		    UserBalance.update_balances(u1.id)
 		}.should change(UserBalance,:count).by(2)
 		# Test balances
 		test_balance(u1,u2,expected_balance)
@@ -202,7 +214,7 @@ describe UserBalance do
 		# Test: UserBalance created
 		lambda {
 		    # Update balances
-		    UserBalance.update_balances
+		    UserBalance.update_balances(u1.id)
 		}.should change(UserBalance,:count).by(2)
 		# Test balances
 		test_balance(u1,u2,expected_balance)
@@ -231,7 +243,7 @@ describe UserBalance do
 		# Test: UserBalance created
 		lambda {
 		    # Update balances
-		    UserBalance.update_balances
+		    UserBalance.update_balances(u1.id)
 		}.should change(UserBalance,:count).by(2)
 		# Test balances
 		test_balance(u1,u2,expected_balance)
@@ -256,7 +268,7 @@ describe UserBalance do
 		# Test: UserBalance created
 		lambda {
 		    # Update balances
-		    UserBalance.update_balances
+		    UserBalance.update_balances(u1.id)
 		}.should change(UserBalance,:count).by(2)
 		# Test balances
 		test_balance(u1,u2,expected_balance)
@@ -283,7 +295,7 @@ describe UserBalance do
 		# Test: UserBalance created
 		lambda {
 		    # Update balances
-		    UserBalance.update_balances
+		    UserBalance.update_balances(u1.id)
 		}.should change(UserBalance,:count).by(2)
 		# Test balances
 		test_balance(u1,u2,expected_balance)
@@ -310,7 +322,7 @@ describe UserBalance do
 		# Test: UserBalance created
 		lambda {
 		    # Update balances
-		    UserBalance.update_balances
+		    UserBalance.update_balances(u1.id)
 		}.should change(UserBalance,:count).by(2)
 		# Test balances
 		test_balance(u1,u2,expected_balance)
@@ -337,7 +349,7 @@ describe UserBalance do
 		# Test: UserBalance created
 		lambda {
 		    # Update balances
-		    UserBalance.update_balances
+		    UserBalance.update_balances(u1.id)
 		}.should change(UserBalance,:count).by(2)
 		# Test balances
 		test_balance(u1,u2,expected_balance)
@@ -366,7 +378,7 @@ describe UserBalance do
 		# Test: UserBalance created
 		lambda {
 		    # Update balances
-		    UserBalance.update_balances
+		    UserBalance.update_balances(u1.id)
 		}.should change(UserBalance,:count).by(2)
 		# Test balances
 		test_balance(u1,u2,expected_balance)
@@ -395,7 +407,7 @@ describe UserBalance do
 		# Test: UserBalance created
 		lambda {
 		    # Update balances
-		    UserBalance.update_balances
+		    UserBalance.update_balances(u1.id)
 		}.should change(UserBalance,:count).by(2)
 		# Test balances
 		test_balance(u1,u2,expected_balance)
@@ -425,7 +437,7 @@ describe UserBalance do
 		# Test: UserBalance created
 		lambda {
 		    # Update balances
-		    UserBalance.update_balances
+		    UserBalance.update_balances(u1.id)
 		}.should change(UserBalance,:count).by(2)
 		# Test balances
 		test_balance(u1,u2,expected_balance)
@@ -461,7 +473,7 @@ describe UserBalance do
 		# Test: UserBalance created
 		lambda {
 		    # Update balances
-		    UserBalance.update_balances
+		    UserBalance.update_balances(u1.id)
 		}.should change(UserBalance,:count).by(2)
 		# Test balances
 		test_balance(u1,u2,expected_balance)
@@ -501,7 +513,7 @@ describe UserBalance do
 		# Test: UserBalance created
 		lambda {
 		    # Update balances
-		    UserBalance.update_balances
+		    UserBalance.update_balances(u1.id)
 		}.should change(UserBalance,:count).by(2)
 		# Test balances
 		test_balance(u1,u2,expected_balance)
@@ -545,7 +557,7 @@ describe UserBalance do
 		# Test: UserBalance created
 		lambda {
 		    # Update balances
-		    UserBalance.update_balances
+		    UserBalance.update_balances(u1.id)
 		}.should change(UserBalance,:count).by(2)
 		# Test balances
 		test_balance(u1,u2,expected_balance)
@@ -577,7 +589,7 @@ describe UserBalance do
 	    # Test: UserBalance created
 	    lambda {
 		# Update balances
-		UserBalance.update_balances
+		UserBalance.update_balances(u1.id)
 	    }.should change(UserBalance,:count).by(2)
 	    # Test balances
 	    test_balance(u1,u2,expected_balance)
@@ -585,7 +597,7 @@ describe UserBalance do
 	    # Test: UserBalance created
 	    lambda {
 		# Update balances
-		UserBalance.update_balances
+		UserBalance.update_balances(u1.id)
 	    }.should change(UserBalance,:count).by(0)
 	end
     end
@@ -614,7 +626,7 @@ describe UserBalance do
 	# Test: UserBalance created
 	lambda {
 	    # Update balances
-	    UserBalance.update_balances
+	    UserBalance.update_balances(u1.id)
 	}.should change(UserBalance,:count).by(2)
 	# Test balances
 	test_balance(u1,u2,expected_balance)
@@ -658,7 +670,7 @@ describe UserBalance do
 		# Test: UserBalance created
 		lambda {
 		    # Update balances
-		    UserBalance.update_balances
+		    UserBalance.update_balances(u1.id)
 		}.should change(UserBalance,:count).by(2)
 		# Test: current records
 		UserBalance.where(:current => true).size.should == 2
@@ -687,7 +699,7 @@ describe UserBalance do
 		# Test: UserBalance created
 		lambda {
 		    # Update balances
-		    UserBalance.update_balances
+		    UserBalance.update_balances(u1.id)
 		}.should change(UserBalance,:count).by(2)
 		# Test: current records
 		UserBalance.where(:current => true).size.should == 2
@@ -697,7 +709,7 @@ describe UserBalance do
 		# Test: UserBalance created
 		lambda {
 		    # Update balances
-		    UserBalance.update_balances
+		    UserBalance.update_balances(u1.id)
 		}.should change(UserBalance,:count).by(2)
 		# Test: current records
 		UserBalance.where(:current => true).size.should == 4
@@ -707,7 +719,7 @@ describe UserBalance do
 		# Test: UserBalance created
 		lambda {
 		    # Update balances
-		    UserBalance.update_balances
+		    UserBalance.update_balances(u1.id)
 		}.should change(UserBalance,:count).by(2)
 		# Test: current records
 		UserBalance.where(:current => true).size.should == 4

@@ -50,13 +50,67 @@ describe UpdateBalanceHistory do
 	obj.user.should == @u
     end
 
-    pending "should link to user_payments" do
+    it "should link to user_payments" do
+	# Set amount
+	payment1=3.30
+	payment2=5.00
+	# Create users
+	u1=get_next_user
+	u2=get_next_user
+	# Create new UserPayment
+	up1=add_user_payment(u1,u2,payment1)
+	up2=add_user_payment(u2,u1,payment2)
+	# Update balances
+	UserBalance.update_balances(u1.id)
+	# Get last UpdateBalanceHistory
+	ubh=UpdateBalanceHistory.last
+	# Should link to user_payments
+	ubh.user_payments.size.should == 2
     end
 
-    pending "should link to user_depts" do
+    it "should link to user_depts" do
+	# Set amount
+	dept1=12.50
+	dept2=14.50
+	# Create users
+	u1=get_next_user
+	u2=get_next_user
+	# Get an expense record
+	expense=get_valid_expense
+	# Create new UserDept
+	ud1=add_user_dept(u1,u2,dept1,expense.id)
+	ud2=add_user_dept(u1,u2,dept2,expense.id)
+	# Update balances
+	UserBalance.update_balances(u1.id)
+	# Get last UpdateBalanceHistory
+	ubh=UpdateBalanceHistory.last
+	# Should link to user_depts
+	ubh.user_depts.size.should == 2
     end
 
-    pending "should link to user_balances" do
+    it "should link to user_balances" do
+	# Set amount
+	existing_balance1_1=15.25
+	existing_balance1_2=5.25
+	dept1=12.50
+	dept2=14.50
+	# Create users
+	u1=get_next_user
+	u2=get_next_user
+	# Get an expense record
+	expense=get_valid_expense
+	# Create new UserDept
+	ud1=add_user_dept(u1,u2,dept1,expense.id)
+	ud2=add_user_dept(u1,u2,dept2,expense.id)
+	# Create new UserBalance
+	ub1=add_balance(u1,u2,existing_balance1_1)
+	ub2=add_balance(u1,u2,existing_balance1_2)
+	# Update balances
+	UserBalance.update_balances(u1.id)
+	# Get last UpdateBalanceHistory
+	ubh=UpdateBalanceHistory.last
+	# Should link to user_balances
+	ubh.user_balances.size.should == 2
     end
 
     it "should link all rows used in 'update_balance'" do
@@ -96,22 +150,38 @@ describe UpdateBalanceHistory do
 	# Test: UserBalance created
 	lambda {
 	    # Update balances
-	    UserBalance.update_balances
+	    UserBalance.update_balances(u1.id)
 	}.should change(UserBalance,:count).by(2)
 	# Get last UpdateBalanceHistory
 	ubh=UpdateBalanceHistory.last
 	# Test updatebalancehistoryid
-	ud1.update_balance_history_id.should == ubh.id
-	ud2.update_balance_history_id.should == ubh.id
-	ud3.update_balance_history_id.should == ubh.id
-	up1.update_balance_history_id.should == ubh.id
-	up2.update_balance_history_id.should == ubh.id
-	up3.update_balance_history_id.should == ubh.id
-	ub1.update_balance_history_id.should == ubh.id
-	ub2.update_balance_history_id.should == ubh.id
-	ub3.update_balance_history_id.should == ubh.id
-	ub4.update_balance_history_id.should == ubh.id
+	ud1.reload.update_balance_history_id.should == ubh.id
+	ud2.reload.update_balance_history_id.should == ubh.id
+	ud3.reload.update_balance_history_id.should == ubh.id
+	up1.reload.update_balance_history_id.should == ubh.id
+	up2.reload.update_balance_history_id.should == ubh.id
+	up3.reload.update_balance_history_id.should == ubh.id
+	ub1.reload.update_balance_history_id.should == ubh.id
+	ub2.reload.update_balance_history_id.should == ubh.id
+	ub3.reload.update_balance_history_id.should == ubh.id
+	ub4.reload.update_balance_history_id.should == ubh.id
+	# Run again
+	# Create new UserDept
+	ud4=add_user_dept(u1,u2,dept1,expense.id)
+	# Create new UserPayment
+	up4=add_user_payment(u1,u2,payment1)
+	# Create new UserBalance
+	ub5=add_balance(u1,u2,existing_balance1_1)
+	# Test: UserBalance created
+	lambda {
+	    # Update balances
+	    UserBalance.update_balances(u1.id)
+	}.should change(UserBalance,:count).by(2)
+	# Get last UpdateBalanceHistory
+	ubh=UpdateBalanceHistory.last
+	# Test updatebalancehistoryid
+	ud4.reload.update_balance_history_id.should == ubh.id
+	up4.reload.update_balance_history_id.should == ubh.id
+	ub4.reload.update_balance_history_id.should == ubh.id
     end
-
-  pending "add some examples to (or delete) #{__FILE__}"
 end
