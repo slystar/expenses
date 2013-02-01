@@ -1,5 +1,20 @@
 Models:
-- import csv from bank
+- import from bank
+    - New Tables
+	- rails generate scaffold ImportHistory user_id:integer import_config_id:integer
+	    - will serve the view, controller portion to do the actual import
+	- rails generate model ImportConfig user_id:integer title:string description:text field_mapping:text file_type:text has_unique_id:boolean
+	    - field_mapping: JSON or YAML?
+		- YAML is easy but SLOW to Create
+		- JSON is fater but can only do primitives, hash, arrays
+		- www.skorks.com/2010/04/serializing-and-deserializing-objects-with-ruby/
+	    - look at builtin rails option (http://stackoverflow.com/questions/6694432/using-rails-serialize-to-save-hash-to-database)
+		- serialize :COLUMN, Hash
+		- serialize :column, JSON
+	- rails generate model ImportData user_id:integer import_history_id:integer import_config_id:integer unique_id=string hash:string raw_text:text mapped_fields:text process_flag:boolean process_date:datetime expense_id:integer process_notes:text
+	    - Keep original data in database or save file and keep reference to file in database?
+    - Modification to tables
+	- rails generate migration AddImportInfoToExpense imported:boolean import_history_id:integer import_data_id:integer
 - check indexes
 - expense history (user_id, expense_id, group_id), could allow group
   deletion
