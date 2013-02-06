@@ -18,6 +18,7 @@ Models:
 	    - Keep original data in file and keep reference to file in database
     - Modification to tables
 	- rails generate migration AddImportInfoToExpense imported:boolean import_history_id:integer import_data_id:integer
+- duplication check
 - check indexes
 - expense history (user_id, expense_id, group_id), could allow group
   deletion

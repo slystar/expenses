@@ -1,0 +1,36 @@
+%p#notice= notice
+
+%p
+  %b User:
+  = @import_datum.user_id
+%p
+  %b Import history:
+  = @import_datum.import_history_id
+%p
+  %b Import config:
+  = @import_datum.import_config_id
+%p
+  %b Unique:
+  = @import_datum.unique_id
+%p
+  %b Unique hash:
+  = @import_datum.unique_hash
+%p
+  %b Mapped fields:
+  = @import_datum.mapped_fields
+%p
+  %b Process flag:
+  = @import_datum.process_flag
+%p
+  %b Process date:
+  = @import_datum.process_date
+%p
+  %b Expense:
+  = @import_datum.expense_id
+%p
+  %b Process notes:
+  = @import_datum.process_notes
+
+= link_to 'Edit', edit_import_datum_path(@import_datum)
+\|
+= link_to 'Back', import_data_path

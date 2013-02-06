@@ -1,4 +1,6 @@
 Expenses::Application.routes.draw do
+  resources :import_data
+
   resources :user_payments
 
   resources :groups

@@ -1,0 +1,37 @@
+%h1 Listing import_data
+
+%table
+  %tr
+    %th User
+    %th Import history
+    %th Import config
+    %th Unique
+    %th Unique hash
+    %th Mapped fields
+    %th Process flag
+    %th Process date
+    %th Expense
+    %th Process notes
+    %th
+    %th
+    %th
+
+  - @import_data.each do |import_datum|
+    %tr
+      %td= import_datum.user_id
+      %td= import_datum.import_history_id
+      %td= import_datum.import_config_id
+      %td= import_datum.unique_id
+      %td= import_datum.unique_hash
+      %td= import_datum.mapped_fields
+      %td= import_datum.process_flag
+      %td= import_datum.process_date
+      %td= import_datum.expense_id
+      %td= import_datum.process_notes
+      %td= link_to 'Show', import_datum
+      %td= link_to 'Edit', edit_import_datum_path(import_datum)
+      %td= link_to 'Destroy', import_datum, method: :delete, data: { confirm: 'Are you sure?' }
+
+%br
+
+= link_to 'New Import datum', new_import_datum_path
