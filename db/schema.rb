@@ -11,7 +11,7 @@
 #
 # It's strongly recommended to check this file into your version control system.
 
-ActiveRecord::Schema.define(:version => 20130121171618) do
+ActiveRecord::Schema.define(:version => 20130206174032) do
 
   create_table "backups", :force => true do |t|
     t.datetime "backup_date"
@@ -46,6 +46,42 @@ ActiveRecord::Schema.define(:version => 20130121171618) do
     t.string   "name"
     t.text     "description"
     t.integer  "display_order"
+    t.datetime "created_at"
+    t.datetime "updated_at"
+  end
+
+  create_table "import_configs", :force => true do |t|
+    t.integer  "user_id"
+    t.string   "title"
+    t.text     "description"
+    t.text     "field_mapping"
+    t.string   "file_type"
+    t.string   "unique_id_field"
+    t.text     "unique_id_hash_fields"
+    t.datetime "created_at"
+    t.datetime "updated_at"
+  end
+
+  create_table "import_data", :force => true do |t|
+    t.integer  "user_id"
+    t.integer  "import_history_id"
+    t.integer  "import_config_id"
+    t.string   "unique_id"
+    t.string   "unique_hash"
+    t.text     "mapped_fields"
+    t.boolean  "process_flag"
+    t.datetime "process_date"
+    t.integer  "expense_id"
+    t.text     "process_notes"
+    t.datetime "created_at"
+    t.datetime "updated_at"
+  end
+
+  create_table "import_histories", :force => true do |t|
+    t.integer  "user_id"
+    t.integer  "import_config_id"
+    t.string   "original_file_name"
+    t.string   "new_file_name"
     t.datetime "created_at"
     t.datetime "updated_at"
   end
