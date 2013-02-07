@@ -70,4 +70,15 @@ module SpecHelpFunctions
 	# Return object
 	ub.reload
     end
+
+    # Get a valid ImportConfig object
+    def get_valid_import_config(attr=@attr)
+	# Get an import_config
+	ic=ImportConfig.new(attr)
+	# Add user id because it should not be mass assignable
+	ic.user_id=attr[:user_id]
+	# Return object
+	return ic
+    end
+
 end
