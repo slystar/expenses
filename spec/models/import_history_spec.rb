@@ -86,6 +86,8 @@ describe ImportHistory do
 	file_content='This is a test file content'
 	# Save file
 	ih.save_file(file_content,storage_dir)
+	# Save record
+	ih.save!
 	# Get filename
 	filename=ih.new_file_name
 	# Test

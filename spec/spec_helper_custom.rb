@@ -75,8 +75,10 @@ module SpecHelpFunctions
     def get_valid_import_config(attr=@attr)
 	# Get an import_config
 	ic=ImportConfig.new(attr)
+	# Get new user
+	u1=get_next_user
 	# Add user id because it should not be mass assignable
-	ic.user_id=attr[:user_id]
+	ic.user_id=u1.id
 	# Return object
 	return ic
     end
