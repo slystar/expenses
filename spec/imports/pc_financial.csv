@@ -1,0 +1,5 @@
+Transaction Date, Posting Date, Billing Amount, Merchant, Merchant City , Merchant State , Merchant Zip , Reference Number , Debit/Credit Flag , SICMCC Code
+01/06/2013,01/07/2013,$34.74,"store 1","city1",prov,postalcode, "55134423006800143588105",D,5411
+01/04/2013,01/07/2013,$83.43,"WAL-MART","city2",prov,postalcode, "55503803006004099002957",D,5310
+01/03/2013,01/04/2013,($325.00),"PAYMENT / PAIEMENT","city3",N,, "75181273004100300505435",C,0000
+12/20/2012,12/21/2012,($325.00),"PAYMENT / PAIEMENT","city3",N,, "75181272356100300430275",C,0000
