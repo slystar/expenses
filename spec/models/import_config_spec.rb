@@ -3,7 +3,7 @@ require 'spec_helper'
 describe ImportConfig do
 
     before(:each) do
-	@attr={:user_id => 1, :title => 'Big bank import', :description => 'CSV export of Big Bank', :field_mapping => {:amount => 2, :store => 3}, :file_type => 'csv', :unique_id_field => 4, :unique_id_hash_fields => [:date_bought,:store_id,:amount]}
+	@attr={:title => 'Big bank import', :description => 'CSV export of Big Bank', :field_mapping => {:amount => 2, :store => 3}, :file_type => 'csv', :unique_id_field => 4, :unique_id_hash_fields => [:date_bought,:store_id,:amount]}
 	@new_user_id=2
     end
 

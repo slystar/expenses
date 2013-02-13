@@ -1,6 +1,6 @@
 class ImportConfig < ActiveRecord::Base
     # Accessible attributes
-    attr_accessible :user_id, :title, :description, :field_mapping, :file_type, :unique_id_field, :unique_id_hash_fields
+    attr_accessible :title, :description, :field_mapping, :file_type, :unique_id_field, :unique_id_hash_fields
 
     # Constants
     FILE_TYPES=['csv']
