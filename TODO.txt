@@ -21,6 +21,7 @@ Models:
 - duplication check
     - fields: amount, date_bought, store
 - check indexes
+- migration using ActiveRecord
 - expense history (user_id, expense_id, group_id), could allow group
   deletion
 
