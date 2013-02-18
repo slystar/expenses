@@ -12,7 +12,7 @@ class ImportHistory < ActiveRecord::Base
     validates :user, :presence => true
     validates :import_config, :presence => true
 
-    # Class method to generate new filename
+    # method to generate new filename
     def save_file(file_content,target_dir)
 	# Check file content
 	if file_content.nil? or file_content.empty?
@@ -39,5 +39,95 @@ class ImportHistory < ActiveRecord::Base
 	self.new_file_name=new_name
 	# Return true
 	return true
+    end
+
+    # Method to create field digest
+    def create_digest(data)
+	Digest::SHA2.hexdigest(data)
+    end
+
+    # Method to import data
+    def import_data(file, import_config,user_id)
+	# Get file type
+	file_type=import_config.file_type.downcase
+	# Import based on filetype
+	case file_type
+	when 'csv'
+	    import_csv(file,import_config,user_id)
+	else
+	    # Unknown import filetype
+	    self.errors.add(:base,"Unknown import filetype: #{file_type}")
+	    # Return nil
+	    return false
+	end
+	# Success
+	return true
+    end
+
+    # Private methods
+    private
+
+    # Method to check the amount
+    def amount_positive(amount)
+	# Remove dollar sign
+	new_amount=amount.gsub('$','')
+	# Remove whitesapces
+	new_amount.gsub!(/\s/,'')
+	# Check for non numeric characters
+	if new_amount =~ /[^0-9.-]/
+	    return false
+	end
+	# Convert to integer
+	amount_int=new_amount.to_i
+	# Check if positive
+	if amount_int >= 0
+	    return true
+	else
+	    return false
+	end
+    end
+
+    # Method to clean amount
+    def clean_amount(amount)
+	# Keep only digits and decimal point
+	return amount.gsub(/[^0-9.]/,'')
+    end
+
+    # Method to import CSV data
+    def import_csv(filename, import_config, user_id)
+	# Get unique hash fields
+	unique_hash_ids=import_config[:unique_id_hash_fields]
+	# Loop over csv
+	CSV.foreach(filename) do |row|
+	    # Variables
+	    unique_hash_str=''
+	    mapped_fields={}
+	    # Get unique id column
+	    unique_id_col=import_config[:unique_id_field].to_i if not import_config[:unique_id_field].nil?
+	    # Collect fields for unique_hash
+	    unique_hash_ids.each{|id| unique_hash_str << row[id]}
+	    # Get attributes
+	    unique_id=row[unique_id_col]
+	    unique_hash=create_digest(unique_hash_str)
+	    # Recreate new mapped_fields with proper values
+	    import_config[:field_mapping].each{|column, row_id| mapped_fields[column]=row[row_id]}
+	    # Extract amount
+	    amount=mapped_fields[:amount]
+	    # Check amount
+	    if not amount_positive(amount)
+		# Skip negative amounts since those are payments
+		next
+	    end
+	    # Clean amount
+	    mapped_fields[:amount]=clean_amount(amount)
+	    # Set attributes
+	    attr={:unique_id => unique_id, :unique_hash => unique_hash, :mapped_fields => mapped_fields}
+	    # Create new ImportData
+	    id=ImportDatum.new(attr)
+	    # Set user
+	    id.user_id=user_id
+	    # Save record
+	    id.save!
+	end
     end
 end

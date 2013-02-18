@@ -108,4 +108,41 @@ describe ImportHistory do
 	# Read tmp file from upload
 	# Check data size
     end
+
+    it "should generate an error when importing an unknown filetype" do
+	# Get import history
+	ih=get_valid_import_history()
+	# Get import config
+	ic=ih.import_config
+	# Set new filetype
+	ic.file_type='docx'
+	# Import file
+	result=ih.import_data('test.docx',ic,ih.user_id)
+	# Test
+	result.should == false
+	# Errors should exist
+	ih.errors.size.should > 0
+    end
+
+    it "should be able to import csv from amex" do
+	# Import config attributes
+	@attr_ic={:title => 'Amex', :description => 'CSV export of amex', :field_mapping => {:date_bought => 0, :amount => 2, :store => 3}, :file_type => 'csv', :unique_id_field => 1, :unique_id_hash_fields => [0,2,3]}
+	# Import file
+	filename='spec/imports/amex.csv'
+	# Get import history
+	ih=get_valid_import_history()
+	# Get import config
+	ic=ih.import_config
+	# Get user
+	u=ih.user_id
+	# Import data
+	ih.import_data(filename,ic,u)
+	5.should == 1
+    end
+
+    pending "should be able to import csv from pcfinancial" do
+    end
+
+    pending "should be able to ignore duplicate entries during import" do
+    end
 end

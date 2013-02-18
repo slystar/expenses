@@ -82,12 +82,7 @@ describe ImportDatum do
 	id.should_not be_valid
     end
 
-    it "should require expense_id" do
-	id=get_valid_import_data()
-	# Set field
-	id.expense_id=nil
-	# Test
-	id.should_not be_valid
+    pending "should require expense_id after processing" do
     end
 
     it "should have an import_config method" do
@@ -98,26 +93,6 @@ describe ImportDatum do
     it "should have an import_history method" do
 	id=get_valid_import_data()
 	id.should respond_to(:import_history)
-    end
-
-    it "should generate an error when importing an unknown filetype" do
-	id=get_valid_import_data()
-	# Get import_config
-	ic=id.import_config
-	# Set new filetype
-	ic.file_type='docx'
-	# Import file
-	result=id.import('test.docx',ic)
-	# Test
-	result.should == false
-	# Errors should exist
-	id.errors.size.should > 0
-    end
-
-    pending "should be able to import csv from amex" do
-    end
-
-    pending "should be able to import csv from pcfinancial" do
     end
 
   pending "add some examples to (or delete) #{__FILE__}"

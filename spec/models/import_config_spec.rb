@@ -66,6 +66,9 @@ describe ImportConfig do
 	ic.should be_valid
     end
 
+    pending "should return a hash for field_mapping" do
+    end
+
     it "should require a file_type" do
 	# Get ImportConfig
 	ic=get_valid_import_config()
@@ -105,7 +108,7 @@ describe ImportConfig do
 	# Test
 	ic.should_not be_valid
     end
-
+    
     it "should require an array for unique_id_hash_fields" do
 	# Get ImportConfig
 	ic=get_valid_import_config()
@@ -121,6 +124,9 @@ describe ImportConfig do
 	ic.unique_id_hash_fields=[1,2]
 	# Test
 	ic.should be_valid
+    end
+
+    pending "should return an array for unique_id_hash_fields" do
     end
 
   pending "add some examples to (or delete) #{__FILE__}"
