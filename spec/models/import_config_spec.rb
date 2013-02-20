@@ -66,7 +66,17 @@ describe ImportConfig do
 	ic.should be_valid
     end
 
-    pending "should return a hash for field_mapping" do
+    it "should return a hash for field_mapping" do
+	# Get ImportConfig
+	ic=get_valid_import_config()
+	# Set field
+	ic.field_mapping=@attr[:field_mapping]
+	# Save record
+	ic.save!
+	# Retrieve record
+	new_ic=ImportConfig.find(ic.id)
+	# Test
+	new_ic.field_mapping.is_a?(Hash).should == true
     end
 
     it "should require a file_type" do
@@ -126,7 +136,17 @@ describe ImportConfig do
 	ic.should be_valid
     end
 
-    pending "should return an array for unique_id_hash_fields" do
+    it "should return an array for unique_id_hash_fields" do
+	# Get ImportConfig
+	ic=get_valid_import_config()
+	# Set field
+	ic.unique_id_hash_fields=[1,2]
+	# Save record
+	ic.save!
+	# Retrieve record
+	new_ic=ImportConfig.find(ic.id)
+	# Test
+	new_ic.unique_id_hash_fields.is_a?(Array).should == true
     end
 
   pending "add some examples to (or delete) #{__FILE__}"

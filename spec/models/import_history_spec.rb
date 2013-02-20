@@ -131,16 +131,59 @@ describe ImportHistory do
 	filename='spec/imports/amex.csv'
 	# Get import history
 	ih=get_valid_import_history()
+	# Save import_history
+	ih.save!
 	# Get import config
 	ic=ih.import_config
 	# Get user
 	u=ih.user_id
 	# Import data
 	ih.import_data(filename,ic,u)
-	5.should == 1
+	# Get all ImportData
+	id=ImportDatum.all
+	# ImportData should contain 3 new rows
+	id.size.should == 3
+	# Get first record
+	id1=id.first
+	# Get Date bought
+	date_bought=id1.mapped_fields[:date_bought]
+	# Check Date
+	date_bought.strftime("%Y-%m-%d").should == Date.parse('2012-12-01').strftime("%Y-%m-%d")
+	# Check amount
+	id1.mapped_fields[:amount].should == "38.31"
+	# Check Store
+	id1.mapped_fields[:store].should == "ULTRAMAR"
     end
 
-    pending "should be able to import csv from pcfinancial" do
+    it "should be able to import csv from pcfinancial" do
+	# Import config attributes
+	@attr_ic={:title => 'PC', :description => 'CSV export of PC MC', :field_mapping => {:date_bought => 0, :amount => 2, :store => 3}, :file_type => 'csv', :unique_id_field => 7, :unique_id_hash_fields => [0,2,3]}
+	# Import file
+	filename='spec/imports/pc_financial.csv'
+	# Get import history
+	ih=get_valid_import_history()
+	# Save import_history
+	ih.save!
+	# Get import config
+	ic=ih.import_config
+	# Get user
+	u=ih.user_id
+	# Import data
+	ih.import_data(filename,ic,u)
+	# Get all ImportData
+	id=ImportDatum.all
+	# ImportData should contain 2 new rows
+	id.size.should == 2
+	# Get first record
+	id1=id.first
+	# Get Date bought
+	date_bought=id1.mapped_fields[:date_bought]
+	# Check Date
+	date_bought.strftime("%Y-%m-%d").should == Date.parse('2013-01-26').strftime("%Y-%m-%d")
+	# Check amount
+	id1.mapped_fields[:amount].should == "34.74"
+	# Check Store
+	id1.mapped_fields[:store].should == "store 1"
     end
 
     pending "should be able to ignore duplicate entries during import" do

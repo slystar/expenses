@@ -97,8 +97,13 @@ class ImportHistory < ActiveRecord::Base
     def import_csv(filename, import_config, user_id)
 	# Get unique hash fields
 	unique_hash_ids=import_config[:unique_id_hash_fields]
+	# Read file
+	file_content=File.read(filename)
+	# Clean file
+	file_content.gsub!(/ ,/,',')
+	file_content.gsub!(/, /,',')
 	# Loop over csv
-	CSV.foreach(filename) do |row|
+	CSV.parse(file_content) do |row|
 	    # Variables
 	    unique_hash_str=''
 	    mapped_fields={}
@@ -113,6 +118,8 @@ class ImportHistory < ActiveRecord::Base
 	    import_config[:field_mapping].each{|column, row_id| mapped_fields[column]=row[row_id]}
 	    # Extract amount
 	    amount=mapped_fields[:amount]
+	    # Extract date_bought
+	    date_bought=mapped_fields[:date_bought]
 	    # Check amount
 	    if not amount_positive(amount)
 		# Skip negative amounts since those are payments
@@ -120,12 +127,31 @@ class ImportHistory < ActiveRecord::Base
 	    end
 	    # Clean amount
 	    mapped_fields[:amount]=clean_amount(amount)
+	    # Create date object if available
+	    if date_bought
+		# So far, all dates are in mm/day/yyyy
+		date_array=date_bought.match(/(\d\d)\/(\d\d)\/(\d\d\d\d)/)
+		# Get info
+		d=date_array[2]
+		m=date_array[1]
+		y=date_array[3]
+		# Create new date string
+		new_date_str="#{y}-#{m}-#{d}"
+		# Convert to date object
+		date_obj=Date.parse(new_date_str)
+		# Save date object
+		mapped_fields[:date_bought]=date_obj
+	    end
 	    # Set attributes
 	    attr={:unique_id => unique_id, :unique_hash => unique_hash, :mapped_fields => mapped_fields}
 	    # Create new ImportData
 	    id=ImportDatum.new(attr)
 	    # Set user
 	    id.user_id=user_id
+	    # Set import_history_id
+	    id.import_history_id=self.id
+	    # Set import_config_id
+	    id.import_config_id=import_config.id
 	    # Save record
 	    id.save!
 	end
