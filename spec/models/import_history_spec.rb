@@ -25,6 +25,25 @@ describe ImportHistory do
 	return ih
     end
 
+    def import_amex()
+	# Import config attributes
+	@attr_ic={:title => 'Amex', :description => 'CSV export of amex', :field_mapping => {:date_bought => 0, :amount => 2, :store => 3}, :file_type => 'csv', :unique_id_field => 1, :unique_id_hash_fields => [0,2,3]}
+	# Import file
+	filename='spec/imports/amex.csv'
+	# Get import history
+	ih=get_valid_import_history()
+	# Save import_history
+	ih.save!
+	# Get import config
+	ic=ih.import_config
+	# Get user
+	u=ih.user_id
+	# Import data
+	ih.import_data(filename,ic,u)
+	# Return ImportHistory
+	return ih
+    end
+
     it "should create a new instance given valid attributes" do
 	ih=get_valid_import_history
 	# Try to save
@@ -105,8 +124,18 @@ describe ImportHistory do
     end
 
     pending "should require upload with content" do
-	# Read tmp file from upload
-	# Check data size
+	# Set target dir
+	storage_dir=Dir.tmpdir
+	# Simulate empty file
+	file_content=''
+	# Get object
+	ih=get_valid_import_history()
+	# Save file
+	ih.save_file(file_content,storage_dir)
+	# Save record
+	ih.save.should == false
+	# Test
+	ih.errors.size.should == 1
     end
 
     it "should generate an error when importing an unknown filetype" do
@@ -125,20 +154,8 @@ describe ImportHistory do
     end
 
     it "should be able to import csv from amex" do
-	# Import config attributes
-	@attr_ic={:title => 'Amex', :description => 'CSV export of amex', :field_mapping => {:date_bought => 0, :amount => 2, :store => 3}, :file_type => 'csv', :unique_id_field => 1, :unique_id_hash_fields => [0,2,3]}
-	# Import file
-	filename='spec/imports/amex.csv'
-	# Get import history
-	ih=get_valid_import_history()
-	# Save import_history
-	ih.save!
-	# Get import config
-	ic=ih.import_config
-	# Get user
-	u=ih.user_id
 	# Import data
-	ih.import_data(filename,ic,u)
+	ih=import_amex
 	# Get all ImportData
 	id=ImportDatum.all
 	# ImportData should contain 3 new rows
@@ -186,6 +203,62 @@ describe ImportHistory do
 	id1.mapped_fields[:store].should == "store 1"
     end
 
-    pending "should be able to ignore duplicate entries during import" do
+    it "should be able to ignore duplicate entries during import" do
+	# Import file
+	filename='spec/imports/amex.csv'
+	# Get Import data
+	ih=import_amex
+	# Get all ImportData
+	id=ImportDatum.all
+	# ImportData should contain 3 new rows
+	id.size.should == 3
+	# Get new import history
+	ih2=get_valid_import_history()
+	# Save import_history
+	ih2.save!
+	# Get import config
+	ic=ih2.import_config
+	# Get user
+	u=ih2.user_id
+	# Import data
+	ih2.import_data(filename,ic,u)
+	# Get all ImportData
+	id=ImportDatum.all
+	# ImportData should still contain 3 new rows
+	id.size.should == 3
+	# Test
+	ih2.errors.size.should == 3
+    end
+
+    it "should be able to provide a list or records to be processed" do
+	# Get Import data
+	ih=import_amex
+	# Get user
+	user_id=ih.user_id
+	# Get all ImportData
+	id=ImportDatum.all
+	# ImportData should still contain 3 new rows
+	id.size.should == 3
+	# Get a list of imports to process
+	records=ImportDatum.imports_to_process(user_id)
+	# Check size
+	records.size.should == id.size
+    end
+
+    pending "should be able to approve imported records" do
+	# Get Import data
+	ih=import_amex
+	# Get all ImportData
+	id=ImportDatum.all
+	# ImportData should contain 3 new rows
+	id.size.should == 3
+	# Get first record
+	id1=id.first
+	# Approve record
+	id1.approve
+	1.should == 5
+    end
+
+    pending "should be able to refuse imported records" do
     end
 end

@@ -186,5 +186,44 @@ describe ImportDatum do
 	id.should_not be_valid
     end
 
-  pending "add some examples to (or delete) #{__FILE__}"
+    it "should have a unique unique_id" do
+	id=get_valid_import_data()
+	# Set fields
+	id.unique_id='123456'
+	id.unique_hash='123456'
+	# Test
+	id.save!
+	# Get new record
+	id2=get_valid_import_data
+	# Set fields
+	id2.unique_id='123456'
+	id2.unique_hash='abc'
+	# Should not be valid
+	id2.should_not be_valid
+    end
+
+    it "should have a unique_hash" do
+	id=get_valid_import_data()
+	# Set fields
+	id.unique_id='123456'
+	id.unique_hash='123456'
+	# Test
+	id.save!
+	# Get new record
+	id2=get_valid_import_data
+	# Set fields
+	id2.unique_id='abc'
+	id2.unique_hash='123456'
+	# Should not be valid
+	id2.should_not be_valid
+    end
+
+    pending "should have process_flag set to false on creation" do
+    end
+
+    pending "should have class method imports_to_process" do
+    end
+
+    pending "should have imports_to_process return import records" do
+    end
 end

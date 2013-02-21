@@ -11,7 +11,8 @@ class ImportDatum < ActiveRecord::Base
     belongs_to :import_history
 
     # Validations
-    validates :unique_hash, :presence => true
+    validates :unique_id, :uniqueness => true
+    validates :unique_hash, :presence => true, :uniqueness => true
     validates :mapped_fields, :presence => true
     # Validations: relationships
     validates :user, :presence => true
@@ -22,6 +23,14 @@ class ImportDatum < ActiveRecord::Base
     validate :check_expense_id_on_create, :on => :create
     validate :check_process_flag_on_create, :on => :create
     validate :check_process_date_on_create, :on => :create
+
+    # Method to get a list of import records to process
+    def self.imports_to_process(user_id)
+	# Find records that have not been processed for this user
+	recs=ImportDatum.where(:user_id => user_id).where(:process_flag => false)
+	# Get records
+	return recs.all
+    end
 
     private
 
@@ -37,7 +46,7 @@ class ImportDatum < ActiveRecord::Base
 
     # Method to check process_flag on record creation
     def check_process_flag_on_create
-	self.errors.add(:process_flag,"should not be set on creation") if not self.process_flag.nil?
+	self.errors.add(:process_flag,"should not be set on creation") if not self.process_flag == false
     end
 
     # Method to check process_date on record creation

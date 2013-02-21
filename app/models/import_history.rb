@@ -152,8 +152,18 @@ class ImportHistory < ActiveRecord::Base
 	    id.import_history_id=self.id
 	    # Set import_config_id
 	    id.import_config_id=import_config.id
-	    # Save record
-	    id.save!
+	    # check if record is valid
+	    if id.valid?
+		# Save record
+		id.save!
+	    else
+		# Add row info
+		err_msg="ID: #{unique_id},"
+		# Prepare message
+		err_msg << id.errors.messages.to_s
+		# Not valid, add to errors
+		self.errors.add(:base,err_msg)
+	    end
 	end
     end
 end
