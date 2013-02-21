@@ -11,7 +11,7 @@
 #
 # It's strongly recommended to check this file into your version control system.
 
-ActiveRecord::Schema.define(:version => 20130206174032) do
+ActiveRecord::Schema.define(:version => 20130221183035) do
 
   create_table "backups", :force => true do |t|
     t.datetime "backup_date"
@@ -69,7 +69,7 @@ ActiveRecord::Schema.define(:version => 20130206174032) do
     t.string   "unique_id"
     t.string   "unique_hash"
     t.text     "mapped_fields"
-    t.boolean  "process_flag"
+    t.boolean  "process_flag",      :default => false
     t.datetime "process_date"
     t.integer  "expense_id"
     t.text     "process_notes"
@@ -152,7 +152,7 @@ ActiveRecord::Schema.define(:version => 20130206174032) do
     t.integer  "from_user_id"
     t.integer  "to_user_id"
     t.decimal  "amount"
-    t.boolean  "approved"
+    t.boolean  "approved",                  :default => false
     t.datetime "approved_date"
     t.datetime "created_at"
     t.datetime "updated_at"
