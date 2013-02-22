@@ -244,21 +244,4 @@ describe ImportHistory do
 	# Check size
 	records.size.should == id.size
     end
-
-    pending "should be able to approve imported records" do
-	# Get Import data
-	ih=import_amex
-	# Get all ImportData
-	id=ImportDatum.all
-	# ImportData should contain 3 new rows
-	id.size.should == 3
-	# Get first record
-	id1=id.first
-	# Approve record
-	id1.approve
-	1.should == 5
-    end
-
-    pending "should be able to refuse imported records" do
-    end
 end
