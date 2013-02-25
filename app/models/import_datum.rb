@@ -32,6 +32,26 @@ class ImportDatum < ActiveRecord::Base
 	return recs.all
     end
 
+    # Method to approve imported record
+    def approve(expense_data)
+	# Get mapped fields
+pp	imported_fields=self.mapped_fields
+	# Merge imported data with the rest of the data
+	new_record_data=imported_fields.merge(expense_data)
+	# Create a new expense record
+	expense=Expense.new(new_record_data)
+	# Check if it's valid
+	if expense.valid?
+	    # Return true of save is OK, false otherwise
+	    return expense.save
+	else
+	    # Error
+	    self.errors.add(:base,expense.errors.messages)
+	    # Return nil
+	    return nil
+	end
+    end
+
     private
 
     # Method to check the type of field_mapping

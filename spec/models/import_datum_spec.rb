@@ -261,14 +261,17 @@ describe ImportDatum do
 	imports.size.should == 0
     end
 
-    pending "should be able to approve imported records" do
+    it "should be able to approve valid imported records" do
 	id1=get_next_valid_import_data_object
+	# Set expense data
+	expense_attr={:user_id => id1.user_id}
 	# Save record
 	id1.save!
 	# Reload
 	id1.reload
 	# Approve record
-	id1.approve
+	p id1.approve(expense_attr)
+	pp id1.errors
 	# Reload
 	id1.reload
 	# Get fields
@@ -285,6 +288,9 @@ describe ImportDatum do
 	expense.store_id.should == store_id
 	expense.date_bought.should == date_bought
 	1.should == 5
+    end
+
+    pending "should return an error when trying to approve an invalid record" do
     end
 
     pending "should be able to refuse imported records" do

@@ -148,6 +148,4 @@ describe ImportConfig do
 	# Test
 	new_ic.unique_id_hash_fields.is_a?(Array).should == true
     end
-
-  pending "add some examples to (or delete) #{__FILE__}"
 end
