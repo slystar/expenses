@@ -3,7 +3,7 @@ require 'spec_helper'
 describe ImportConfig do
 
     before(:each) do
-	@attr={:title => 'Big bank import', :description => 'CSV export of Big Bank', :field_mapping => {:amount => 2, :store => 3}, :file_type => 'csv', :unique_id_field => 4, :unique_id_hash_fields => [:date_bought,:store_id,:amount]}
+	@attr={:title => 'Big bank import', :description => 'CSV export of Big Bank', :field_mapping => {:amount => 2, :store => 3}, :file_type => 'csv', :unique_id_field => 4, :unique_id_hash_fields => [:date_purchased,:store_id,:amount], :date_type => 0}
 	@new_user_id=2
     end
 
@@ -147,5 +147,32 @@ describe ImportConfig do
 	new_ic=ImportConfig.find(ic.id)
 	# Test
 	new_ic.unique_id_hash_fields.is_a?(Array).should == true
+    end
+
+    it "should require a DateType" do
+	# Get ImportConfig
+	ic=get_valid_import_config()
+	# Set field
+	ic.date_type=nil
+	# Test
+	ic.should_not be_valid
+    end
+
+    it "should require a valid DateType" do
+	# Get ImportConfig
+	ic=get_valid_import_config()
+	# Set field
+	ic.date_type=999
+	# Test
+	ic.should_not be_valid
+    end
+
+    it "should accept valid DateType" do
+	# Get ImportConfig
+	ic=get_valid_import_config()
+	# Set field
+	ic.date_type=0
+	# Test
+	ic.should be_valid
     end
 end

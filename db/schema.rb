@@ -11,7 +11,7 @@
 #
 # It's strongly recommended to check this file into your version control system.
 
-ActiveRecord::Schema.define(:version => 20130221183035) do
+ActiveRecord::Schema.define(:version => 20130225182430) do
 
   create_table "backups", :force => true do |t|
     t.datetime "backup_date"
@@ -60,6 +60,7 @@ ActiveRecord::Schema.define(:version => 20130221183035) do
     t.text     "unique_id_hash_fields"
     t.datetime "created_at"
     t.datetime "updated_at"
+    t.integer  "date_type"
   end
 
   create_table "import_data", :force => true do |t|
@@ -75,6 +76,7 @@ ActiveRecord::Schema.define(:version => 20130221183035) do
     t.text     "process_notes"
     t.datetime "created_at"
     t.datetime "updated_at"
+    t.boolean  "approved"
   end
 
   create_table "import_histories", :force => true do |t|

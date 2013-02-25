@@ -9,6 +9,7 @@ class ImportDatum < ActiveRecord::Base
     belongs_to :user
     belongs_to :import_config
     belongs_to :import_history
+    belongs_to :expense
 
     # Validations
     validates :unique_id, :uniqueness => true
@@ -35,21 +36,41 @@ class ImportDatum < ActiveRecord::Base
     # Method to approve imported record
     def approve(expense_data)
 	# Get mapped fields
-pp	imported_fields=self.mapped_fields
+	imported_fields=self.mapped_fields
 	# Merge imported data with the rest of the data
 	new_record_data=imported_fields.merge(expense_data)
 	# Create a new expense record
 	expense=Expense.new(new_record_data)
 	# Check if it's valid
 	if expense.valid?
-	    # Return true of save is OK, false otherwise
-	    return expense.save
-	else
-	    # Error
-	    self.errors.add(:base,expense.errors.messages)
-	    # Return nil
-	    return nil
+	    # Try to save expense
+	    if expense.save
+		# Process this record
+		self.process_flag=true
+		self.process_date=Time.now
+		self.expense_id=expense.id
+		self.approved=true
+		# Save self
+		self.save
+		# Return true
+		return true
+	    end
 	end
+	# Error
+	self.errors.add(:base,expense.errors.messages)
+	# Return nil
+	return false
+    end
+
+    # Method to refuse imported record
+    def refuse()
+	# Set fields
+	self.process_flag=true
+	self.process_date=Time.now
+	self.expense_id=0
+	self.approved=false
+	# Save self
+	self.save
     end
 
     private

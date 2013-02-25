@@ -3,8 +3,8 @@ require 'spec_helper'
 describe ImportDatum do
 
     before(:each) do
-	@attr={:unique_id => 'abcd', :unique_hash => 'thisisahash', :mapped_fields => {:amount => 10, :date_bought => '2013-02-01'}}
-	@attr_ic={:user_id => 1, :title => 'Big bank import', :description => 'CSV export of Big Bank', :field_mapping => {:amount => 2, :store => 3}, :file_type => 'csv', :unique_id_field => 4, :unique_id_hash_fields => [2,3,4]}
+	@attr={:unique_id => 'abcd', :unique_hash => 'thisisahash', :mapped_fields => {:amount => 10, :date_purchased => '2013-02-01', :store_id => 1}}
+	@attr_ic={:user_id => 1, :title => 'Big bank import', :description => 'CSV export of Big Bank', :field_mapping => {:amount => 2, :store => 3}, :file_type => 'csv', :unique_id_field => 4, :unique_id_hash_fields => [2,3,4], :date_type => 0}
 	@attr_ih={:import_config_id => 1, :original_file_name => "uploaded_file.csv"}
 	@new_user_id=1
 	@seed_num=1
@@ -232,6 +232,12 @@ describe ImportDatum do
 	id.process_flag.should == false
     end
 
+    it "should have an expense relationship" do
+	id=get_next_valid_import_data_object()
+	# Test
+	id.should respond_to(:expense)
+    end
+
     it "should have class method imports_to_process" do
 	# Test
 	ImportDatum.should respond_to(:imports_to_process)
@@ -262,37 +268,75 @@ describe ImportDatum do
     end
 
     it "should be able to approve valid imported records" do
+	# Variables
+	today=Time.now.utc.strftime("%Y-%m-%d")
+	# Get import_data
 	id1=get_next_valid_import_data_object
-	# Set expense data
-	expense_attr={:user_id => id1.user_id}
+	# Get expense attributes
+	expense_attr=get_attr_expense
+	# Merge current mapped_fields
+	expense_attr=expense_attr.merge(id1.mapped_fields)
 	# Save record
 	id1.save!
 	# Reload
 	id1.reload
 	# Approve record
-	p id1.approve(expense_attr)
-	pp id1.errors
+	id1.approve(expense_attr)
 	# Reload
 	id1.reload
 	# Get fields
 	amount=id1.mapped_fields[:amount]
-	store_id=id1.mapped_fields[:store]
-	date_bought=id1.mapped_fields[:date_bought]
+	store_id=id1.mapped_fields[:store_id]
+	date_purchased=id1.mapped_fields[:date_purchased]
 	# Test
 	id1.process_flag.should == true
-	id1.process_date.should == today
+	id1.process_date.strftime("%Y-%m-%d").should == today
+	id1.approved.should == true
 	# Get related expense
-	expense=id.expense
+	expense=id1.expense
 	# Test
 	expense.amount.should == amount
 	expense.store_id.should == store_id
-	expense.date_bought.should == date_bought
-	1.should == 5
+	expense.date_purchased.strftime("%Y-%m-%d").should == date_purchased
     end
 
-    pending "should return an error when trying to approve an invalid record" do
+    it "should return an error when trying to approve an invalid record" do
+	# Variables
+	today=Time.now.utc.strftime("%Y-%m-%d")
+	# Get import_data
+	id1=get_next_valid_import_data_object
+	# Get expense attributes
+	expense_attr={}
+	# Merge current mapped_fields
+	expense_attr=expense_attr.merge(id1.mapped_fields)
+	# Save record
+	id1.save!
+	# Reload
+	id1.reload
+	# Approve record
+	result=id1.approve(expense_attr)
+	# Test
+	result.should == false
+	id1.errors.size.should > 0
     end
 
-    pending "should be able to refuse imported records" do
+    it "should be able to refuse imported records" do
+	# Variables
+	today=Time.now.utc.strftime("%Y-%m-%d")
+	# Get import_data
+	id1=get_next_valid_import_data_object
+	# Save record
+	id1.save!
+	# Reload
+	id1.reload
+	# Refuse record
+	id1.refuse
+	# Reload
+	id1.reload
+	# Test
+	id1.process_flag.should == true
+	id1.process_date.strftime("%Y-%m-%d").should == today
+	id1.expense_id.should == 0
+	id1.approved.should == false
     end
 end

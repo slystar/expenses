@@ -4,7 +4,7 @@ describe ImportHistory do
 
     before(:each) do
 	@attr={:import_config_id => 1, :original_file_name => "uploaded_file.csv"}
-	@attr_ic={:user_id => 1, :title => 'Big bank import', :description => 'CSV export of Big Bank', :field_mapping => {:amount => 2, :store => 3}, :file_type => 'csv', :unique_id_field => 4, :unique_id_hash_fields => [2,3,4]}
+	@attr_ic={:user_id => 1, :title => 'Big bank import', :description => 'CSV export of Big Bank', :field_mapping => {:amount => 2, :store => 3}, :file_type => 'csv', :unique_id_field => 4, :unique_id_hash_fields => [2,3,4], :date_type => 0}
 	@new_user_id=1
     end
 
@@ -27,7 +27,7 @@ describe ImportHistory do
 
     def import_amex()
 	# Import config attributes
-	@attr_ic={:title => 'Amex', :description => 'CSV export of amex', :field_mapping => {:date_bought => 0, :amount => 2, :store => 3}, :file_type => 'csv', :unique_id_field => 1, :unique_id_hash_fields => [0,2,3]}
+	@attr_ic={:title => 'Amex', :description => 'CSV export of amex', :field_mapping => {:date_purchased => 0, :amount => 2, :store => 3}, :file_type => 'csv', :unique_id_field => 1, :unique_id_hash_fields => [0,2,3], :date_type => 0}
 	# Import file
 	filename='spec/imports/amex.csv'
 	# Get import history
@@ -163,9 +163,9 @@ describe ImportHistory do
 	# Get first record
 	id1=id.first
 	# Get Date bought
-	date_bought=id1.mapped_fields[:date_bought]
+	date_purchased=id1.mapped_fields[:date_purchased]
 	# Check Date
-	date_bought.strftime("%Y-%m-%d").should == Date.parse('2012-12-01').strftime("%Y-%m-%d")
+	date_purchased.strftime("%Y-%m-%d").should == Date.parse('2012-12-01').strftime("%Y-%m-%d")
 	# Check amount
 	id1.mapped_fields[:amount].should == "38.31"
 	# Check Store
@@ -174,7 +174,7 @@ describe ImportHistory do
 
     it "should be able to import csv from pcfinancial" do
 	# Import config attributes
-	@attr_ic={:title => 'PC', :description => 'CSV export of PC MC', :field_mapping => {:date_bought => 0, :amount => 2, :store => 3}, :file_type => 'csv', :unique_id_field => 7, :unique_id_hash_fields => [0,2,3]}
+	@attr_ic={:title => 'PC', :description => 'CSV export of PC MC', :field_mapping => {:date_purchased => 0, :amount => 2, :store => 3}, :file_type => 'csv', :unique_id_field => 7, :unique_id_hash_fields => [0,2,3], :date_type => 0}
 	# Import file
 	filename='spec/imports/pc_financial.csv'
 	# Get import history
@@ -194,9 +194,9 @@ describe ImportHistory do
 	# Get first record
 	id1=id.first
 	# Get Date bought
-	date_bought=id1.mapped_fields[:date_bought]
+	date_purchased=id1.mapped_fields[:date_purchased]
 	# Check Date
-	date_bought.strftime("%Y-%m-%d").should == Date.parse('2013-01-26').strftime("%Y-%m-%d")
+	date_purchased.strftime("%Y-%m-%d").should == Date.parse('2013-01-26').strftime("%Y-%m-%d")
 	# Check amount
 	id1.mapped_fields[:amount].should == "34.74"
 	# Check Store
