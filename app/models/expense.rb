@@ -28,6 +28,10 @@ class Expense < ActiveRecord::Base
     validate :check_process_date, :on => :create
     validate :check_process_flag, :on => :create
     validate :check_for_processed_record_update, :on => :update
+    validate :check_duplication_check_reviewed, :on => :create
+
+    # Before save
+    before_save :create_duplication_check_hash
 
     # Check on destruction
     before_destroy :check_for_processed_record_delete
@@ -136,5 +140,27 @@ class Expense < ActiveRecord::Base
     def check_process_flag
 	# Check for process_flag
 	self.errors.add(:base,"Process_flag must be false on create") if self.process_flag
+    end
+
+    # Method to check duplication_check_reviewed
+    def check_duplication_check_reviewed
+	# Check
+	self.errors.add(:duplication_check_reviewed,"can't be set on creation") if not self.duplication_check_reviewed == false
+    end
+
+    # Method to create duplication_check_hash
+    def create_duplication_check_hash
+	# Variable
+	string_to_hash=''
+	# Add formated date_purchased
+	string_to_hash << self.date_purchased.strftime('%Y-%m-%d').to_s
+	# Add amount
+	string_to_hash << self.amount.to_s
+	# Add store_id
+	string_to_hash << self.store_id.to_s
+	# Create hash
+	d_hash=Digest::SHA2.hexdigest(string_to_hash)
+	# Set field
+	self.duplication_check_hash=d_hash
     end
 end

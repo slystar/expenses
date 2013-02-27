@@ -529,5 +529,78 @@ describe Expense do
 	# Update balances
 	# Test
     end
+
+    it "should require duplication_check_hash" do
+	expense=Expense.new(@attr)
+	# Save
+	expense.save!
+	# Get hash
+	dup_hash=expense.duplication_check_hash
+	# Test
+	dup_hash.size.should > 0
+	# Test, should be sha2
+	dup_hash.size.should == 64
+    end
+
+    it "should use date_purchased, amount and store_id to create duplication_check_hash" do
+	# Variables
+	amount=43.69
+	date_purchased=Date.today
+	expense=Expense.new(@attr)
+	# Set date_purchased
+	expense.date_purchased=date_purchased
+	# Set amount
+	expense.amount=amount
+	# Get store
+	store_id=expense.store_id
+	# Create hash_string
+	hash_string=date_purchased.strftime('%Y-%m-%d').to_s + amount.to_s + store_id.to_s
+	# Created expected hash
+	expected_hash=Digest::SHA2.hexdigest(hash_string)
+	# Save
+	expense.save!
+	# Get hash
+	dup_hash=expense.duplication_check_hash
+	# Test
+	dup_hash.should == expected_hash
+    end
+
+    it "should not allow duplication_check_reviewed to be set on creation" do
+	expense=Expense.new(@attr)
+	# Set field
+	expense.duplication_check_reviewed=true
+	# Test
+	expense.should_not be_valid
+    end
+
+    it "should allow duplication_check_reviewed to be set after creation" do
+	expense=Expense.new(@attr)
+	# Save
+	expense.save!
+	# Reload
+	expense.reload
+	# Set field
+	expense.duplication_check_reviewed=true
+	# Test
+	expense.should be_valid
+    end
+
+    it "should have duplication_check_reviewed set to false on creation" do
+	expense=Expense.new(@attr)
+	# Save
+	expense.save!
+	# Test
+	expense.duplication_check_reviewed.should == false
+    end
+
+    pending "should have a find_duplicates method" do
+    end
+
+    pending "should be able to review possible duplicates" do
+    end
+
+    pending "should set duplication_check_reviewed to false if a future duplicate is found" do
+    end
+
     pending "should notify user about updates"
 end
