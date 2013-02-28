@@ -4,6 +4,7 @@ describe Expense do
 
     before(:each) do
 	@attr=get_attr_expense
+	@new_user_id = 1
     end
 
     it "should create a record with valid attributes" do
@@ -593,10 +594,33 @@ describe Expense do
 	expense.duplication_check_reviewed.should == false
     end
 
-    pending "should have a find_duplicates method" do
+    it "should respond to a find_duplicates class method" do
+	# Test
+	Expense.should respond_to(:find_duplicates)
+    end
+
+    it "should find duplicates if find_duplicates is called" do
+	# Create users
+	u1=get_next_user
+	u2=get_next_user
+	# Create expenses
+	e1=Expense.create!(@attr.merge(:user_id => u1.id))
+	e2=Expense.create!(@attr.merge(:user_id => u1.id))
+	e3=Expense.create!(@attr.merge(:date_purchased => Date.today, :user_id => u2.id))
+	e4=Expense.create!(@attr.merge(:date_purchased => Date.today, :user_id => u2.id))
+	e5=Expense.create!(@attr.merge(:date_purchased => Date.today, :user_id => u2.id))
+	# Test
+	Expense.find_duplicates(u1.id).size.should == 2
+	Expense.find_duplicates(u2.id).size.should == 3
+    end
+
+    pending "should be able to find a duplicate before record is saved" do
     end
 
     pending "should be able to review possible duplicates" do
+    end
+
+    pending "should ignore duplicate records that have been reviewed" do
     end
 
     pending "should set duplication_check_reviewed to false if a future duplicate is found" do

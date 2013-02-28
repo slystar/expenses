@@ -71,6 +71,12 @@ class Expense < ActiveRecord::Base
 	self.save!
     end
 
+    # Class method to find duplicate entries
+    def self.find_duplicates(user_id)
+	# Find records with same duplication_check_hash
+	Expense.where(:duplication_check_hash => Expense.select(:duplication_check_hash).group(:duplication_check_hash).having("count(duplication_check_hash) > 1")).where(:user_id => user_id)
+    end
+
     private
 
     def check_for_processed_record_delete
