@@ -71,10 +71,37 @@ class Expense < ActiveRecord::Base
 	self.save!
     end
 
-    # Class method to find duplicate entries
+    # Method to find duplicates start from a record
+    def find_duplicates
+	# Create hash
+	create_duplication_check_hash if self.duplication_check_hash.nil?
+	# Get hash
+	d_hash=self.duplication_check_hash
+	# Find records with this hash
+	obj=Expense.where(:user_id => self.user_id).where(:duplication_check_hash => d_hash).where(:duplication_check_reviewed => false)
+	# Find possible reviewed duplicates that are now active
+	pp Expense.where(:user_id => self.user_id).where(:duplication_check_hash => d_hash).group(:duplication_check_hash,:duplication_check_reviewed).count
+	# Add additional check if this is a saved record
+	if self.id
+	    # Return the equivalent of an empty object if it only found itself
+	    return Expense.where('1 == 2') if obj.count == 1
+	end
+	# Return obj
+	return obj
+    end
+
+    # Class method to find all duplicate entries for a user
     def self.find_duplicates(user_id)
 	# Find records with same duplication_check_hash
-	Expense.where(:duplication_check_hash => Expense.select(:duplication_check_hash).group(:duplication_check_hash).having("count(duplication_check_hash) > 1")).where(:user_id => user_id)
+	Expense.where(:duplication_check_hash => Expense.select(:duplication_check_hash).group(:duplication_check_hash).having("count(duplication_check_hash) > 1")).where(:user_id => user_id).where(:duplication_check_reviewed => false)
+    end
+
+    # Method to review duplicates
+    def review_duplicates
+	# Get duplicates
+	duplicates=find_duplicates
+	# Update all records
+	duplicates.update_all(:duplication_check_reviewed => true)
     end
 
     private

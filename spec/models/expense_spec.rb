@@ -614,16 +614,105 @@ describe Expense do
 	Expense.find_duplicates(u2.id).size.should == 3
     end
 
-    pending "should be able to find a duplicate before record is saved" do
+    it "should respond to a find_duplicates method" do
+	expense=Expense.new(@attr)
+	# Test
+	expense.should respond_to(:find_duplicates)
     end
 
-    pending "should be able to review possible duplicates" do
+    it "should be able to find a duplicate before record is saved" do
+	# Create expense
+	e1=Expense.create!(@attr)
+	# Get user
+	u_id=e1.user_id
+	# Create new expense
+	e2=Expense.new(@attr.merge(:user_id => u_id))
+	# Test
+	e2.find_duplicates.size.should > 0
     end
 
-    pending "should ignore duplicate records that have been reviewed" do
+    it "should be able to find a duplicate after record is saved" do
+	# Create expense
+	e1=Expense.create!(@attr)
+	# Get user
+	u_id=e1.user_id
+	# Create new expense
+	e2=Expense.create!(@attr.merge(:user_id => u_id))
+	# Reload
+	e2.reload
+	# Test
+	e2.find_duplicates.size.should > 0
     end
 
-    pending "should set duplication_check_reviewed to false if a future duplicate is found" do
+    it "should be able to review possible duplicates" do
+	# Create users
+	u1=get_next_user
+	# Create expenses
+	e1=Expense.create!(@attr.merge(:user_id => u1.id))
+	e2=Expense.create!(@attr.merge(:user_id => u1.id))
+	# Test class method
+	Expense.find_duplicates(u1.id).size.should == 2
+	# Test record method
+	e1.find_duplicates.size.should > 0
+	# Review this record and all duplicate records
+	e1.review_duplicates
+	# Test
+	Expense.find_duplicates(u1.id).size.should == 0
+	e1.find_duplicates.size.should == 0
+    end
+
+    it "should ignore duplicate records that have been reviewed" do
+	# Create users
+	u1=get_next_user
+	# Get 2nd date
+	date2=@attr[:date_purchased].tomorrow
+	# Create expenses
+	e1=Expense.create!(@attr.merge(:user_id => u1.id))
+	e2=Expense.create!(@attr.merge(:user_id => u1.id))
+	e3=Expense.create!(@attr.merge(:date_purchased => date2, :user_id => u1.id))
+	e4=Expense.create!(@attr.merge(:date_purchased => date2, :user_id => u1.id))
+	e5=Expense.create!(@attr.merge(:date_purchased => date2, :user_id => u1.id))
+	# Test
+	Expense.find_duplicates(u1.id).size.should == 5
+	e1.find_duplicates.size.should == 2
+	e3.find_duplicates.size.should == 3
+	# Review first set of duplicates
+	e1.review_duplicates
+	# Test
+	Expense.find_duplicates(u1.id).size.should == 3
+	e1.find_duplicates.size.should == 0
+	e3.find_duplicates.size.should == 3
+    end
+
+    it "should have find_duplicates return nothing if it has no duplicates" do
+	# Create expense
+	e1=Expense.create!(@attr)
+	# Get user
+	u_id=e1.user_id
+	# Test
+	Expense.find_duplicates(u_id).size.should == 0
+	e1.find_duplicates.size.should == 0
+    end
+
+    it "should set duplication_check_reviewed to false if a duplicate is created in the future" do
+	# Create users
+	u1=get_next_user
+	# Create expenses
+	e1=Expense.create!(@attr.merge(:user_id => u1.id))
+	e2=Expense.create!(@attr.merge(:user_id => u1.id))
+	# Test class method
+	Expense.find_duplicates(u1.id).size.should == 2
+	e1.find_duplicates.size.should == 2
+	# Review this record and all duplicate records
+	e1.review_duplicates
+	# Test
+	e1.find_duplicates.size.should == 0
+	Expense.find_duplicates(u1.id).size.should == 0
+	# Create new record
+	e3=Expense.create!(@attr.merge(:user_id => u1.id))
+	# Test
+	e1.find_duplicates.size.should == 3
+	Expense.find_duplicates(u1.id).size.should == 3
     end
 
     pending "should notify user about updates"
