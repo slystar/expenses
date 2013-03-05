@@ -1,6 +1,8 @@
 Models:
 - duplication check
     - fields: amount, date_bought, store
+    - ActiveRecord example to find duplicates
+	UserPayment.where(:amount => UserPayment.select(:amount).where(:amount => UserPayment.select(:amount).where(:process_flag => false)).group(:amount).having("count(amount)>1"))
 - check indexes
 - migration using ActiveRecord
 - expense history (user_id, expense_id, group_id), could allow group
