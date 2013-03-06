@@ -715,5 +715,11 @@ describe Expense do
 	Expense.find_duplicates(u1.id).size.should == 3
     end
 
+    pending "could have a note for reviewed duplicates" do
+    end
+
+    pending "should set duplication reviewed date on review" do
+    end
+
     pending "should notify user about updates"
 end
