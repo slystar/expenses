@@ -29,12 +29,16 @@ class Expense < ActiveRecord::Base
     validate :check_process_flag, :on => :create
     validate :check_for_processed_record_update, :on => :update
     validate :check_duplication_check_reviewed, :on => :create
+    validate :check_duplication_check_processed, :on => :create
 
     # Before save
     before_save :create_duplication_check_hash
 
     # Check on destruction
     before_destroy :check_for_processed_record_delete
+
+    # After create
+    after_create :process_duplicates
 
     # Method to process expense
     def process(user_id)
@@ -73,18 +77,11 @@ class Expense < ActiveRecord::Base
 
     # Method to find duplicates start from a record
     def find_duplicates
-	# Create hash
-	create_duplication_check_hash if self.duplication_check_hash.nil?
-	# Get hash
-	d_hash=self.duplication_check_hash
-	# Find records with this hash
-	obj=Expense.where(:user_id => self.user_id).where(:duplication_check_hash => d_hash).where(:duplication_check_reviewed => false)
-	# Find possible reviewed duplicates that are now active
-	pp Expense.where(:user_id => self.user_id).where(:duplication_check_hash => d_hash).group(:duplication_check_hash,:duplication_check_reviewed).count
-	# Add additional check if this is a saved record
+	# Find OTHER records with this hash
+	obj=find_duplicate_object.where(:duplication_check_processed => false)
+	# If this record is saved in database already
 	if self.id
-	    # Return the equivalent of an empty object if it only found itself
-	    return Expense.where('1 == 2') if obj.count == 1
+	    obj=obj.where("id != ?", self.id) if obj.count == 1
 	end
 	# Return obj
 	return obj
@@ -93,7 +90,10 @@ class Expense < ActiveRecord::Base
     # Class method to find all duplicate entries for a user
     def self.find_duplicates(user_id)
 	# Find records with same duplication_check_hash
-	Expense.where(:duplication_check_hash => Expense.select(:duplication_check_hash).group(:duplication_check_hash).having("count(duplication_check_hash) > 1")).where(:user_id => user_id).where(:duplication_check_reviewed => false)
+	Expense.where(:duplication_check_hash => 
+	    Expense.select(:duplication_check_hash).where(:duplication_check_processed => false)
+	    .group(:duplication_check_hash).having("count(duplication_check_hash)>1"))
+	.where(:user_id => user_id)
     end
 
     # Method to review duplicates
@@ -101,9 +101,20 @@ class Expense < ActiveRecord::Base
 	# Get duplicates
 	duplicates=find_duplicates
 	# Update all records
-	duplicates.update_all(:duplication_check_reviewed => true)
+	duplicates.update_all(:duplication_check_reviewed => true, :duplication_check_processed => true, :duplication_check_reviewed_date => Time.now)
     end
 
+    # Method to prepare find_duplicate object
+    def find_duplicate_object
+	# Create hash if required
+	create_duplication_check_hash if self.duplication_check_hash.nil?
+	# Get hash
+	d_hash=self.duplication_check_hash
+	# Prepare Expense object with basic duplication clause
+	Expense.where(:user_id => self.user_id).where(:duplication_check_hash => d_hash)
+    end
+
+    # Private methods
     private
 
     def check_for_processed_record_delete
@@ -181,6 +192,12 @@ class Expense < ActiveRecord::Base
 	self.errors.add(:duplication_check_reviewed,"can't be set on creation") if not self.duplication_check_reviewed == false
     end
 
+    # Method to check duplication_check_processed
+    def check_duplication_check_processed
+	# Check
+	self.errors.add(:duplication_check_processed,"can't be set on creation") if not self.duplication_check_processed == false
+    end
+
     # Method to create duplication_check_hash
     def create_duplication_check_hash
 	# Variable
@@ -195,5 +212,18 @@ class Expense < ActiveRecord::Base
 	d_hash=Digest::SHA2.hexdigest(string_to_hash)
 	# Set field
 	self.duplication_check_hash=d_hash
+    end
+
+    # Method to process duplication information
+    def process_duplicates
+	# Find any duplicate records and update flags
+	records_changed=self.find_duplicate_object.update_all(:duplication_check_processed => false)
+	# Check if we need to update self
+	if records_changed == 0
+	    # Set field
+	    self.duplication_check_processed=true
+	    # Save self
+	    self.save
+	end
     end
 end

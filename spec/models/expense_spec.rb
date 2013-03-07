@@ -599,7 +599,7 @@ describe Expense do
 	Expense.should respond_to(:find_duplicates)
     end
 
-    it "should find duplicates if find_duplicates is called" do
+    it "should find duplicates if self.find_duplicates is called" do
 	# Create users
 	u1=get_next_user
 	u2=get_next_user
@@ -715,10 +715,56 @@ describe Expense do
 	Expense.find_duplicates(u1.id).size.should == 3
     end
 
-    pending "could have a note for reviewed duplicates" do
+    it "should create a new record with duplication_check_processed set to false" do
+	# Create expense
+	expense=Expense.new(@attr)
+	# Check flag
+	expense.duplication_check_processed.should == false
+	# Save record
+	expense.save!
+	expense.reload
+	# Test
+	expense.duplication_check_processed.should == false
     end
 
-    pending "should set duplication reviewed date on review" do
+    it "should not allow duplication_check_processed to be set on creation" do
+	# Create expense
+	expense=Expense.new(@attr)
+	# Set field
+	expense.duplication_check_processed=true
+	# Test
+	expense.should_not be_valid
+    end
+
+    it "should set duplication reviewed date on review" do
+	# Get today
+	today=Time.now.utc.strftime("%Y-%m-%d")
+	# Create users
+	u1=get_next_user
+	# Create expenses
+	e1=Expense.create!(@attr.merge(:user_id => u1.id))
+	e2=Expense.create!(@attr.merge(:user_id => u1.id))
+	# Test class method
+	Expense.find_duplicates(u1.id).size.should == 2
+	# Test record method
+	e1.find_duplicates.size.should > 0
+	# Review this record and all duplicate records
+	e1.review_duplicates
+	# Test
+	e1.reload.duplication_check_reviewed_date.strftime("%Y-%m-%d").should == today
+	e2.reload.duplication_check_reviewed_date.strftime("%Y-%m-%d").should == today
+    end
+
+    pending "could have a note for reviewed duplicates" do
+	# Create users
+	u1=get_next_user
+	# Create expenses
+	e1=Expense.create!(@attr.merge(:user_id => u1.id))
+	e2=Expense.create!(@attr.merge(:user_id => u1.id))
+	# Test class method
+	Expense.find_duplicates(u1.id).size.should == 2
+	# Test record method
+	e1.find_duplicates.size.should > 0
     end
 
     pending "should notify user about updates"
