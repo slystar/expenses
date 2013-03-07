@@ -755,16 +755,26 @@ describe Expense do
 	e2.reload.duplication_check_reviewed_date.strftime("%Y-%m-%d").should == today
     end
 
-    pending "could have a note for reviewed duplicates" do
+    it "should respond to note" do
+	# Create expenses
+	e1=Expense.create!(@attr)
+	# Test
+	e1.should respond_to(:expense_note)
+    end
+
+    it "could have a note for reviewed duplicates" do
 	# Create users
 	u1=get_next_user
 	# Create expenses
 	e1=Expense.create!(@attr.merge(:user_id => u1.id))
 	e2=Expense.create!(@attr.merge(:user_id => u1.id))
-	# Test class method
-	Expense.find_duplicates(u1.id).size.should == 2
-	# Test record method
-	e1.find_duplicates.size.should > 0
+	# Create note
+	note=ExpenseNote.new({:note => 'aaa'})
+	# Review record with note
+	e1.review_duplicates(note)
+	# Test
+	e1.reload.expense_note.should == note
+	e2.reload.expense_note.should == note
     end
 
     pending "should notify user about updates"

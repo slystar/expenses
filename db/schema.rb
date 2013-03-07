@@ -11,7 +11,7 @@
 #
 # It's strongly recommended to check this file into your version control system.
 
-ActiveRecord::Schema.define(:version => 20130306172534) do
+ActiveRecord::Schema.define(:version => 20130307182123) do
 
   create_table "backups", :force => true do |t|
     t.datetime "backup_date"
@@ -20,23 +20,31 @@ ActiveRecord::Schema.define(:version => 20130306172534) do
     t.datetime "updated_at"
   end
 
+  create_table "expense_notes", :force => true do |t|
+    t.text     "note"
+    t.integer  "version",    :default => 0
+    t.datetime "created_at"
+    t.datetime "updated_at"
+  end
+
   create_table "expenses", :force => true do |t|
-    t.date     "date_purchased",                                                                    :null => false
+    t.date     "date_purchased",                                     :null => false
     t.text     "description"
-    t.integer  "pay_method_id",                                                                     :null => false
-    t.integer  "reason_id",                                                                         :null => false
-    t.integer  "store_id",                                                                          :null => false
-    t.integer  "user_id",                                                                           :null => false
-    t.integer  "group_id",                                                                          :null => false
-    t.decimal  "amount",                          :precision => 10, :scale => 2, :default => 0.0
+    t.integer  "pay_method_id",                                      :null => false
+    t.integer  "reason_id",                                          :null => false
+    t.integer  "store_id",                                           :null => false
+    t.integer  "user_id",                                            :null => false
+    t.integer  "group_id",                                           :null => false
+    t.decimal  "amount",                          :default => 0.0
     t.date     "process_date"
-    t.boolean  "process_flag",                                                   :default => false
+    t.boolean  "process_flag",                    :default => false
     t.datetime "created_at"
     t.datetime "updated_at"
     t.string   "duplication_check_hash"
-    t.boolean  "duplication_check_reviewed",                                     :default => false
+    t.boolean  "duplication_check_reviewed",      :default => false
     t.datetime "duplication_check_reviewed_date"
-    t.boolean  "duplication_check_processed",                                    :default => false
+    t.boolean  "duplication_check_processed",     :default => false
+    t.integer  "expense_note_id"
   end
 
   create_table "group_members", :force => true do |t|

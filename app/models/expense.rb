@@ -9,6 +9,7 @@ class Expense < ActiveRecord::Base
     belongs_to :user
     belongs_to :group
     has_many :user_depts
+    belongs_to :expense_note
 
     # Validations
     validates :date_purchased, :presence => true, :custom_valid_datetime => true
@@ -97,11 +98,19 @@ class Expense < ActiveRecord::Base
     end
 
     # Method to review duplicates
-    def review_duplicates
+    def review_duplicates(note=nil)
 	# Get duplicates
 	duplicates=find_duplicates
-	# Update all records
-	duplicates.update_all(:duplication_check_reviewed => true, :duplication_check_processed => true, :duplication_check_reviewed_date => Time.now)
+	# Check if note
+	if note
+	    # Save note
+	    note.save!
+	    # Update all records
+	    duplicates.update_all(:duplication_check_reviewed => true, :duplication_check_processed => true, :duplication_check_reviewed_date => Time.now, :expense_note_id => note.id)
+	else
+	    # Update all records
+	    duplicates.update_all(:duplication_check_reviewed => true, :duplication_check_processed => true, :duplication_check_reviewed_date => Time.now)
+	end
     end
 
     # Method to prepare find_duplicate object
