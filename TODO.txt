@@ -1,9 +1,13 @@
 Models:
 - migration using ActiveRecord
-    - http://killswitchcollective.com/articles/45_legacy_data_migration_with_activerecord
-    - http://pathfindersoftware.com/2008/03/using-activerec/
-- expense history (user_id, expense_id, group_id), could allow group
-  deletion
+    - Turn off date processing (created_at, upadted_at)
+	- http://everydayrails.com/2011/12/11/legacy-data-migrations-rails.html
+    - Test migration
+	- test in rake task to make sure mappings remain, stores, etc
+    - More references
+	- http://killswitchcollective.com/articles/45_legacy_data_migration_with_activerecord
+	- http://pathfindersoftware.com/2008/03/using-activerec/
+- expense history (user_id, expense_id, group_id), could allow group deletion
 
 Backups:
 - put backing up code in model?
