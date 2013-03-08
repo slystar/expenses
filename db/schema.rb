@@ -11,7 +11,7 @@
 #
 # It's strongly recommended to check this file into your version control system.
 
-ActiveRecord::Schema.define(:version => 20130308174729) do
+ActiveRecord::Schema.define(:version => 20130308181246) do
 
   create_table "backups", :force => true do |t|
     t.datetime "backup_date"
@@ -102,6 +102,8 @@ ActiveRecord::Schema.define(:version => 20130308174729) do
     t.boolean  "approved"
   end
 
+  add_index "import_data", ["unique_hash"], :name => "index_import_data_on_unique_hash"
+  add_index "import_data", ["unique_id"], :name => "index_import_data_on_unique_id"
   add_index "import_data", ["user_id", "process_flag"], :name => "index_import_data_on_user_id_and_process_flag"
   add_index "import_data", ["user_id"], :name => "index_import_data_on_user_id"
 
@@ -122,6 +124,8 @@ ActiveRecord::Schema.define(:version => 20130308174729) do
     t.datetime "updated_at"
   end
 
+  add_index "pay_methods", ["name"], :name => "index_pay_methods_on_name"
+
   create_table "payment_notes", :force => true do |t|
     t.integer  "user_payment_id"
     t.integer  "user_id"
@@ -136,6 +140,8 @@ ActiveRecord::Schema.define(:version => 20130308174729) do
     t.datetime "updated_at"
   end
 
+  add_index "reasons", ["name"], :name => "index_reasons_on_name"
+
   create_table "roles", :force => true do |t|
     t.string   "name"
     t.text     "description"
@@ -143,11 +149,15 @@ ActiveRecord::Schema.define(:version => 20130308174729) do
     t.datetime "updated_at"
   end
 
+  add_index "roles", ["name"], :name => "index_roles_on_name"
+
   create_table "stores", :force => true do |t|
     t.string   "name",       :null => false
     t.datetime "created_at"
     t.datetime "updated_at"
   end
+
+  add_index "stores", ["name"], :name => "index_stores_on_name"
 
   create_table "update_balance_histories", :force => true do |t|
     t.integer  "user_id"
