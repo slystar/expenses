@@ -19,6 +19,6 @@ class ExpenseNote < ActiveRecord::Base
 	# Get current
 	current=self.version
 	# Update if it's not the creation of original object
-	self.version=current + 1 if self.id
+	self.version=current + 1
     end
 end

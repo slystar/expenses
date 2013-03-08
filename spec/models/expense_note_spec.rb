@@ -31,25 +31,25 @@ describe ExpenseNote do
 	# Save
 	en.save!
 	# Test
-	en.reload.version.should == 0
+	en.reload.version.should == 1
     end
 
     it "should increment version on updates to existing note" do
 	# Create
 	en=ExpenseNote.create!(@attr)
 	# Check version
-	en.version.should == 0
+	en.version.should == 1
 	# Update note
 	en.note='2nd note'
 	# Save
 	en.save
 	# Test
-	en.version.should == 1
+	en.version.should == 2
 	# Update note
 	en.note='3rd note'
 	# Save
 	en.save
 	# Test
-	en.version.should == 2
+	en.version.should == 3
     end
 end
