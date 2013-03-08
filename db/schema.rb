@@ -11,7 +11,7 @@
 #
 # It's strongly recommended to check this file into your version control system.
 
-ActiveRecord::Schema.define(:version => 20130307182123) do
+ActiveRecord::Schema.define(:version => 20130308174729) do
 
   create_table "backups", :force => true do |t|
     t.datetime "backup_date"
@@ -47,12 +47,19 @@ ActiveRecord::Schema.define(:version => 20130307182123) do
     t.integer  "expense_note_id"
   end
 
+  add_index "expenses", ["duplication_check_hash"], :name => "index_expenses_on_duplication_check_hash"
+  add_index "expenses", ["duplication_check_processed"], :name => "index_expenses_on_duplication_check_processed"
+  add_index "expenses", ["user_id"], :name => "index_expenses_on_user_id"
+
   create_table "group_members", :force => true do |t|
     t.integer  "user_id"
     t.integer  "group_id"
     t.datetime "created_at"
     t.datetime "updated_at"
   end
+
+  add_index "group_members", ["group_id"], :name => "index_group_members_on_group_id"
+  add_index "group_members", ["user_id"], :name => "index_group_members_on_user_id"
 
   create_table "groups", :force => true do |t|
     t.string   "name"
@@ -61,6 +68,8 @@ ActiveRecord::Schema.define(:version => 20130307182123) do
     t.datetime "created_at"
     t.datetime "updated_at"
   end
+
+  add_index "groups", ["name"], :name => "index_groups_on_name"
 
   create_table "import_configs", :force => true do |t|
     t.integer  "user_id"
@@ -74,6 +83,8 @@ ActiveRecord::Schema.define(:version => 20130307182123) do
     t.datetime "updated_at"
     t.integer  "date_type"
   end
+
+  add_index "import_configs", ["user_id"], :name => "index_import_configs_on_user_id"
 
   create_table "import_data", :force => true do |t|
     t.integer  "user_id"
@@ -91,6 +102,9 @@ ActiveRecord::Schema.define(:version => 20130307182123) do
     t.boolean  "approved"
   end
 
+  add_index "import_data", ["user_id", "process_flag"], :name => "index_import_data_on_user_id_and_process_flag"
+  add_index "import_data", ["user_id"], :name => "index_import_data_on_user_id"
+
   create_table "import_histories", :force => true do |t|
     t.integer  "user_id"
     t.integer  "import_config_id"
@@ -99,6 +113,8 @@ ActiveRecord::Schema.define(:version => 20130307182123) do
     t.datetime "created_at"
     t.datetime "updated_at"
   end
+
+  add_index "import_histories", ["user_id"], :name => "index_import_histories_on_user_id"
 
   create_table "pay_methods", :force => true do |t|
     t.string   "name"
@@ -139,6 +155,8 @@ ActiveRecord::Schema.define(:version => 20130307182123) do
     t.datetime "updated_at"
   end
 
+  add_index "update_balance_histories", ["user_id"], :name => "index_update_balance_histories_on_user_id"
+
   create_table "user_balances", :force => true do |t|
     t.integer  "from_user_id"
     t.integer  "to_user_id"
@@ -149,6 +167,11 @@ ActiveRecord::Schema.define(:version => 20130307182123) do
     t.boolean  "current",                   :default => false
     t.integer  "update_balance_history_id"
   end
+
+  add_index "user_balances", ["amount"], :name => "index_user_balances_on_amount"
+  add_index "user_balances", ["current"], :name => "index_user_balances_on_current"
+  add_index "user_balances", ["from_user_id"], :name => "index_user_balances_on_from_user_id"
+  add_index "user_balances", ["to_user_id"], :name => "index_user_balances_on_to_user_id"
 
   create_table "user_depts", :force => true do |t|
     t.integer  "from_user_id"
@@ -161,6 +184,10 @@ ActiveRecord::Schema.define(:version => 20130307182123) do
     t.datetime "process_date"
     t.integer  "update_balance_history_id"
   end
+
+  add_index "user_depts", ["from_user_id"], :name => "index_user_depts_on_from_user_id"
+  add_index "user_depts", ["process_flag"], :name => "index_user_depts_on_process_flag"
+  add_index "user_depts", ["to_user_id"], :name => "index_user_depts_on_to_user_id"
 
   create_table "user_payments", :force => true do |t|
     t.integer  "from_user_id"
@@ -175,6 +202,10 @@ ActiveRecord::Schema.define(:version => 20130307182123) do
     t.integer  "update_balance_history_id"
   end
 
+  add_index "user_payments", ["from_user_id"], :name => "index_user_payments_on_from_user_id"
+  add_index "user_payments", ["process_flag", "approved"], :name => "index_user_payments_on_process_flag_and_approved"
+  add_index "user_payments", ["to_user_id"], :name => "index_user_payments_on_to_user_id"
+
   create_table "user_roles", :force => true do |t|
     t.integer  "user_id"
     t.integer  "role_id"
@@ -183,6 +214,9 @@ ActiveRecord::Schema.define(:version => 20130307182123) do
     t.datetime "updated_at"
   end
 
+  add_index "user_roles", ["role_id"], :name => "index_user_roles_on_role_id"
+  add_index "user_roles", ["user_id"], :name => "index_user_roles_on_user_id"
+
   create_table "users", :force => true do |t|
     t.string   "user_name",       :null => false
     t.string   "password_digest", :null => false
@@ -190,5 +224,7 @@ ActiveRecord::Schema.define(:version => 20130307182123) do
     t.datetime "created_at"
     t.datetime "updated_at"
   end
+
+  add_index "users", ["user_name"], :name => "index_users_on_user_name"
 
 end
