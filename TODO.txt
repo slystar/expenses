@@ -1,7 +1,7 @@
 Models:
-- check indexes
-    - https://tomafro.net/2009/08/using-indexes-in-rails-index-your-associations
 - migration using ActiveRecord
+    - http://killswitchcollective.com/articles/45_legacy_data_migration_with_activerecord
+    - http://pathfindersoftware.com/2008/03/using-activerec/
 - expense history (user_id, expense_id, group_id), could allow group
   deletion
 
