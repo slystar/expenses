@@ -33,8 +33,8 @@ describe "Stores:" do
 	    fill_in "Name", :with => name
 	    click_on "Update Store"
 	    page.should have_content(name)
-	    page.should have_selector('a', :hrf => "#{stores_path}/#{id}/edit")
-	    page.should have_selector('a', :hrf => "#{stores_path}")
+	    page.should have_selector('a', :visible => "#{stores_path}/#{id}/edit")
+	    page.should have_selector('a', :visible => "#{stores_path}")
 	    page.should have_selector("div#flash_notice")
 	    current_path.should == "#{stores_path}/#{id}"
 	end
@@ -90,7 +90,7 @@ describe "Stores:" do
 	    visit "#{stores_path}/#{id}/edit"
 	    fill_in "Name", :with => name
 	    click_on "Update Store"
-	    page.should have_selector('a', :hrf => "#{stores_path}")
+	    page.should have_selector('a', :visible => "#{stores_path}")
 	    page.should have_selector("div#error_explanation")
 	    current_path.should == "#{stores_path}/#{id}"
 	end

@@ -1,4 +1,6 @@
 class ImportHistory < ActiveRecord::Base
+    require 'csv'
+
     # Accessible attributes
     attr_accessible :import_config_id, :original_file_name
 

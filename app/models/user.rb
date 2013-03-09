@@ -80,7 +80,7 @@ class User < ActiveRecord::Base
 	    # Create Group
 	    group=Group.create!(:name => self.user_name, :description => "Default group for user #{self.user_name}")
 	    # Add user to group
-	    GroupMember.create!(:user_id => self, :group_id => group.id)
+	    GroupMember.create!(:user_id => self.id, :group_id => group.id)
 	end
     end
 

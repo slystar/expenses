@@ -1,6 +1,7 @@
 require 'rubygems'
 require 'spork'
 require "#{File.dirname(__FILE__)}/spec_helper_custom.rb"
+require 'capybara/rspec'
 
 Spork.prefork do
   # Loading more in this block will cause your tests to run faster. However,
@@ -36,6 +37,9 @@ RSpec.configure do |config|
 
   # Custom helpers
   config.include SpecHelpFunctions
+
+  # Bug after upgrade to rails 3.2.x
+  config.include Capybara::DSL
 end
 end
 

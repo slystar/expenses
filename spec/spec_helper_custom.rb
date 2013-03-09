@@ -6,7 +6,7 @@ module SpecHelpFunctions
 	@pay_method=PayMethod.create!(:name => 'cash')
 	@user=User.create!(:user_name => Faker::Name.name, :password => 'testpass2')
 	@group=Group.create!(:name => Faker::Company.name, :description => 'Test group')
-	{:date_purchased => Time.now, :store_id=> @store, :pay_method_id => @pay_method, :reason_id => @reason, :user_id => @user, :group_id => @group, :amount => 10.50}
+	{:date_purchased => Time.now, :store_id=> @store.id, :pay_method_id => @pay_method.id, :reason_id => @reason.id, :user_id => @user.id, :group_id => @group.id, :amount => 10.50}
     end
 
     # Create a valid expense object
