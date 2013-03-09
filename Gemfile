@@ -42,6 +42,7 @@ group :development, :test do
   gem 'factory_girl_rails'
   gem 'guard-rspec'
   gem 'guard-spork'
+  gem 'mysql' # To import from old database
 end
 
 group :development do
