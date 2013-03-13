@@ -45,6 +45,11 @@ describe User do
 	user.should_not be_valid
     end
 
+    it "should have an optional name" do
+	user=User.new(@attr.merge(:name => "a" * 7))
+	user.should be_valid
+    end
+
     it "should have a default group upon creation" do
 	user=User.create!(@attr)
 	group=user.groups.find{|g| g.name == user.user_name}
