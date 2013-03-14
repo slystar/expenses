@@ -1,3 +1,8 @@
+# Require helper
+require './lib/legacy_migration/helper.rb'
+# Include helper
+include LegacyHelper
+
 class LegacyBase < ActiveRecord::Base
     establish_connection(
 	:adapter => "mysql2",
