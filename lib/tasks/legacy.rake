@@ -5,53 +5,38 @@ namespace :legacy do
     require './lib/legacy_migration/legacy_group.rb'
     require 'pry'
 
-    namespace :test do
-	# Set the Rails environment
-	Rails.env='test'
-	# Info
-	puts("Rails env=#{Rails.env}")
+    # Set the Rails environment
+    Rails.env='development'
+    # Info
+    puts("Rails env=#{Rails.env}")
 
-	desc 'import legacy data into test'
-	task :import => :environment do
-	    # Reset database
-	    Rake::Task["db:reset"].invoke
-	    # Import legacy data
-	    Rake::Task["legacy:import_data"].invoke
-	    # Reset database
-	    #Rake::Task["db:reset"].invoke
-	end
-
-	desc 'reset test db'
-	task :reset do
-	    # Reset database
-	    Rake::Task["db:reset"].invoke
-	end
-
-	task :test do
-	    binding.pry
-	    o=LegacyUser
-	    LegacyUser.test
-	    puts('done')
-	    o.test
-	end
+    desc 'reset test db'
+    task :reset => :environment do
+	ActiveRecord::Base.record_timestamps = true
+	puts("Rails env (Reset)=#{Rails.env}")
+	# Reset database
+	Rake::Task["db:drop"].invoke
+	Rake::Task["db:create"].invoke
+	# Migrate database
+	Rake::Task["db:migrate"].invoke
     end
 
-    namespace :dev do
-	# Set the Rails environment
-	Rails.env='development'
-	# Info
-	puts("Rails env=#{Rails.env}")
-
-	desc 'import legacy data into DEV'
-	task :import => :environment do
-	end
+    task :test do
+	binding.pry
+	o=LegacyUser
+	LegacyUser.test
+	puts('done')
+	o.test
     end
-
 
     desc 'import legacy data'
-    task :import_data do
+    task :import_data => :environment do
+
+	# Reset database
+	Rake::Task["legacy:reset"].invoke
+
 	# Turn off timestamp to import existing timestamps
-	ActiveRecord::Base.record_timestamps = false
+	#ActiveRecord::Base.record_timestamps = false
 
 	# Variables
 	user_map={}
@@ -74,7 +59,7 @@ namespace :legacy do
 	    group_map[old_id]=new_id
 	end
 	# Test import
-	LegacyGroup.validate_import
+	LegacyGroup.validate_import(group_map)
 	# --------------- GROUP_MEMBER --------------
 	# --------------- PAY_METHOD --------------
 	# --------------- REASON --------------
@@ -87,7 +72,7 @@ namespace :legacy do
 
 
 	# Turn timestamps back on
-	ActiveRecord::Base.record_timestamps = true
+	#ActiveRecord::Base.record_timestamps = true
     end
 
     # Method to count records

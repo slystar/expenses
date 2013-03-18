@@ -16,34 +16,34 @@ ActiveRecord::Schema.define(:version => 20130308181246) do
   create_table "backups", :force => true do |t|
     t.datetime "backup_date"
     t.integer  "backup_dir_size_KB"
-    t.datetime "created_at"
-    t.datetime "updated_at"
+    t.datetime "created_at",         :null => false
+    t.datetime "updated_at",         :null => false
   end
 
   create_table "expense_notes", :force => true do |t|
     t.text     "note"
     t.integer  "version",    :default => 0
-    t.datetime "created_at"
-    t.datetime "updated_at"
+    t.datetime "created_at",                :null => false
+    t.datetime "updated_at",                :null => false
   end
 
   create_table "expenses", :force => true do |t|
-    t.date     "date_purchased",                                     :null => false
+    t.date     "date_purchased",                                                                    :null => false
     t.text     "description"
-    t.integer  "pay_method_id",                                      :null => false
-    t.integer  "reason_id",                                          :null => false
-    t.integer  "store_id",                                           :null => false
-    t.integer  "user_id",                                            :null => false
-    t.integer  "group_id",                                           :null => false
-    t.decimal  "amount",                          :default => 0.0
+    t.integer  "pay_method_id",                                                                     :null => false
+    t.integer  "reason_id",                                                                         :null => false
+    t.integer  "store_id",                                                                          :null => false
+    t.integer  "user_id",                                                                           :null => false
+    t.integer  "group_id",                                                                          :null => false
+    t.decimal  "amount",                          :precision => 10, :scale => 2, :default => 0.0
     t.date     "process_date"
-    t.boolean  "process_flag",                    :default => false
-    t.datetime "created_at"
-    t.datetime "updated_at"
+    t.boolean  "process_flag",                                                   :default => false
+    t.datetime "created_at",                                                                        :null => false
+    t.datetime "updated_at",                                                                        :null => false
     t.string   "duplication_check_hash"
-    t.boolean  "duplication_check_reviewed",      :default => false
+    t.boolean  "duplication_check_reviewed",                                     :default => false
     t.datetime "duplication_check_reviewed_date"
-    t.boolean  "duplication_check_processed",     :default => false
+    t.boolean  "duplication_check_processed",                                    :default => false
     t.integer  "expense_note_id"
   end
 
@@ -54,8 +54,8 @@ ActiveRecord::Schema.define(:version => 20130308181246) do
   create_table "group_members", :force => true do |t|
     t.integer  "user_id"
     t.integer  "group_id"
-    t.datetime "created_at"
-    t.datetime "updated_at"
+    t.datetime "created_at", :null => false
+    t.datetime "updated_at", :null => false
   end
 
   add_index "group_members", ["group_id"], :name => "index_group_members_on_group_id"
@@ -65,8 +65,8 @@ ActiveRecord::Schema.define(:version => 20130308181246) do
     t.string   "name"
     t.text     "description"
     t.integer  "display_order"
-    t.datetime "created_at"
-    t.datetime "updated_at"
+    t.datetime "created_at",    :null => false
+    t.datetime "updated_at",    :null => false
   end
 
   add_index "groups", ["name"], :name => "index_groups_on_name"
@@ -79,8 +79,8 @@ ActiveRecord::Schema.define(:version => 20130308181246) do
     t.string   "file_type"
     t.string   "unique_id_field"
     t.text     "unique_id_hash_fields"
-    t.datetime "created_at"
-    t.datetime "updated_at"
+    t.datetime "created_at",            :null => false
+    t.datetime "updated_at",            :null => false
     t.integer  "date_type"
   end
 
@@ -97,8 +97,8 @@ ActiveRecord::Schema.define(:version => 20130308181246) do
     t.datetime "process_date"
     t.integer  "expense_id"
     t.text     "process_notes"
-    t.datetime "created_at"
-    t.datetime "updated_at"
+    t.datetime "created_at",                           :null => false
+    t.datetime "updated_at",                           :null => false
     t.boolean  "approved"
   end
 
@@ -112,16 +112,16 @@ ActiveRecord::Schema.define(:version => 20130308181246) do
     t.integer  "import_config_id"
     t.string   "original_file_name"
     t.string   "new_file_name"
-    t.datetime "created_at"
-    t.datetime "updated_at"
+    t.datetime "created_at",         :null => false
+    t.datetime "updated_at",         :null => false
   end
 
   add_index "import_histories", ["user_id"], :name => "index_import_histories_on_user_id"
 
   create_table "pay_methods", :force => true do |t|
     t.string   "name"
-    t.datetime "created_at"
-    t.datetime "updated_at"
+    t.datetime "created_at", :null => false
+    t.datetime "updated_at", :null => false
   end
 
   add_index "pay_methods", ["name"], :name => "index_pay_methods_on_name"
@@ -130,14 +130,14 @@ ActiveRecord::Schema.define(:version => 20130308181246) do
     t.integer  "user_payment_id"
     t.integer  "user_id"
     t.text     "note"
-    t.datetime "created_at"
-    t.datetime "updated_at"
+    t.datetime "created_at",      :null => false
+    t.datetime "updated_at",      :null => false
   end
 
   create_table "reasons", :force => true do |t|
     t.string   "name"
-    t.datetime "created_at"
-    t.datetime "updated_at"
+    t.datetime "created_at", :null => false
+    t.datetime "updated_at", :null => false
   end
 
   add_index "reasons", ["name"], :name => "index_reasons_on_name"
@@ -145,24 +145,24 @@ ActiveRecord::Schema.define(:version => 20130308181246) do
   create_table "roles", :force => true do |t|
     t.string   "name"
     t.text     "description"
-    t.datetime "created_at"
-    t.datetime "updated_at"
+    t.datetime "created_at",  :null => false
+    t.datetime "updated_at",  :null => false
   end
 
   add_index "roles", ["name"], :name => "index_roles_on_name"
 
   create_table "stores", :force => true do |t|
     t.string   "name",       :null => false
-    t.datetime "created_at"
-    t.datetime "updated_at"
+    t.datetime "created_at", :null => false
+    t.datetime "updated_at", :null => false
   end
 
   add_index "stores", ["name"], :name => "index_stores_on_name"
 
   create_table "update_balance_histories", :force => true do |t|
     t.integer  "user_id"
-    t.datetime "created_at"
-    t.datetime "updated_at"
+    t.datetime "created_at", :null => false
+    t.datetime "updated_at", :null => false
   end
 
   add_index "update_balance_histories", ["user_id"], :name => "index_update_balance_histories_on_user_id"
@@ -171,8 +171,8 @@ ActiveRecord::Schema.define(:version => 20130308181246) do
     t.integer  "from_user_id"
     t.integer  "to_user_id"
     t.decimal  "amount"
-    t.datetime "created_at"
-    t.datetime "updated_at"
+    t.datetime "created_at",                                   :null => false
+    t.datetime "updated_at",                                   :null => false
     t.integer  "previous_user_balance_id",  :default => 0
     t.boolean  "current",                   :default => false
     t.integer  "update_balance_history_id"
@@ -187,8 +187,8 @@ ActiveRecord::Schema.define(:version => 20130308181246) do
     t.integer  "from_user_id"
     t.integer  "to_user_id"
     t.decimal  "amount"
-    t.datetime "created_at"
-    t.datetime "updated_at"
+    t.datetime "created_at",                                   :null => false
+    t.datetime "updated_at",                                   :null => false
     t.boolean  "process_flag",              :default => false
     t.integer  "expense_id"
     t.datetime "process_date"
@@ -205,8 +205,8 @@ ActiveRecord::Schema.define(:version => 20130308181246) do
     t.decimal  "amount"
     t.boolean  "approved",                  :default => false
     t.datetime "approved_date"
-    t.datetime "created_at"
-    t.datetime "updated_at"
+    t.datetime "created_at",                                   :null => false
+    t.datetime "updated_at",                                   :null => false
     t.boolean  "process_flag",              :default => false
     t.datetime "process_date"
     t.integer  "update_balance_history_id"
@@ -220,8 +220,8 @@ ActiveRecord::Schema.define(:version => 20130308181246) do
     t.integer  "user_id"
     t.integer  "role_id"
     t.text     "note"
-    t.datetime "created_at"
-    t.datetime "updated_at"
+    t.datetime "created_at", :null => false
+    t.datetime "updated_at", :null => false
   end
 
   add_index "user_roles", ["role_id"], :name => "index_user_roles_on_role_id"
@@ -231,8 +231,8 @@ ActiveRecord::Schema.define(:version => 20130308181246) do
     t.string   "user_name",       :null => false
     t.string   "password_digest", :null => false
     t.string   "name"
-    t.datetime "created_at"
-    t.datetime "updated_at"
+    t.datetime "created_at",      :null => false
+    t.datetime "updated_at",      :null => false
   end
 
   add_index "users", ["user_name"], :name => "index_users_on_user_name"
