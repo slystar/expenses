@@ -225,14 +225,19 @@ class Expense < ActiveRecord::Base
 
     # Method to process duplication information
     def process_duplicates
-	# Find any duplicate records and update flags
-	records_changed=self.find_duplicate_object.update_all(:duplication_check_processed => false)
-	# Check if we need to update self
-	if records_changed == 0
-	    # Set field
-	    self.duplication_check_processed=true
-	    # Save self
-	    self.save
+	# Try to find duplicate records (reads can be done in parallel much easier than writes which will lock up databases like spqlite while the write is in progress)
+	duplicates=self.find_duplicate_object
+	# Check if we need to update records
+	if duplicates.size > 1
+	    # Update flags
+	    records_changed=duplicates.update_all(:duplication_check_processed => false)
+	    # Check if we need to update self
+	    if records_changed == 0
+		# Set field
+		self.duplication_check_processed=true
+		# Save self
+		self.save
+	    end
 	end
     end
 end
