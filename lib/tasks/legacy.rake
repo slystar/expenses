@@ -1,8 +1,7 @@
 namespace :legacy do
     # Required libraries
     require './lib/legacy_migration/legacy_base.rb'
-    require './lib/legacy_migration/legacy_user.rb'
-    require './lib/legacy_migration/legacy_group.rb'
+    require './lib/legacy_migration/required.rb'
     require 'pry'
 
     # Set the Rails environment
@@ -41,6 +40,7 @@ namespace :legacy do
 	# Variables
 	user_map={}
 	group_map={}
+	group_member_map={}
 
 	# --------------- USER --------------
 	LegacyUser.all.each do |u|
@@ -50,7 +50,7 @@ namespace :legacy do
 	    user_map[old_id]=new_id
 	end
 	# Test import
-	LegacyUser.validate_import
+	LegacyUser.validate_import(user_map)
 	# --------------- GROUP --------------
 	LegacyGroup.all.each do |o|
 	    # Import data
@@ -61,6 +61,14 @@ namespace :legacy do
 	# Test import
 	LegacyGroup.validate_import(group_map)
 	# --------------- GROUP_MEMBER --------------
+	LegacyGroupMember.all.each do |o|
+	    # Import data
+	    old_id,new_id=o.migrate_me!(user_map, group_map)
+	    # Add to map
+	    group_member_map[old_id]=new_id
+	end
+	# Test import
+	LegacyGroupMember.validate_import(group_member_map)
 	# --------------- PAY_METHOD --------------
 	# --------------- REASON --------------
 	# --------------- STORE --------------
@@ -70,6 +78,10 @@ namespace :legacy do
 	# --------------- BACKUP --------------
 	# --------------- MORTGAGE_PAYMENT --------------
 
+	# --------------- Globat Tests --------------
+	# Depts
+	# Credits
+	# Group members in expenses
 
 	# Turn timestamps back on
 	#ActiveRecord::Base.record_timestamps = true

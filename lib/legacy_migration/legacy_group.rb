@@ -34,21 +34,24 @@ class LegacyGroup < LegacyBase
     end
 
     # Method to test import
-    def self.validate_import(import_map)
-	# Get first map
-	old_id,new_id=import_map.first
-	# Get first legacy record
-	@old_1=LegacyGroup.find(old_id)
-	# Get matching new
-	@new_1=Group.find(new_id)
-	# Test
-	self.raise_error('name',@old_1,@new_1) if @new_1.name.downcase != @old_1.group_name.downcase
-	self.raise_error('display_order',@old_1,@new_1) if @new_1.display_order != @old_1.display_order
-	self.raise_error('created_at',@old_1,@new_1) if @new_1.created_at != @old_1.created_on
-	self.raise_error('updated_at',@old_1,@new_1) if @new_1.updated_at != @old_1.updated_on
-	self.raise_error('counts',@old_1,@new_1) if LegacyUser.all.count != User.all.count
+    def self.validate_import(record_map)
+	# Loop over all old records
+	LegacyGroup.all.each do |o|
+	    # Get first legacy record
+	    @old_1=o
+	    # Get matching new
+	    @new_1=Group.find(record_map[o.id])
+	    # Test
+	    self.raise_error('name',@old_1,@new_1) if @new_1.name.downcase != @old_1.group_name.downcase
+	    self.raise_error('display_order',@old_1,@new_1) if @new_1.display_order != @old_1.display_order
+	    self.raise_error('created_at',@old_1,@new_1) if @new_1.created_at != @old_1.created_on
+	    self.raise_error('updated_at',@old_1,@new_1) if @new_1.updated_at != @old_1.updated_on
+	end
+	# Test counts
+	self.raise_error('counts',@old_1,@new_1) if LegacyGroup.all.count != Group.all.count
 	# Ok
 	puts("#{self.name} successfully imported")
+	# Return true
 	return true
     end
 end

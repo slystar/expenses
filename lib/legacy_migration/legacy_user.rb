@@ -29,19 +29,24 @@ class LegacyUser < LegacyBase
     end
 
     # Method to test import
-    def self.validate_import
-	# Get first legacy record
-	@old_1=LegacyUser.first
-	# Get matching new
-	@new_1=User.where(:user_name => @old_1.login).first
-	# Test
-	self.raise_error('user_name',@old_1,@new_1) if @new_1.user_name != @old_1.login
-	self.raise_error('name',@old_1,@new_1) if @new_1.name != @old_1.login
-	self.raise_error('created_at',@old_1,@new_1) if @new_1.created_at != @old_1.created_on
-	self.raise_error('updated_at',@old_1,@new_1) if @new_1.updated_at != @old_1.updated_on
+    def self.validate_import(record_map)
+	# Loop over all old records
+	LegacyUser.all.each do |u|
+	    # Get first legacy record
+	    @old_1=u
+	    # Get matching new
+	    @new_1=User.find(record_map[u.id])
+	    # Test
+	    self.raise_error('user_name',@old_1,@new_1) if @new_1.user_name != @old_1.login
+	    self.raise_error('name',@old_1,@new_1) if @new_1.name != @old_1.login
+	    self.raise_error('created_at',@old_1,@new_1) if @new_1.created_at != @old_1.created_on
+	    self.raise_error('updated_at',@old_1,@new_1) if @new_1.updated_at != @old_1.updated_on
+	end
+	# Test counts
 	self.raise_error('counts',@old_1,@new_1) if LegacyUser.all.count != User.all.count
 	# Ok
 	puts("#{self.name} successfully imported")
+	# Return true
 	return true
     end
 end
