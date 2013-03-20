@@ -12,6 +12,8 @@ class LegacyGroup < LegacyBase
 		:name => self.group_name,
 		:display_order => self.display_order
 	    )
+	    # Set id
+	    new_group.id=self.id
 	else
 	    new_group=existing_group
 	end
@@ -35,8 +37,10 @@ class LegacyGroup < LegacyBase
 
     # Method to test import
     def self.validate_import(record_map)
+	# Get all
+	all=LegacyGroup.all
 	# Loop over all old records
-	LegacyGroup.all.each do |o|
+	all.each do |o|
 	    # Get first legacy record
 	    @old_1=o
 	    # Get matching new
@@ -48,9 +52,9 @@ class LegacyGroup < LegacyBase
 	    self.raise_error('updated_at',@old_1,@new_1) if @new_1.updated_at != @old_1.updated_on
 	end
 	# Test counts
-	self.raise_error('counts',@old_1,@new_1) if LegacyGroup.all.count != Group.all.count
+	self.raise_error('counts',@old_1,@new_1) if all.count != Group.all.count
 	# Ok
-	puts("#{self.name} successfully imported")
+	puts("#{self.name} (#{all.count}) successfully imported")
 	# Return true
 	return true
     end

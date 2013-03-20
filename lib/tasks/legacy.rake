@@ -31,8 +31,17 @@ namespace :legacy do
     desc 'import legacy data'
     task :import_data => :environment do
 
+	# Variables
+	times=[]
+
+	# Start time
+	times.push(Time.now)
+
 	# Reset database
 	Rake::Task["legacy:reset"].invoke
+
+	# Run time
+	run_time(times)
 
 	# Turn off timestamp to import existing timestamps
 	#ActiveRecord::Base.record_timestamps = false
@@ -41,6 +50,9 @@ namespace :legacy do
 	user_map={}
 	group_map={}
 	group_member_map={}
+	pay_method_map={}
+	reason_map={}
+	store_map={}
 
 	# --------------- USER --------------
 	LegacyUser.all.each do |u|
@@ -51,6 +63,8 @@ namespace :legacy do
 	end
 	# Test import
 	LegacyUser.validate_import(user_map)
+	# Run time
+	run_time(times)
 	# --------------- GROUP --------------
 	LegacyGroup.all.each do |o|
 	    # Import data
@@ -60,6 +74,8 @@ namespace :legacy do
 	end
 	# Test import
 	LegacyGroup.validate_import(group_map)
+	# Run time
+	run_time(times)
 	# --------------- GROUP_MEMBER --------------
 	LegacyGroupMember.all.each do |o|
 	    # Import data
@@ -69,9 +85,41 @@ namespace :legacy do
 	end
 	# Test import
 	LegacyGroupMember.validate_import(group_member_map)
+	# Run time
+	run_time(times)
 	# --------------- PAY_METHOD --------------
+	LegacyPayMethod.all.each do |o|
+	    # Import data
+	    old_id,new_id=o.migrate_me!()
+	    # Add to map
+	    pay_method_map[old_id]=new_id
+	end
+	# Test import
+	LegacyPayMethod.validate_import(pay_method_map)
+	# Run time
+	run_time(times)
 	# --------------- REASON --------------
+	LegacyReason.all.each do |o|
+	    # Import data
+	    old_id,new_id=o.migrate_me!()
+	    # Add to map
+	    reason_map[old_id]=new_id
+	end
+	# Test import
+	LegacyReason.validate_import(reason_map)
+	# Run time
+	run_time(times)
 	# --------------- STORE --------------
+	LegacyStore.all.each do |o|
+	    # Import data
+	    old_id,new_id=o.migrate_me!()
+	    # Add to map
+	    store_map[old_id]=new_id
+	end
+	# Test import
+	LegacyStore.validate_import(store_map)
+	# Run time
+	run_time(times)
 	# --------------- EXPENSE --------------
 	# --------------- USER_CHARGE --------------
 	# --------------- USER_PAYMENT --------------
@@ -90,5 +138,22 @@ namespace :legacy do
     # Method to count records
     def get_count(model)
 	model.all.count
+    end
+
+    # Method to get time difference
+    def get_time_diff(time_array)
+	# Get current time
+	now=Time.now
+	# Get last entry
+	last=time_array.last
+	# Round
+	diff=((now - last) * 100).to_i / 100.00
+	# Get diff
+	return diff
+    end
+
+    # Method to display run time
+    def run_time(times)
+	puts("    Time: #{get_time_diff(times)} seconds")
     end
 end

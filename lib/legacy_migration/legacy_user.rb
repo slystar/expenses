@@ -14,6 +14,8 @@ class LegacyUser < LegacyBase
 	# Set timestamps fields
 	new_user.created_at = self.created_on
 	new_user.updated_at = self.updated_on
+	# Set id
+	new_user.id=self.id
 	# Validate
 	if not new_user.valid?
 	    puts("-" * 20)
@@ -30,8 +32,10 @@ class LegacyUser < LegacyBase
 
     # Method to test import
     def self.validate_import(record_map)
+	# Get all
+	all=LegacyUser.all
 	# Loop over all old records
-	LegacyUser.all.each do |u|
+	all.each do |u|
 	    # Get first legacy record
 	    @old_1=u
 	    # Get matching new
@@ -43,9 +47,9 @@ class LegacyUser < LegacyBase
 	    self.raise_error('updated_at',@old_1,@new_1) if @new_1.updated_at != @old_1.updated_on
 	end
 	# Test counts
-	self.raise_error('counts',@old_1,@new_1) if LegacyUser.all.count != User.all.count
+	self.raise_error('counts',@old_1,@new_1) if all.count != User.all.count
 	# Ok
-	puts("#{self.name} successfully imported")
+	puts("#{self.name} (#{all.count}) successfully imported")
 	# Return true
 	return true
     end

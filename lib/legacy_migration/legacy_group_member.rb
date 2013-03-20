@@ -20,6 +20,8 @@ class LegacyGroupMember < LegacyBase
 	    # Crete new Object
 	    new_group=GroupMember.new(
 	    )
+	    # Set id
+	    new_group.id = self.id
 	else
 	    new_group=existing_group_membership
 	end
@@ -33,7 +35,6 @@ class LegacyGroupMember < LegacyBase
 	if not new_group.valid?
 	    puts("-" * 20)
 	    puts("error: #{self.class}-> GroupMember : #{self.id}")
-	    puts(new_group.errors.messages)
 	    exit
 	end
 	# Save record
@@ -46,8 +47,10 @@ class LegacyGroupMember < LegacyBase
     def self.validate_import(record_map)
 	# Variables
 	skipped=0
+	# Get all
+	all=LegacyGroupMember.all
 	# Loop over all old records
-	LegacyGroupMember.all.each do |o|
+	all.each do |o|
 	    # Skip records that have been skipped
 	    if not record_map.keys.include?(o.id)
 		# Add to counter
@@ -60,19 +63,19 @@ class LegacyGroupMember < LegacyBase
 	    new_1=GroupMember.find(record_map[o.id])
 	    # Get User records
 	    old_user=LegacyUser.find(old_1.user_id)
-	    new_user=User.find(new_1.user_id)
+	    new_user=new_1.user
 	    # Get Group records
 	    old_group=LegacyGroup.find(old_1.group_id)
-	    new_group=Group.find(new_1.group_id)
+	    new_group=new_1.group
 	    # Test
 	    self.raise_error('user',old_1,new_1) if new_user.user_name != old_user.login
 	    self.raise_error('group',old_1,new_1) if new_group.name.downcase != old_group.group_name.downcase
 	    self.raise_error('created_at',old_1,new_1) if new_1.created_at != old_1.created_on
 	    self.raise_error('updated_at',old_1,new_1) if new_1.updated_at != old_1.updated_on
 	end
-	self.raise_error('counts',@old_1,@new_1) if (LegacyGroupMember.all.count - skipped) != GroupMember.all.count
+	self.raise_error('counts',@old_1,@new_1) if (all.count - skipped) != GroupMember.all.count
 	# Ok
-	puts("#{self.name} successfully imported")
+	puts("#{self.name} (#{all.count - skipped}) successfully imported")
 	# Return true
 	return true
     end
