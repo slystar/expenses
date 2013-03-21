@@ -37,6 +37,7 @@ class LegacyStore < LegacyBase
 	    # Get matching new
 	    new_1=Store.find(record_map[u.id])
 	    # Test
+	    self.raise_error('id',old_1,new_1) if new_1.id != old_1.id
 	    self.raise_error('name',old_1,new_1) if new_1.name != old_1.store
 	    self.raise_error('created_at',old_1,new_1) if new_1.created_at != old_1.created_on
 	    self.raise_error('updated_at',old_1,new_1) if new_1.updated_at != old_1.updated_on
