@@ -124,6 +124,8 @@ namespace :legacy do
 	diff_from_last=round_to((now - last),2)
 	# Round from start
 	diff_from_start=round_to((now - start),2)
+	# Add to array
+	time_array.push(now)
 	# Get diff
 	return [diff_from_start, diff_from_last]
     end
@@ -132,7 +134,7 @@ namespace :legacy do
     def run_time()
 	# Get run times
 	from_start,from_last=get_time_diff(@times)
-	puts("    Time: #{from_last)} seconds, total: #{from_start}")
+	puts("    Time: #{from_last} seconds, total: #{from_start}")
     end
 
     # Metho to import data
