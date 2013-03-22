@@ -3,8 +3,6 @@ class LegacyExpense < LegacyBase
 
     # Method to migrate self
     def migrate_me!
-	# Get charged users
-	#charged_users=self.charged_users
 	# BAD records fix
 	bad_records={}
 	# Add fixes for bad records
@@ -37,6 +35,15 @@ class LegacyExpense < LegacyBase
 		# Apply fix
 		new_object[field]=value
 	    end
+	end
+	# Apply fix for missing group (seems to be group sophie or personal for sophie based on record analysis)
+	if self.group_id == 4
+	    # Get legacy group
+	    g=Group.find(:first,:conditions => {:name => new_object.user.name})
+	    # Set group_id
+	    new_object.group_id=g.id
+	    # Info
+	    puts("  Expense: #{self.id} set group_id = #{new_object.group.name}")
 	end
 	# Validate
 	if not new_object.valid?
@@ -82,7 +89,7 @@ class LegacyExpense < LegacyBase
 	    # Get matching new
 	    new_1=Expense.find(record_map[u.id])
 	    # Get charged users
-	    charged_users=u.charged_users.split(' | ').first.split(',')
+	    charged_users=u.charged_users
 	    # Test
 	    self.raise_error('id',old_1,new_1) if new_1.id != old_1.id
 	    self.raise_error('date_purchased',old_1,new_1) if new_1.date_purchased != old_1.date_purchased
@@ -113,5 +120,29 @@ class LegacyExpense < LegacyBase
 	puts("#{self.name} (#{all.count}) successfully imported")
 	# Return true
 	return true
+    end
+
+    # Method to get legacy_group
+    def get_or_create_legacy_group()
+	# Variables
+	group_name='legacy'
+	# Try to find legacy group
+	g=Group.find(:first,:conditions => {:name => group_name})
+	# If no group found
+	if g.nil?
+	    # Create group
+	    g=Group.new({:name => group_name})
+	    # Save group
+	    g.save!
+	    # Loop over all users
+	    User.all.each do |u|
+		# Add members
+		g.users << u
+	    end
+	    # Save group
+	    g.save!
+	end
+	# Return group
+	return g
     end
 end

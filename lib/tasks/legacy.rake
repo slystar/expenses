@@ -77,16 +77,7 @@ namespace :legacy do
 	# --------------- STORE --------------
 	process_model(LegacyStore, store_map)
 	# --------------- EXPENSE --------------
-	LegacyExpense.all.each do |o|
-	    # Import data
-	    old_id,new_id=o.migrate_me!()
-	    # Add to map
-	    expense_map[old_id]=new_id
-	end
-	# Test import
-	LegacyExpense.validate_import(expense_map)
-	# Run time
-	run_time()
+	process_model(LegacyExpense, expense_map)
 	# --------------- USER_CHARGE --------------
 	# --------------- USER_PAYMENT --------------
 	# --------------- BACKUP --------------
@@ -139,12 +130,35 @@ namespace :legacy do
 
     # Metho to import data
     def process_model(model,map)
-	model.all.each do |o|
+	# Print info
+	print("--#{model.name}: ")
+	# Variables
+	count=0
+	displayed_progress=[]
+	# Get all records
+	all=model.all
+	# Get total count
+	total_count=all.count
+	# Loop over all
+	all.each do |o|
 	    # Import data
 	    old_id,new_id=o.migrate_me!
 	    # Add to map
 	    map[old_id]=new_id
+	    # Calculate progress
+	    progress=(100 * count / total_count)
+	    # Increment count
+	    count += 1
+	    # Display progress
+	    if (progress % 10) == 0 and not displayed_progress.include?(progress)
+		# Print progress
+		print("#{progress}% ")
+		# Add to displayed
+		displayed_progress.push(progress)
+	    end
 	end
+	# Print line return
+	puts()
 	# Test import
 	model.validate_import(map)
 	# Run time
