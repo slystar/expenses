@@ -20,12 +20,13 @@ namespace :legacy do
 	Rake::Task["db:migrate"].invoke
     end
 
-    task :test do
-	binding.pry
-	o=LegacyUser
-	LegacyUser.test
-	puts('done')
-	o.test
+    task :test => :environment do
+	# Generate map
+	expense_map={}
+	# Loop over all Expenses
+	Expense.all.each{|e| expense_map[e.id]=e.id}
+	# Run validation
+	e=LegacyExpense.validate_import(expense_map)
     end
 
     desc 'import legacy data'

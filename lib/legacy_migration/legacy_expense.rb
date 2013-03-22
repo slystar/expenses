@@ -92,7 +92,7 @@ class LegacyExpense < LegacyBase
 	    charged_users=u.charged_users
 	    # Test
 	    self.raise_error('id',old_1,new_1) if new_1.id != old_1.id
-	    self.raise_error('date_purchased',old_1,new_1) if new_1.date_purchased != old_1.date_purchased
+	    self.raise_error('date_purchased',old_1,new_1) if new_1.date_purchased != old_1.date_bought
 	    self.raise_error('description',old_1,new_1) if new_1.description != old_1.description
 	    self.raise_error('pay_method',old_1,new_1) if new_1.pay_method != pay_methods[old_1.pay_method_id]
 	    self.raise_error('reason',old_1,new_1) if new_1.reason.name != reasons[old_1.reason_id]
