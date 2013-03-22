@@ -21,6 +21,14 @@ describe Expense do
 	expense.should be_valid
     end
 
+    it "should accept a description" do
+	desc='test description'
+	expense=Expense.create!(@attr.merge(:description =>desc))
+	expense.reload
+	# test
+	expense.description.should == desc
+    end
+
     it "should refuse invalid dates for date_purchased" do
 	expense=Expense.new(@attr.merge(:date_purchased => '2011 10 14 aaa'))
 	expense.should_not be_valid

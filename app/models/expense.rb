@@ -1,6 +1,6 @@
 class Expense < ActiveRecord::Base
     # Accessible attributes
-    attr_accessible :date_purchased, :store_id, :pay_method_id, :reason_id, :user_id, :group_id, :amount
+    attr_accessible :date_purchased, :store_id, :pay_method_id, :reason_id, :user_id, :group_id, :amount, :description
 
     # Relationshipts
     belongs_to :store
