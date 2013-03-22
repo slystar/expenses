@@ -60,16 +60,7 @@ namespace :legacy do
 	# --------------- GROUP --------------
 	process_model(LegacyGroup, group_map)
 	# --------------- GROUP_MEMBER --------------
-	LegacyGroupMember.all.each do |o|
-	    # Import data
-	    old_id,new_id=o.migrate_me!(user_map, group_map)
-	    # Add to map
-	    group_member_map[old_id]=new_id
-	end
-	# Test import
-	LegacyGroupMember.validate_import(group_member_map)
-	# Run time
-	run_time()
+	process_model(LegacyGroupMember, group_member_map, [user_map,group_map])
 	# --------------- PAY_METHOD --------------
 	process_model(LegacyPayMethod, pay_method_map)
 	# --------------- REASON --------------
@@ -129,7 +120,7 @@ namespace :legacy do
     end
 
     # Metho to import data
-    def process_model(model,map)
+    def process_model(model,map,extra=[])
 	# Print info
 	print("--#{model.name}: ")
 	# Variables
@@ -142,7 +133,7 @@ namespace :legacy do
 	# Loop over all
 	all.each do |o|
 	    # Import data
-	    old_id,new_id=o.migrate_me!
+	    old_id,new_id=o.migrate_me!(*extra)
 	    # Add to map
 	    map[old_id]=new_id
 	    # Calculate progress
