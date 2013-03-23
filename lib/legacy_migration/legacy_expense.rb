@@ -19,10 +19,11 @@ class LegacyExpense < LegacyBase
 	    :store_id => self.store_id,
 	    :user_id => self.user_id,
 	    :group_id => self.group_id,
-	    :amount => self.amount,
-	    :process_date => self.process_date,
-	    :process_flag => self.process_flag
+	    :amount => self.amount
 	)
+	# Set date fields
+	new_object.process_date = self.process_date
+	new_object.process_flag = self.process_flag
 	# Set timestamps fields
 	new_object.created_at = self.created_on
 	new_object.updated_at = self.updated_on
@@ -73,9 +74,9 @@ class LegacyExpense < LegacyBase
 	# Get all reasons
 	LegacyReason.select(:id).select(:reason).all.each{|o| reasons[o.id]=o.reason}
 	# Get all pay_methods
-	LegacyPayMethod.select(:id).select(:pay_method).all.each{|o| reasons[o.id]=o.pay_method}
+	LegacyPayMethod.select(:id).select(:pay_method).all.each{|o| pay_methods[o.id]=o.pay_method}
 	# Get all stores
-	LegacyStore.select(:id).select(:store).all.each{|o| reasons[o.id]=o.store}
+	LegacyStore.select(:id).select(:store).all.each{|o| stores[o.id]=o.store}
 	# Get all users
 	LegacyUser.select(:id).select(:login).all.each{|o| users[o.id]=o.login}
 	# Get all groups
@@ -94,7 +95,7 @@ class LegacyExpense < LegacyBase
 	    self.raise_error('id',old_1,new_1) if new_1.id != old_1.id
 	    self.raise_error('date_purchased',old_1,new_1) if new_1.date_purchased != old_1.date_bought
 	    self.raise_error('description',old_1,new_1) if new_1.description != old_1.description
-	    self.raise_error('pay_method',old_1,new_1) if new_1.pay_method != pay_methods[old_1.pay_method_id]
+	    self.raise_error('pay_method',old_1,new_1) if new_1.pay_method.name != pay_methods[old_1.pay_method_id]
 	    self.raise_error('reason',old_1,new_1) if new_1.reason.name != reasons[old_1.reason_id]
 	    self.raise_error('store',old_1,new_1) if new_1.store.name != stores[old_1.store_id]
 	    self.raise_error('user',old_1,new_1) if new_1.user.user_name != users[old_1.user_id]
