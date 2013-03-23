@@ -21,9 +21,6 @@ class LegacyExpense < LegacyBase
 	    :group_id => self.group_id,
 	    :amount => self.amount
 	)
-	# Set date fields
-	new_object.process_date = self.process_date
-	new_object.process_flag = self.process_flag
 	# Set timestamps fields
 	new_object.created_at = self.created_on
 	new_object.updated_at = self.updated_on
@@ -57,6 +54,11 @@ class LegacyExpense < LegacyBase
 	    puts("Exiting")
 	    exit
 	end
+	# Save record
+	new_object.save!
+	# Add after creation fields
+	new_object.process_date = self.process_date
+	new_object.process_flag = self.process_flag
 	# Save record
 	new_object.save!
 	# Return id map
