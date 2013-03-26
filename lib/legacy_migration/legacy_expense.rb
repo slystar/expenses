@@ -1,15 +1,16 @@
 class LegacyExpense < LegacyBase
     self.table_name = 'expenses'
 
+    # Add fixes for bad records
+    @bad_records={
+	154=>{:store_id => 288},
+	184=>{:store_id => 291},
+	300=>{:store_id => 241},
+	346=>{:store_id => 241}
+    }
+
     # Method to migrate self
     def migrate_me!
-	# BAD records fix
-	bad_records={}
-	# Add fixes for bad records
-	bad_records[154]={:store_id => 288}
-	bad_records[184]={:store_id => 291}
-	bad_records[300]={:store_id => 241}
-	bad_records[346]={:store_id => 241}
 	# Create new Object
 	new_object=Expense.new(
 	    :date_purchased => self.date_bought,
@@ -32,9 +33,9 @@ class LegacyExpense < LegacyBase
 	# Set id
 	new_object.id=self.id
 	# Apply fix if required
-	if bad_records.keys.include?(self.id)
+	if @bad_records.keys.include?(self.id)
 	    # Loop over bad keys
-	    bad_records[self.id].each do |field, value|
+	    @bad_records[self.id].each do |field, value|
 		# Apply fix
 		new_object[field]=value
 	    end
@@ -96,6 +97,21 @@ class LegacyExpense < LegacyBase
 	    old_1=u
 	    # Get matching new
 	    new_1=Expense.find(record_map[u.id])
+	    # Compensate for bad records
+	    if @bad_records.keys.include?(u.id)
+		# Loop over bad keys
+		@bad_records[u.id].each do |field, value|
+		    # Apply fix
+		    old_1[field]=value
+		end
+	    end
+	    # Apply fix for missing group (seems to be group sophie or personal for sophie based on record analysis)
+	    if u.group_id == 4
+		# Get legacy group
+		g=Group.find(:first,:conditions => {:name => new_1.user.name})
+		# Set group_id
+		old_1.group_id=g.id
+	    end
 	    # Get charged users
 	    charged_users=u.charged_users
 	    # Test
@@ -119,11 +135,11 @@ class LegacyExpense < LegacyBase
 	    # Check if charged users
 	    if charged_users
 		# Get charged user ids
-		charged_user_ids=charged_users.split(' | ').first.split(',').sort
+		charged_user_ids=charged_users.split(' | ').first.split(',').collect{|o| o.to_i}.sort
 		# Get new records charged user ids
-		new_charged_user_ids=new_1.group.users.select{|o| o.id}.sort
+		new_charged_user_ids=new_1.group.users.collect{|o| o.id}.sort
 		# Test
-		self.raise_error('charged_users',old_1,new_1) if new_charged_users_ids != charged_users_ids
+		self.raise_error('charged_users',old_1,new_1) if new_charged_user_ids != charged_user_ids
 	    end
 	end
 	# Test counts
