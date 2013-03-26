@@ -2,7 +2,7 @@ class LegacyExpense < LegacyBase
     self.table_name = 'expenses'
 
     # Add fixes for bad records
-    @bad_records={
+    BAD_RECORDS={
 	154=>{:store_id => 288},
 	184=>{:store_id => 291},
 	300=>{:store_id => 241},
@@ -33,9 +33,9 @@ class LegacyExpense < LegacyBase
 	# Set id
 	new_object.id=self.id
 	# Apply fix if required
-	if @bad_records.keys.include?(self.id)
+	if BAD_RECORDS.keys.include?(self.id)
 	    # Loop over bad keys
-	    @bad_records[self.id].each do |field, value|
+	    BAD_RECORDS[self.id].each do |field, value|
 		# Apply fix
 		new_object[field]=value
 	    end
@@ -98,9 +98,9 @@ class LegacyExpense < LegacyBase
 	    # Get matching new
 	    new_1=Expense.find(record_map[u.id])
 	    # Compensate for bad records
-	    if @bad_records.keys.include?(u.id)
+	    if BAD_RECORDS.keys.include?(u.id)
 		# Loop over bad keys
-		@bad_records[u.id].each do |field, value|
+		BAD_RECORDS[u.id].each do |field, value|
 		    # Apply fix
 		    old_1[field]=value
 		end
