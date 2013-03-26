@@ -24,8 +24,14 @@ class LegacyUser < LegacyBase
 	    puts("Exiting")
 	    exit
 	end
+	# Get current timestamp setting
+	current_timestamp_setting=ActiveRecord::Base.record_timestamps
+	# Turn on timestamp because User creates groups and group_membershipts
+	ActiveRecord::Base.record_timestamps = true
 	# Save record
 	new_user.save!
+	# Turn timestamp back to previous setting
+	ActiveRecord::Base.record_timestamps = current_timestamp_setting
 	# Return id map
 	return [self.id, new_user.id]
     end
