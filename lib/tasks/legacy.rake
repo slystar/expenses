@@ -20,17 +20,54 @@ namespace :legacy do
 	Rake::Task["db:migrate"].invoke
     end
 
-    task :test => :environment do
-	# Generate map
-	expense_map={}
-	# Loop over all Expenses
-	Expense.all.each{|e| expense_map[e.id]=e.id}
-	# Run validation
-	e=LegacyExpense.validate_import(expense_map)
+    task :zzz => :environment do
+	# Turn off timestamp to import existing timestamps
+	ActiveRecord::Base.record_timestamps = false
+	# Delete expense
+	Expense.delete_all
+	model=LegacyExpense
+	map={}
+	extra=[]
+	# Print info
+	print("--#{model.name}: ")
+	# Variables
+	count=0
+	displayed_progress=[]
+	# Get all records
+	all=model.all[0..10]
+	# Get total count
+	total_count=all.count
+	# Loop over all
+	all.each do |o|
+	    # Import data
+	    old_id,new_id=o.migrate_me!(*extra)
+	    # Add to map
+	    map[old_id]=new_id
+	    # Calculate progress
+	    progress=(100 * count / total_count)
+	    # Increment count
+	    count += 1
+	    # Display progress
+	    if (progress % 10) == 0 and not displayed_progress.include?(progress)
+		# Print progress
+		print("#{progress}% ")
+		# Add to displayed
+		displayed_progress.push(progress)
+	    end
+	end
+	# Print line return
+	puts()
+	# Test import
+	model.validate_import(map)
+	# Turn off timestamp to import existing timestamps
+	ActiveRecord::Base.record_timestamps = true
     end
 
     desc 'import legacy data'
     task :import_data => :environment do
+
+	# Turn on timestamp to import existing timestamps (must be on for user because it auto creates groups)
+	ActiveRecord::Base.record_timestamps = true
 
 	# Variables
 	@times=[]
@@ -44,9 +81,6 @@ namespace :legacy do
 	# Run time
 	run_time()
 
-	# Turn off timestamp to import existing timestamps
-	#ActiveRecord::Base.record_timestamps = false
-
 	# Variables
 	user_map={}
 	group_map={}
@@ -58,6 +92,10 @@ namespace :legacy do
 
 	# --------------- USER --------------
 	process_model(LegacyUser, user_map)
+
+	# Turn off timestamp to import existing timestamps (must be on for user because it auto creates groups)
+	ActiveRecord::Base.record_timestamps = false
+
 	# --------------- GROUP --------------
 	process_model(LegacyGroup, group_map)
 	# --------------- GROUP_MEMBER --------------
@@ -81,7 +119,7 @@ namespace :legacy do
 	# Group members in expenses
 
 	# Turn timestamps back on
-	#ActiveRecord::Base.record_timestamps = true
+	ActiveRecord::Base.record_timestamps = true
     end
 
     # Method to count records
