@@ -24,6 +24,11 @@ class LegacyExpense < LegacyBase
 	# Set timestamps fields
 	new_object.created_at = self.created_on
 	new_object.updated_at = self.updated_on
+	# Make sure updated_ad is not null
+	if new_object.updated_at.nil?
+	    # Set updated_at = created_at
+	    new_object.updated_at=new_object.created_at
+	end
 	# Set id
 	new_object.id=self.id
 	# Apply fix if required
@@ -101,12 +106,16 @@ class LegacyExpense < LegacyBase
 	    self.raise_error('reason',old_1,new_1) if new_1.reason.name != reasons[old_1.reason_id]
 	    self.raise_error('store',old_1,new_1) if new_1.store.name != stores[old_1.store_id]
 	    self.raise_error('user',old_1,new_1) if new_1.user.user_name != users[old_1.user_id]
-	    self.raise_error('group',old_1,new_1) if new_1.group.name != groups[old_1.group_id]
+	    self.raise_error('group',old_1,new_1) if new_1.group.name.downcase != groups[old_1.group_id].downcase
 	    self.raise_error('amount',old_1,new_1) if new_1.amount != old_1.amount
 	    self.raise_error('process_date',old_1,new_1) if new_1.process_date != old_1.process_date
-	    self.raise_error('process_flag',old_1,new_1) if new_1.process_flag != old_1.process_date
+	    self.raise_error('process_flag',old_1,new_1) if new_1.process_flag != old_1.process_flag
 	    self.raise_error('created_at',old_1,new_1) if new_1.created_at != old_1.created_on
-	    self.raise_error('updated_at',old_1,new_1) if new_1.updated_at != old_1.updated_on
+	    if new_1.updated_at != old_1.updated_on 
+		if new_1.updated_at != old_1.created_on
+		    self.raise_error('updated_at',old_1,new_1)
+		end
+	    end
 	    # Check if charged users
 	    if charged_users
 		# Get charged user ids
