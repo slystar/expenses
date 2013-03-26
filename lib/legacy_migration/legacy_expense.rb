@@ -149,28 +149,4 @@ class LegacyExpense < LegacyBase
 	# Return true
 	return true
     end
-
-    # Method to get legacy_group
-    def get_or_create_legacy_group()
-	# Variables
-	group_name='legacy'
-	# Try to find legacy group
-	g=Group.find(:first,:conditions => {:name => group_name})
-	# If no group found
-	if g.nil?
-	    # Create group
-	    g=Group.new({:name => group_name})
-	    # Save group
-	    g.save!
-	    # Loop over all users
-	    User.all.each do |u|
-		# Add members
-		g.users << u
-	    end
-	    # Save group
-	    g.save!
-	end
-	# Return group
-	return g
-    end
 end
