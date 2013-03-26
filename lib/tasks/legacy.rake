@@ -20,7 +20,16 @@ namespace :legacy do
 	Rake::Task["db:migrate"].invoke
     end
 
-    task :zzz => :environment do
+    task :single_validate => :environment do
+	# Generate map
+	expense_map={}
+	# Loop over all Expenses
+	Expense.all.each{|e| expense_map[e.id]=e.id}
+	# Run validation
+	e=LegacyExpense.validate_import(expense_map)
+    end
+
+    task :single_import => :environment do
 	# Turn off timestamp to import existing timestamps
 	ActiveRecord::Base.record_timestamps = false
 	# Delete expense
@@ -65,8 +74,7 @@ namespace :legacy do
 
     desc 'import legacy data'
     task :import_data => :environment do
-
-	# Turn on timestamp to import existing timestamps (must be on for user because it auto creates groups)
+	# Turn on timestamp (should be default)
 	ActiveRecord::Base.record_timestamps = true
 
 	# Variables
@@ -81,6 +89,9 @@ namespace :legacy do
 	# Run time
 	run_time()
 
+	# Turn off timestamp to import existing timestamps
+	ActiveRecord::Base.record_timestamps = false
+
 	# Variables
 	user_map={}
 	group_map={}
@@ -92,10 +103,6 @@ namespace :legacy do
 
 	# --------------- USER --------------
 	process_model(LegacyUser, user_map)
-
-	# Turn off timestamp to import existing timestamps (must be on for user because it auto creates groups)
-	ActiveRecord::Base.record_timestamps = false
-
 	# --------------- GROUP --------------
 	process_model(LegacyGroup, group_map)
 	# --------------- GROUP_MEMBER --------------
