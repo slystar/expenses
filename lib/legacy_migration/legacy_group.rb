@@ -22,6 +22,11 @@ class LegacyGroup < LegacyBase
 	# Set timestamps fields
 	new_group.created_at = self.created_on
 	new_group.updated_at = self.updated_on
+	# Make sure updated_ad is not null
+	if new_group.updated_at.nil?
+	    # Set updated_at = created_at
+	    new_group.updated_at=new_group.created_at
+	end
 	# Validate
 	if not new_group.valid?
 	    puts("-" * 20)
@@ -42,17 +47,21 @@ class LegacyGroup < LegacyBase
 	# Loop over all old records
 	all.each do |o|
 	    # Get first legacy record
-	    @old_1=o
+	    old_1=o
 	    # Get matching new
-	    @new_1=Group.find(record_map[o.id])
+	    new_1=Group.find(record_map[o.id])
 	    # Test
-	    self.raise_error('name',@old_1,@new_1) if @new_1.name.downcase != @old_1.group_name.downcase
-	    self.raise_error('display_order',@old_1,@new_1) if @new_1.display_order != @old_1.display_order
-	    self.raise_error('created_at',@old_1,@new_1) if @new_1.created_at != @old_1.created_on
-	    self.raise_error('updated_at',@old_1,@new_1) if @new_1.updated_at != @old_1.updated_on
+	    self.raise_error('name',old_1,new_1) if new_1.name.downcase != old_1.group_name.downcase
+	    self.raise_error('display_order',old_1,new_1) if new_1.display_order != old_1.display_order
+	    self.raise_error('created_at',old_1,new_1) if new_1.created_at != old_1.created_on
+	    if new_1.updated_at != old_1.updated_on 
+		if new_1.updated_at != old_1.created_on
+		    self.raise_error('updated_at',old_1,new_1)
+		end
+	    end
 	end
 	# Test counts
-	self.raise_error('counts',@old_1,@new_1) if all.count != Group.all.count
+	self.raise_error('counts',old_1,new_1) if all.count != Group.all.count
 	# Ok
 	puts("#{self.name} (#{all.count}) successfully imported")
 	# Return true
