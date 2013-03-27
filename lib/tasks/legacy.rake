@@ -9,6 +9,12 @@ namespace :legacy do
     # Info
     puts("Rails env=#{Rails.env}")
 
+    # Variables
+    @times=[]
+    # Start time
+    @times.push(Time.now)
+
+
     desc 'reset test db'
     task :reset => :environment do
 	ActiveRecord::Base.record_timestamps = true
@@ -32,42 +38,10 @@ namespace :legacy do
     task :single_import => :environment do
 	# Turn off timestamp to import existing timestamps
 	ActiveRecord::Base.record_timestamps = false
-	# Delete expense
-	Expense.delete_all
-	model=LegacyExpense
-	map={}
-	extra=[]
-	# Print info
-	print("--#{model.name}: ")
-	# Variables
-	count=0
-	displayed_progress=[]
-	# Get all records
-	all=model.all[0..10]
-	# Get total count
-	total_count=all.count
-	# Loop over all
-	all.each do |o|
-	    # Import data
-	    old_id,new_id=o.migrate_me!(*extra)
-	    # Add to map
-	    map[old_id]=new_id
-	    # Calculate progress
-	    progress=(100 * count / total_count)
-	    # Increment count
-	    count += 1
-	    # Display progress
-	    if (progress % 10) == 0 and not displayed_progress.include?(progress)
-		# Print progress
-		print("#{progress}% ")
-		# Add to displayed
-		displayed_progress.push(progress)
-	    end
-	end
-	# Print line return
-	puts()
-	# Test import
-	model.validate_import(map)
+	# Delete all records
+	UserPayment.delete_all
+	# --------------- USER_PAYMENT --------------
+	process_model(LegacyUserPayment, {})
 	# Turn off timestamp to import existing timestamps
 	ActiveRecord::Base.record_timestamps = true
     end
@@ -76,12 +50,6 @@ namespace :legacy do
     task :import_data => :environment do
 	# Turn on timestamp (should be default)
 	ActiveRecord::Base.record_timestamps = true
-
-	# Variables
-	@times=[]
-
-	# Start time
-	@times.push(Time.now)
 
 	# Reset database
 	Rake::Task["legacy:reset"].invoke
@@ -100,6 +68,7 @@ namespace :legacy do
 	reason_map={}
 	store_map={}
 	expense_map={}
+	user_payment_map={}
 
 	# --------------- USER --------------
 	process_model(LegacyUser, user_map)
@@ -115,8 +84,9 @@ namespace :legacy do
 	process_model(LegacyStore, store_map)
 	# --------------- EXPENSE --------------
 	process_model(LegacyExpense, expense_map)
-	# --------------- USER_CHARGE --------------
 	# --------------- USER_PAYMENT --------------
+	process_model(LegacyUserPayment, user_payment_map)
+	# --------------- USER_CHARGE --------------
 	# --------------- BACKUP --------------
 	# --------------- MORTGAGE_PAYMENT --------------
 
