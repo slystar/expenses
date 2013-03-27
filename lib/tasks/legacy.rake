@@ -39,9 +39,9 @@ namespace :legacy do
 	# Turn off timestamp to import existing timestamps
 	ActiveRecord::Base.record_timestamps = false
 	# Delete all records
-	UserPayment.delete_all
-	# --------------- USER_PAYMENT --------------
-	process_model(LegacyUserPayment, {})
+	UserDepts.delete_all
+	# --------------- USER_CHARGE --------------
+	process_model(LegacyUserCharge, {})
 	# Turn off timestamp to import existing timestamps
 	ActiveRecord::Base.record_timestamps = true
     end
