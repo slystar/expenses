@@ -35,11 +35,57 @@ namespace :legacy do
 	e=LegacyExpense.validate_import(expense_map)
     end
 
+    task :expense_table_import => :environment do
+	# Variables
+	test_range=0..10
+	# Turn off timestamp to import existing timestamps
+	ActiveRecord::Base.record_timestamps = false
+	# Delete expense
+	Expense.delete_all
+	model=LegacyExpense
+	map={}
+	extra=[]
+	# Print info
+	print("--#{model.name}: ")
+	# Variables
+	count=0
+	displayed_progress=[]
+	# Get all records
+	all=model.all[test_range]
+	# Get total count
+	total_count=all.count
+	# Loop over all
+	all.each do |o|
+	    # Import data
+	    old_id,new_id=o.migrate_me!(*extra)
+	    # Add to map
+	    map[old_id]=new_id
+	    # Calculate progress
+	    progress=(100 * count / total_count)
+	    # Increment count
+	    count += 1
+	    # Display progress
+	    if (progress % 10) == 0 and not displayed_progress.include?(progress)
+		# Print progress
+		print("#{progress}% ")
+		# Add to displayed
+		displayed_progress.push(progress)
+	    end
+	end
+	# Print line return
+	puts()
+	# Test import
+	model.validate_import(map,test_range)
+	# Turn off timestamp to import existing timestamps
+	ActiveRecord::Base.record_timestamps = true
+	
+    end
+
     task :single_import => :environment do
 	# Turn off timestamp to import existing timestamps
 	ActiveRecord::Base.record_timestamps = false
 	# Delete all records
-	UserDepts.delete_all
+	UserDept.delete_all
 	# --------------- USER_CHARGE --------------
 	process_model(LegacyUserCharge, {})
 	# Turn off timestamp to import existing timestamps
@@ -69,6 +115,7 @@ namespace :legacy do
 	store_map={}
 	expense_map={}
 	user_payment_map={}
+	user_charge_map={}
 
 	# --------------- USER --------------
 	process_model(LegacyUser, user_map)
@@ -83,10 +130,11 @@ namespace :legacy do
 	# --------------- STORE --------------
 	process_model(LegacyStore, store_map)
 	# --------------- EXPENSE --------------
-	process_model(LegacyExpense, expense_map)
+	#process_model(LegacyExpense, expense_map)
 	# --------------- USER_PAYMENT --------------
-	process_model(LegacyUserPayment, user_payment_map)
+	#process_model(LegacyUserPayment, user_payment_map)
 	# --------------- USER_CHARGE --------------
+	process_model(LegacyUserCharge, user_charge_map)
 	# --------------- BACKUP --------------
 	# --------------- MORTGAGE_PAYMENT --------------
 
