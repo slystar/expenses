@@ -9,7 +9,10 @@ Models:
 	- http://killswitchcollective.com/articles/45_legacy_data_migration_with_activerecord
 	- http://pathfindersoftware.com/2008/03/using-activerec/
 - do we need a process_flag on user_payment?
+- how to handle returns (ex: you return something to the store after it's
+  been processed)
 - expense history (user_id, expense_id, group_id), could allow group deletion
+    - possibly use papertrail gem
 
 Backups:
 - put backing up code in model?
