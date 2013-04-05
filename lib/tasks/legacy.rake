@@ -83,13 +83,12 @@ namespace :legacy do
 
     task :single_import => :environment do
 	# Turn off timestamp to import existing timestamps
-	ActiveRecord::Base.record_timestamps = false
-	# Delete all records
-	UserDept.delete_all
-	# --------------- USER_CHARGE --------------
-	process_model(LegacyUserCharge, {})
+	#ActiveRecord::Base.record_timestamps = false
+	file_path=File.join('db','legacy_mortgage_payments.csv')
+	LegacyMortgagePayment.migrate_me!(file_path)
+	LegacyMortgagePayment.validate_import(file_path)
 	# Turn off timestamp to import existing timestamps
-	ActiveRecord::Base.record_timestamps = true
+	#ActiveRecord::Base.record_timestamps = true
     end
 
     desc 'import legacy data'
@@ -136,8 +135,11 @@ namespace :legacy do
 	# --------------- USER_CHARGE --------------
 	process_model(LegacyUserCharge, user_charge_map)
 	# --------------- BACKUP --------------
+	# Not required
 	# --------------- MORTGAGE_PAYMENT --------------
-
+	LegacyMortgagePayment.migrate_me!
+	LegacyMortgagePayment.validate_import
+	# --------------- UserBalance --------------
 	# --------------- Globat Tests --------------
 	# Depts
 	# Credits
