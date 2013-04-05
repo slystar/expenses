@@ -9,3 +9,4 @@ tmp/
 **.swp
 webrat.log
 capybara*.log
+db/legacy_mortgage_payments.csv
