@@ -121,6 +121,8 @@ describe ImportHistory do
 	file_name_digest=filename.split('_').last
 	# Check file
 	new_file_digest.should == file_name_digest
+	# Delete tmp file
+	File.delete(File.join(storage_dir,filename))
     end
 
     pending "should require upload with content" do
