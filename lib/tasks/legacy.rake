@@ -83,9 +83,15 @@ namespace :legacy do
 
     task :single_import => :environment do
 	# Turn off timestamp to import existing timestamps
-	#ActiveRecord::Base.record_timestamps = false
+	ActiveRecord::Base.record_timestamps = false
+	# Empty table
+	UserBalance.delete_all
+	# Import balances
+	LegacyUserBalance.migrate_me!
+	# Validate import
+	LegacyUserBalance.validate_import
 	# Turn off timestamp to import existing timestamps
-	#ActiveRecord::Base.record_timestamps = true
+	ActiveRecord::Base.record_timestamps = true
     end
 
     desc 'import legacy data'
@@ -135,9 +141,15 @@ namespace :legacy do
 	# Legacy data not required
 	# --------------- MORTGAGE_PAYMENT --------------
 	file_path=File.join('db','legacy_mortgage_payments.csv')
+	# Copy data
 	LegacyMortgagePayment.migrate_me!(file_path)
+	# Validate copy
 	LegacyMortgagePayment.validate_import(file_path)
 	# --------------- UserBalance --------------
+	# Import balances
+	LegacyUserBalance.migrate_me!
+	# Validate import
+	LegacyUserBalance.validate_import
 	# --------------- Globat Tests --------------
 	# Depts
 	# Credits
