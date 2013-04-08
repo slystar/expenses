@@ -27,6 +27,7 @@ class LegacyUserBalance
 	users=User.all
 	# Loop over users
 	users.each do |u|
+	    # This balance calculation code was taken from the old system and tweaked slightly for new naming conventions
 	    #--Set up balances
 	    this_user=u
 	    users=User.find(:all,:conditions => ["id<>?",this_user.id])
