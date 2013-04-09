@@ -132,9 +132,9 @@ namespace :legacy do
 	# --------------- STORE --------------
 	process_model(LegacyStore, store_map)
 	# --------------- EXPENSE --------------
-	#process_model(LegacyExpense, expense_map)
+	process_model(LegacyExpense, expense_map)
 	# --------------- USER_PAYMENT --------------
-	#process_model(LegacyUserPayment, user_payment_map)
+	process_model(LegacyUserPayment, user_payment_map)
 	# --------------- USER_CHARGE --------------
 	process_model(LegacyUserCharge, user_charge_map)
 	# --------------- BACKUP --------------
@@ -150,10 +150,6 @@ namespace :legacy do
 	LegacyUserBalance.migrate_me!
 	# Validate import
 	LegacyUserBalance.validate_import
-	# --------------- Globat Tests --------------
-	# Depts
-	# Credits
-	# Group members in expenses
 
 	# Turn timestamps back on
 	ActiveRecord::Base.record_timestamps = true
