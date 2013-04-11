@@ -1,16 +1,3 @@
-%p#notice= notice
-%p
-  %b Id:
-  = @user.id
-%p
-  %b User name:
-  = @user.user_name
-%p
-  %b Password:
-  = @user.password
-%p
-  %b Name:
-  = @user.name
-= link_to 'Edit', edit_user_path(@user)
-|
-\#{link_to 'Back', users_path}
+%h1 New User
+= render 'form'
+= link_to 'Back', stores_path
