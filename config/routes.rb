@@ -1,20 +1,20 @@
 Expenses::Application.routes.draw do
-  resources :user_payments
-
-  resources :groups
-
-  resources :pay_methods
-
-  resources :reasons
-
+  # User
   get "logout" => "sessions#destroy", :as => "logout"
   get "login" => "sessions#new", :as => "login"
   get "signup" => "users#new", :as => "signup"
-  resources :expenses
-  resources :stores
-
   resources :users
   resources :sessions
+  resources :groups
+
+  # Expenses
+  get "menu" => "expenses#menu", :as => 'menu'
+  resources :expenses
+  resources :user_payments
+  resources :pay_methods
+  resources :reasons
+  resources :stores
+
 
 
   # The priority is based upon order of creation:

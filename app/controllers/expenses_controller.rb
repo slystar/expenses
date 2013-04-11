@@ -80,4 +80,8 @@ class ExpensesController < ApplicationController
       format.json { head :ok }
     end
   end
+
+  # GET /menu
+  def menu
+  end
 end
