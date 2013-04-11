@@ -83,4 +83,8 @@ module SpecHelpFunctions
 	return ic
     end
 
+    # Get a valid user object
+    def get_valid_new_user()
+	User.new({:user_name => 'test', :password => 'testpassword'})
+    end
 end
