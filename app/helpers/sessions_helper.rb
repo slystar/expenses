@@ -29,7 +29,7 @@ module SessionsHelper
   end
 
   def sign_out
-    current_user = nil
+    @current_user = nil
     session[:user_id] = nil
   end
 
