@@ -784,6 +784,4 @@ describe Expense do
 	e1.reload.expense_note.should == note
 	e2.reload.expense_note.should == note
     end
-
-    pending "should notify user about updates"
 end
