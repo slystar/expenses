@@ -364,4 +364,7 @@ describe User do
 	u1_u3_o.size.should == 1
 	u1_u3_o.first[:amount].to_f.should == (expected_credit_3_1 * -1)
     end
+
+    pending "should be able to rename user_name" do
+    end
 end

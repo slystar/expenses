@@ -1,48 +1,126 @@
 require 'spec_helper'
 
 describe "Users" do
+
     describe 'Sign up' do
-	before { visit signup_path }
 
-	it { page.should have_selector('h1', text: 'Sign up') }
-
-	it "should have the proper tile" do
-	     first('head title').native.text.should == 'Expenses'
+	before(:each) do
+	    # Create new user
+	    @user=User.new({:user_name => 'test_user',:password => '1234abcd', :name => 'test user'})
+	    # Visit signup page
+	    visit signup_path
 	end
 
-	it "should have proper input fields" do
-	    # Variables
-	    expected_input_types={"hidden"=>1, "text"=>2, "password"=>2, "submit"=>1}
-	    found_input_types={}
-	    # Input: text
-	    page.should have_field('user_user_name')
-	    page.should have_field('name')
-	    page.all('input[type=text]').size.should == 2
-	    # Input: password
-	    page.should have_field('user_password')
-	    page.should have_field('user_password_confirmation')
-	    page.all('input[type=password]').size.should == 2
-	    # check all input fields
-	    page.all('input').each do |e|
-		# Get nokogiri object
-		nok=e.native
-		# Get attributes
-		attributes=nok.attributes
-		# Loop over attributes
-		attributes.each do |x|
-		    # Get type
-		    type=x[0]
-		    value=x[1].value
-		    # Process only 'type'
-		    next if type != 'type'
-		    # Create hash if it does not exist
-		    found_input_types[value]=0 if found_input_types[value].nil?
-		    # Add to count
-		    found_input_types[value] += 1
-		end
+	def submit_new_user
+	    # Fill in info
+	    page.fill_in "user_user_name", with: @user.user_name
+	    page.fill_in "user_password", with: @user.password
+	    page.fill_in "user_password_confirmation", with: @user.password
+	    page.fill_in "user_name", with: @user.name
+	    # Click button to submit
+	    page.click_button "Create User"
+	end
+
+	it "should work with valid input" do
+	    # Fill in info
+	    submit_new_user
+	    # Test: Should redirect to menu
+	    current_path.should == menu_path
+	    # Test: Should have a notice
+	    page.should have_content('User was successfully created.')
+	end
+
+	it "should display en error when bad input is given" do
+	    # Create user
+	    @user.save!
+	    # Fill in info
+	    page.fill_in "user_user_name", with: @user.user_name
+	    page.fill_in "user_password", with: '123'
+	    page.fill_in "user_password_confirmation", with: '12345678'
+	    page.fill_in "user_name", with: @user.name
+	    # Click button to submit
+	    page.click_button "Create User"
+	    # Test: Should not redirect
+	    current_path.should == users_path
+	    # Test: Should have a notice div
+	    page.should_not have_selector('div.alert.alert-error')
+	    page.should have_content('User name has already been taken')
+	    page.should have_content('Password is too short')
+	    page.should have_content("Password doesn't match confirmation")
+	end
+
+	it "should add first user to admin role" do
+	    # Fill in info
+	    submit_new_user
+	    # Get user
+	    user=User.find(:first, :conditions => {:user_name=> @user.user_name})
+	    # Test
+	    user.roles.keep_if{|r| r.name == 'Admin'}.size.should == 1
+	end
+
+	it "should not add user 2 or more to admin role" do
+	    # Create 1st user
+	    user1=@user.dup
+	    user1.user_name=@user.user_name + '1'
+	    user1.save!
+	    # Fill in info
+	    submit_new_user
+	    # Get user
+	    user=User.find(:first, :conditions => {:user_name=> @user.user_name})
+	    # Test
+	    user.roles.keep_if{|r| r.name == 'Admin'}.size.should == 0
+	end
+
+	describe "layout" do
+	    it { page.should have_selector('h1', text: 'Sign up') }
+
+	    it "should have the proper tile" do
+		first('head title').native.text.should == 'Expenses'
 	    end
-	    expected_input_types.should == found_input_types
+
+	    it "should have proper input fields" do
+		# Variables
+		expected_input_types={"hidden"=>1, "text"=>2, "password"=>2, "submit"=>1}
+		found_input_types={}
+		# Input: text
+		page.should have_field('user_user_name')
+		page.should have_field('name')
+		page.all('input[type=text]').size.should == 2
+		# Input: password
+		page.should have_field('user_password')
+		page.should have_field('user_password_confirmation')
+		page.all('input[type=password]').size.should == 2
+		# check all input fields
+		page.all('input').each do |e|
+		    # Get nokogiri object
+		    nok=e.native
+		    # Get attributes
+		    attributes=nok.attributes
+		    # Loop over attributes
+		    attributes.each do |x|
+			# Get type
+			type=x[0]
+			value=x[1].value
+			# Process only 'type'
+			next if type != 'type'
+			# Create hash if it does not exist
+			found_input_types[value]=0 if found_input_types[value].nil?
+			# Add to count
+			found_input_types[value] += 1
+		    end
+		end
+		expected_input_types.should == found_input_types
+	    end
 	end
+    end
+
+    describe "Sign in" do
+	pending "should sign in with valid attributes"
+	pending "should not sign in with bad attributes"
+    end
+
+    describe "Edit" do
+	pending "should be able to edit"
     end
 
     describe "GET /users" do
