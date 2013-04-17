@@ -2,11 +2,16 @@ require 'spec_helper'
 
 describe "Users" do
 
+    # Method to get user
+    def get_user
+	return User.new({:user_name => 'test_user',:password => '1234abcd', :name => 'test user'})
+    end
+
     describe 'Sign up' do
 
 	before(:each) do
 	    # Create new user
-	    @user=User.new({:user_name => 'test_user',:password => '1234abcd', :name => 'test user'})
+	    @user=get_user
 	    # Visit signup page
 	    visit signup_path
 	end
@@ -112,11 +117,6 @@ describe "Users" do
 		expected_input_types.should == found_input_types
 	    end
 	end
-    end
-
-    describe "Sign in" do
-	pending "should sign in with valid attributes"
-	pending "should not sign in with bad attributes"
     end
 
     describe "Edit" do
