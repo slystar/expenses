@@ -61,9 +61,9 @@ describe SessionsHelper do
 	helper.current_user?(u2).should == false
     end
 
-    it "should have method: signed_in_user" do
+    it "should have method: login_required" do
 	# Test
-	helper.should respond_to(:signed_in_user)
+	helper.should respond_to(:login_required)
     end
 
     it "should have method: sign_out" do

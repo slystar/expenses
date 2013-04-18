@@ -7,7 +7,7 @@ describe "Users" do
 	return User.new({:user_name => 'test_user',:password => '1234abcd', :name => 'test user'})
     end
 
-    describe 'Sign up' do
+    describe 'new, create (Sign up)' do
 
 	before(:each) do
 	    # Create new user
@@ -119,9 +119,91 @@ describe "Users" do
 	end
     end
 
-    describe "Edit" do
-	pending "should be able to edit"
+    describe 'requires login for' do
+
+	it "index" do
+	    # Visit page
+	    visit "#{users_path}"
+	    # Test
+	    current_path.should == login_path
+	end
+
+	it 'show' do
+	    # Create user
+	    user=get_user
+	    # Save user
+	    user.save!
+	    # Visit page
+	    visit "#{users_path}/#{user.id}"
+	    # Test
+	    current_path.should == login_path
+	end
+
+	it 'update' do
+	    # Create user
+	    user=get_user
+	    # Save user
+	    user.save!
+	    # Visit page
+	    visit "#{users_path}/#{user.id}/edit"
+	    # Test
+	    current_path.should == login_path
+	end
+
+	it 'edit' do
+	    # Create user
+	    user=get_user
+	    # Save user
+	    user.save!
+	    # Visit page
+	    visit "#{users_path}/#{user.id}/edit"
+	    # Test
+	    current_path.should == login_path
+	end
     end
+
+
+    describe 'after login' do
+
+	before(:each) do
+	    # Get user
+	    @user=get_user
+	    # Create user
+	    @user.save!
+	    # Visit login page
+	    visit login_path
+	    # Fill in info
+	    page.fill_in "user_name", with: @user.user_name
+	    page.fill_in "password", with: @user.password
+	    # Click button to submit
+	    page.click_button "Log in"
+	end
+
+	describe 'index' do
+
+	    it "should be index page" do
+		# Visit signup page
+		visit users_path
+		# Test
+		page.should have_link 'New User'
+		page.should have_content 'Listing users'
+	    end
+
+	    pending "should require admin role" do
+		1.should == 5
+	    end
+	end
+	describe 'edit' do
+	    pending "should be able to edit"
+	end
+	describe 'show' do
+	end
+	describe 'update' do
+	end
+	describe 'destroy' do
+	end
+    end
+
 
     describe "GET /users" do
 	it "works! (now write some real specs)" do
