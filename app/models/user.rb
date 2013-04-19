@@ -46,6 +46,15 @@ class User < ActiveRecord::Base
 	UserBalance.where('to_user_id = ? or from_user_id = ?',self.id,self.id).where(:current => true)
     end
 
+    # Method to check if is admin
+    def is_admin?
+	if roles.detect{|r| r.name =~ /Admin/i}
+	    return true
+	else
+	    return false
+	end
+    end
+
     # Below methods are private
     private
 

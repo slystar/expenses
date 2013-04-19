@@ -365,6 +365,13 @@ describe User do
 	u1_u3_o.first[:amount].to_f.should == (expected_credit_3_1 * -1)
     end
 
+    it "should have method is_admin?" do
+	 user1=User.create!(@attr)
+	 user2=get_next_user
+	 user1.is_admin?.should == true
+	 user2.is_admin?.should == false
+    end
+
     pending "should be able to rename user_name" do
     end
 end
