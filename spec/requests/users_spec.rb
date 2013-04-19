@@ -179,8 +179,8 @@ describe "Users" do
 	    # Visit login page
 	    visit login_path
 	    # Fill in info
-	    page.fill_in "user_name", with: @user.user_name
-	    page.fill_in "password", with: @user.password
+	    page.fill_in "user_name", with: user.user_name
+	    page.fill_in "password", with: user.password
 	    # Click button to submit
 	    page.click_button "Log in"
 	end
@@ -207,18 +207,26 @@ describe "Users" do
 		visit users_path
 		# Test: Should redirect to menu
 		current_path.should == menu_path
-		page.should have_content "requires Admin role"
-		1.should == 5
+		page.should have_content "requires admin role"
 	    end
 	end
+
 	describe 'edit' do
-	    pending "should be able to edit"
+	    pending "should require admin role"
 	end
+
 	describe 'show' do
+	    pending "should display current logged in user"
 	end
+
 	describe 'update' do
+	    pending "should not allow a change of user_name"
+	    pending "should allow a change of name"
+	    pending "should allow a change of password"
 	end
+
 	describe 'destroy' do
+	    pending "should not exist"
 	end
     end
 end

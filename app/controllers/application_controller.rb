@@ -12,7 +12,16 @@ class ApplicationController < ActionController::Base
     # Method to check for authenticated user
     def login_required
 	if current_user.nil?
-	    redirect_to login_url, notice: "Please log in."
+	    redirect_to login_path, notice: "Please log in."
+	end
+    end
+
+    # Method tocheck for admin user
+    def admin_required
+	unless current_user.is_admin?
+	    # Get url
+	    target_url=request.url
+	    redirect_to menu_path, notice: "#{target_url} requires admin role."
 	end
     end
 
