@@ -4,6 +4,7 @@ describe "Users" do
 
     # Method to get user
     def get_user
+	@new_user_id=1
 	return User.new({:user_name => 'test_user',:password => '1234abcd', :name => 'test user'})
     end
 
@@ -170,6 +171,11 @@ describe "Users" do
 	    @user=get_user
 	    # Create user
 	    @user.save!
+	    # Login
+	    login_user(@user)
+	end
+
+	def login_user(user)
 	    # Visit login page
 	    visit login_path
 	    # Fill in info
@@ -181,15 +187,27 @@ describe "Users" do
 
 	describe 'index' do
 
-	    it "should be index page" do
+	    before(:each) do
 		# Visit signup page
 		visit users_path
+	    end
+
+	    it "should be index page" do
 		# Test
 		page.should have_link 'New User'
 		page.should have_content 'Listing users'
 	    end
 
-	    pending "should require admin role" do
+	    it "should require admin role" do
+		# Get 2nd user
+		user2=get_next_user
+		# Login second user
+		login_user(user2)
+		# Visit users path
+		visit users_path
+		# Test: Should redirect to menu
+		current_path.should == menu_path
+		page.should have_content "requires Admin role"
 		1.should == 5
 	    end
 	end
@@ -201,15 +219,6 @@ describe "Users" do
 	describe 'update' do
 	end
 	describe 'destroy' do
-	end
-    end
-
-
-    describe "GET /users" do
-	it "works! (now write some real specs)" do
-	    # Run the generator again with the --webrat flag if you want to use webrat methods/matchers
-	    get users_path
-	    response.status.should be(200)
 	end
     end
 end

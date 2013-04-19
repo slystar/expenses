@@ -20,7 +20,6 @@ describe SessionsHelper do
 	# Log in user
 	u=get_logged_in_user
 	# Test
-	helper.current_user.should == u
 	session[:user_id].should == u.id
     end
 
@@ -36,31 +35,6 @@ describe SessionsHelper do
 	helper.signed_in?.should == true
     end
 
-    it "should have method: current_user=(user)" do
-	# Log in user
-	u=get_logged_in_user
-	# Test
-	(helper.current_user=u).should == u
-    end
-
-    it "should have method: current_user" do
-	# Log in user
-	u=get_logged_in_user
-	# Test
-	helper.current_user.should == u
-    end
-
-    it "should have method: current_user?(user)" do
-	# Log in user
-	u=get_logged_in_user
-	# Test
-	helper.current_user?(u).should == true
-	# Get new user
-	u2=get_next_user
-	# Test
-	helper.current_user?(u2).should == false
-    end
-
     it "should have method: login_required" do
 	# Test
 	helper.should respond_to(:login_required)
@@ -74,11 +48,10 @@ describe SessionsHelper do
 	# Sign out
 	helper.sign_out
 	# Test
-	helper.current_user.should == nil
 	session[:user_id].should == nil
     end
 
-    it "should have method: redirect_back_or(default)" do
+    it "should have method: redirect_back_or" do
 	# Log in user
 	u=get_logged_in_user
 	# Test
@@ -91,5 +64,13 @@ describe SessionsHelper do
 	# Test
 	helper.should respond_to(:store_location)
 	session[:return_to].should be_nil
+    end
+
+    it "should have method: is_admin?" do
+	# Log in user
+	u=get_logged_in_user
+	# Test
+	helper.should respond_to(:is_admin?)
+	helper.is_admin?.should == true
     end
 end
