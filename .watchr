@@ -81,7 +81,17 @@ end
 
 # Watch ruby files in app directory and call matching spec
 watch("app/(.*/.*).rb") do |match|
-    run_spec %{spec/#{match[1]}_spec.rb}
+    # Process controllers separately, we will run requests specs instead
+    if match[1] =~ /controller/
+	# Request file
+	req_file="spec/requests/#{match[1].split('/').last.gsub(/_.*/,'')}_spec.rb"
+	# Check if request file exists
+	if File.exist?(req_file)
+	    run_spec %{#{req_file}}
+	end
+    else
+	run_spec %{spec/#{match[1]}_spec.rb}
+    end
 end
 
 # Watch haml files in views and call matching requests spec
