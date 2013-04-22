@@ -37,6 +37,10 @@ class UsersController < ApplicationController
 
     # GET /users/1/edit
     def edit
+	# Should only be able to edit self
+	if not current_user.is_admin? and current_user.id != params[:id]
+	    redirect_to menu_path, notice: "You may only edit yourself."
+	end
 	@user = User.find(params[:id])
     end
 

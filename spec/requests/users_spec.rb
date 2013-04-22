@@ -212,7 +212,33 @@ describe "Users" do
 	end
 
 	describe 'edit' do
-	    pending "should require admin role"
+
+	    before(:each) do
+		@edit_path="#{users_path}/#{@user.id}/edit"
+		# Visit signup page
+		visit @edit_path
+	    end
+
+	    it "should be able to edit yourself" do
+		# Test: Should redirect to menu
+		current_path.should == @edit_path
+	    end
+
+	    it "should be able to change password" do
+		1.should == 5
+	    end
+
+	    it "should not be able to edit someone else" do
+		# Get 2nd user
+		user2=get_next_user
+		# Login second user
+		login_user(user2)
+		# Visit users path
+		visit @edit_path
+		# Test: Should redirect to menu
+		current_path.should == menu_path
+		page.should have_content "You may only edit yourself."
+	    end
 	end
 
 	describe 'show' do

@@ -16,7 +16,7 @@ class ApplicationController < ActionController::Base
 	end
     end
 
-    # Method tocheck for admin user
+    # Method to check for admin user
     def admin_required
 	unless current_user.is_admin?
 	    # Get url
