@@ -26,6 +26,8 @@ gem 'yaml_db'
 
 # Use unicorn as the web server
 # gem 'unicorn'
+# Use puma as the web server
+gem 'puma'
 
 # Deploy with Capistrano
 # gem 'capistrano'
