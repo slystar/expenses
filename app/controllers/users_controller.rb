@@ -65,6 +65,12 @@ class UsersController < ApplicationController
     def update
 	@user = User.find(params[:id])
 
+	# Do not allow modification of following parameters
+	[:user_name].each do |p|
+	    # Remove paramter
+	    params[:user].delete(p)
+	end
+
 	respond_to do |format|
 	    if @user.update_attributes(params[:user])
 		format.html { redirect_to @user, notice: 'User was successfully updated.' }
