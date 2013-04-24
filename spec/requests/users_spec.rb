@@ -215,17 +215,40 @@ describe "Users" do
 
 	    before(:each) do
 		@edit_path="#{users_path}/#{@user.id}/edit"
-		# Visit signup page
-		visit @edit_path
+		go_to_edit_user
+	    end
+
+	    def go_to_edit_user
+		# Visit menu
+		visit menu_path
+		# Visit edit path
+		click_link 'Edit user:'
 	    end
 
 	    it "should be able to edit yourself" do
-		# Test: Should redirect to menu
+		# Test
 		current_path.should == @edit_path
 	    end
 
+	    pending "should have the following elements" do
+		page.should have_link("menu")
+		page.should have_content("Editing user: #{@user.user_name}")
+	    end
+
 	    it "should be able to change password" do
-		1.should == 5
+		new_password=@user.password + 'abc'
+		go_to_edit_user
+		# Make sure passwords are different
+		new_password.should_not == @user.password
+		# Fill in information
+		page.fill_in "user_password", with: new_password
+		page.fill_in "user_password_confirmation", with: new_password
+		# Submit
+		page.click_button "Update User"
+		# Get updated user
+		new_user=User.find(@user.id)
+		# Test
+		new_user.password_digest.should_not == @user.password_digest
 	    end
 
 	    it "should not be able to edit someone else" do

@@ -1,6 +1,9 @@
 Welcome:
 = session[:user_name]
-%p
-This is a test.
-%p
-  %a{:href => '/logout'} Logout
+%ul
+  %li
+    %a{:href => "/users/#{session[:user_id]}/edit"} 
+      Edit user:
+      = session[:user_name]
+  %li
+    %a{:href => '/logout'} Logout
