@@ -1,4 +1,6 @@
-%h1 Editing user
+%h1
+  Editing user: 
+  = @user.user_name
 = form_for(@user) do |f|
   - if @user.errors.any?
     #error_explanation
@@ -16,12 +18,6 @@
     = f.label :password_confirmation
     %br/
     = f.password_field :password_confirmation
-  .field
-    = f.label :name
-    %br/
-    = f.text_field :name
   .actions
     = f.submit
-= link_to 'Show', @user
-|
-\#{link_to 'Back', users_path}
+\#{link_to 'menu', menu_path}
