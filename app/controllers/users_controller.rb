@@ -81,7 +81,7 @@ class UsersController < ApplicationController
 		if error_msg
 		    format.html { redirect_to @user, notice: error_msg }
 		elsif @user.update_attributes(params[:user])
-		    format.html { redirect_to @user, notice: 'User was successfully updated.' }
+		    format.html { redirect_to menu_path, notice: 'User was successfully updated.' }
 		    format.json { head :ok }
 		else
 		    format.html { render action: "edit" }

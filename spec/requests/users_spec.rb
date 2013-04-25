@@ -222,7 +222,7 @@ describe "Users" do
 		# Visit menu
 		visit menu_path
 		# Visit edit path
-		click_link 'Edit user:'
+		click_link 'Edit user'
 	    end
 
 	    it "should be able to edit yourself" do
@@ -232,7 +232,7 @@ describe "Users" do
 
 	    pending "should have the following elements" do
 		page.should have_link("menu")
-		page.should have_content("Editing user: #{@user.user_name}")
+		page.should have_content("Editing user")
 	    end
 
 	    it "should be able to change password" do
@@ -247,8 +247,16 @@ describe "Users" do
 		page.click_button "Update User"
 		# Get updated user
 		new_user=User.find(@user.id)
-		# Test
+		# Test data
 		new_user.password_digest.should_not == @user.password_digest
+		# Test return page
+		current_path.should == menu_path
+		page.should have_content('User was successfully updated.')
+		# Test new password
+		new_user.password=new_password
+		visit logout_path
+		login_user(new_user)
+		current_path.should == menu_path
 	    end
 
 	    it "should not be able to edit someone else" do
