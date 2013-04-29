@@ -2,6 +2,9 @@ Welcome:
 = session[:user_name]
 %ul
   %li
+    %a{:href => "/expenses/new"} 
+      Add expense
+  %li
     %a{:href => "/users/#{session[:user_id]}/edit"} 
       Edit user
   %li

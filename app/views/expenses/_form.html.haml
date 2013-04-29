@@ -1,3 +1,4 @@
+= @expense.errors.messages
 = form_for(@expense) do |f|
   - if @expense.errors.any?
     #error_explanation
@@ -14,23 +15,19 @@
   .field
     = f.label :description
     %br/
-    = f.text_area :description
+    = f.text_area :description, :rows => 4
   .field
     = f.label :pay_method_id
     %br/
-    = f.number_field :pay_method_id
+    = f.collection_select :pay_method_id, @pay_methods, :id,:name, :prompt => '--'
   .field
     = f.label :reason_id
     %br/
-    = f.number_field :reason_id
+    = f.collection_select :reason_id, @reasons, "id","name",:prompt => '--'
   .field
     = f.label :store_id
     %br/
-    = f.number_field :store_id
-  .field
-    = f.label :user_id
-    %br/
-    = f.number_field :user_id
+    = f.collection_select :store_id, @stores, "id","name", prompt: '--'
   .field
     = f.label :group_id
     %br/
@@ -39,13 +36,5 @@
     = f.label :amount
     %br/
     = f.text_field :amount
-  .field
-    = f.label :process_date
-    %br/
-    = f.date_select :process_date
-  .field
-    = f.label :process_flag
-    %br/
-    = f.check_box :process_flag
   .actions
     = f.submit

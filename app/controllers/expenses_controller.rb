@@ -1,87 +1,93 @@
 class ExpensesController < ApplicationController
-  # GET /expenses
-  # GET /expenses.json
-  def index
-    @expenses = Expense.all
+    # GET /expenses
+    # GET /expenses.json
+    def index
+	@expenses = Expense.all
 
-    respond_to do |format|
-      format.html # index.html.erb
-      format.json { render json: @expenses }
+	respond_to do |format|
+	    format.html # index.html.erb
+	    format.json { render json: @expenses }
+	end
     end
-  end
 
-  # GET /expenses/1
-  # GET /expenses/1.json
-  def show
-    @expense = Expense.find(params[:id])
+    # GET /expenses/1
+    # GET /expenses/1.json
+    def show
+	@expense = Expense.find(params[:id])
 
-    respond_to do |format|
-      format.html # show.html.erb
-      format.json { render json: @expense }
+	respond_to do |format|
+	    format.html # show.html.erb
+	    format.json { render json: @expense }
+	end
     end
-  end
 
-  # GET /expenses/new
-  # GET /expenses/new.json
-  def new
-    @expense = Expense.new
+    # GET /expenses/new
+    # GET /expenses/new.json
+    def new
+	@expense = Expense.new
+	@pay_methods = PayMethod.order("name").all
+	@reasons = Reason.order("name").all
+	@stores = Store.order("name").all
 
-    respond_to do |format|
-      format.html # new.html.erb
-      format.json { render json: @expense }
+	respond_to do |format|
+	    format.html # new.html.erb
+	    format.json { render json: @expense }
+	end
     end
-  end
 
-  # GET /expenses/1/edit
-  def edit
-    @expense = Expense.find(params[:id])
-  end
-
-  # POST /expenses
-  # POST /expenses.json
-  def create
-    @expense = Expense.new(params[:expense])
-
-    respond_to do |format|
-      if @expense.save
-        format.html { redirect_to @expense, notice: 'Expense was successfully created.' }
-        format.json { render json: @expense, status: :created, location: @expense }
-      else
-        format.html { render action: "new" }
-        format.json { render json: @expense.errors, status: :unprocessable_entity }
-      end
+    # GET /expenses/1/edit
+    def edit
+	@expense = Expense.find(params[:id])
     end
-  end
 
-  # PUT /expenses/1
-  # PUT /expenses/1.json
-  def update
-    @expense = Expense.find(params[:id])
+    # POST /expenses
+    # POST /expenses.json
+    def create
+	@expense = Expense.new(params[:expense])
 
-    respond_to do |format|
-      if @expense.update_attributes(params[:expense])
-        format.html { redirect_to @expense, notice: 'Expense was successfully updated.' }
-        format.json { head :ok }
-      else
-        format.html { render action: "edit" }
-        format.json { render json: @expense.errors, status: :unprocessable_entity }
-      end
+	respond_to do |format|
+	    if @expense.save
+		format.html { redirect_to @expense, notice: 'Expense was successfully created.' }
+		format.json { render json: @expense, status: :created, location: @expense }
+	    else
+		@pay_methods = PayMethod.order("name").all
+		@reasons = Reason.order("name").all
+		@stores = Store.order("name").all
+		format.html { render action: "new" }
+		format.json { render json: @expense.errors, status: :unprocessable_entity }
+	    end
+	end
     end
-  end
 
-  # DELETE /expenses/1
-  # DELETE /expenses/1.json
-  def destroy
-    @expense = Expense.find(params[:id])
-    @expense.destroy
+    # PUT /expenses/1
+    # PUT /expenses/1.json
+    def update
+	@expense = Expense.find(params[:id])
 
-    respond_to do |format|
-      format.html { redirect_to expenses_url }
-      format.json { head :ok }
+	respond_to do |format|
+	    if @expense.update_attributes(params[:expense])
+		format.html { redirect_to @expense, notice: 'Expense was successfully updated.' }
+		format.json { head :ok }
+	    else
+		format.html { render action: "edit" }
+		format.json { render json: @expense.errors, status: :unprocessable_entity }
+	    end
+	end
     end
-  end
 
-  # GET /menu
-  def menu
-  end
+    # DELETE /expenses/1
+    # DELETE /expenses/1.json
+    def destroy
+	@expense = Expense.find(params[:id])
+	@expense.destroy
+
+	respond_to do |format|
+	    format.html { redirect_to expenses_url }
+	    format.json { head :ok }
+	end
+    end
+
+    # GET /menu
+    def menu
+    end
 end
