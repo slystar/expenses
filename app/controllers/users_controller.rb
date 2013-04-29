@@ -83,6 +83,6 @@ class UsersController < ApplicationController
 	# DELETE /users/1.json
 	def destroy
 	    # Not implemented yet
-	    redirect_to menu_path, notice: "Destroy not enabled"
+	    redirect_to menu_path, alert: "Destroy not enabled"
 	end
     end
