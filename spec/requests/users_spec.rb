@@ -129,17 +129,6 @@ describe "Users" do
 	    current_path.should == login_path
 	end
 
-	it 'show' do
-	    # Create user
-	    user=get_user
-	    # Save user
-	    user.save!
-	    # Visit page
-	    visit "#{users_path}/#{user.id}"
-	    # Test
-	    current_path.should == login_path
-	end
-
 	it 'update' do
 	    # Create user
 	    user=get_user
@@ -270,20 +259,6 @@ describe "Users" do
 		current_path.should == menu_path
 		page.should have_content "You may only edit yourself."
 	    end
-	end
-
-	describe 'show' do
-	    pending "should display current logged in user"
-	end
-
-	describe 'update' do
-	    pending "should not allow a change of user_name"
-	    pending "should allow a change of name"
-	    pending "should allow a change of password"
-	end
-
-	describe 'destroy' do
-	    pending "should not exist"
 	end
     end
 end

@@ -40,15 +40,6 @@ describe UsersController do
 	end
     end
 
-    describe "GET show" do
-	it "assigns the requested user as @user" do
-	    user = User.create! valid_attributes
-	    login(user)
-	    get :show, :id => user.id.to_s
-	    assigns(:user).should eq(user)
-	end
-    end
-
     describe "GET new" do
 	it "assigns a new user as @user" do
 	    get :new
@@ -168,19 +159,19 @@ describe UsersController do
     end
 
     describe "DELETE destroy" do
-	it "destroys the requested user" do
+	it "does not destroy the requested user" do
 	    user = User.create! valid_attributes
 	    login(user)
 	    expect {
 		delete :destroy, :id => user.id.to_s
-	    }.to change(User, :count).by(-1)
+	    }.to change(User, :count).by(0)
 	end
 
-	it "redirects to the users list" do
+	it "redirects to the menu" do
 	    user = User.create! valid_attributes
 	    login(user)
 	    delete :destroy, :id => user.id.to_s
-	    response.should redirect_to(users_url)
+	    response.should redirect_to(menu_path)
 	end
     end
 

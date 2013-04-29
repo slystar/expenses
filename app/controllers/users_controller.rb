@@ -13,17 +13,6 @@ class UsersController < ApplicationController
 	end
     end
 
-    # GET /users/1
-    # GET /users/1.json
-    def show
-	@user = User.find(params[:id])
-
-	respond_to do |format|
-	    format.html # show.html.erb
-	    format.json { render json: @user }
-	end
-    end
-
     # GET /users/new
     # GET /users/new.json
     def new
@@ -93,12 +82,7 @@ class UsersController < ApplicationController
 	# DELETE /users/1
 	# DELETE /users/1.json
 	def destroy
-	    @user = User.find(params[:id])
-	    @user.destroy
-
-	    respond_to do |format|
-		format.html { redirect_to users_url }
-		format.json { head :ok }
-	    end
+	    # Not implemented yet
+	    redirect_to menu_path, notice: "Destroy not enabled"
 	end
     end
