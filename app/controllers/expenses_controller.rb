@@ -1,4 +1,6 @@
 class ExpensesController < ApplicationController
+    before_filter :login_required, :except => [:new, :create]
+
     # GET /expenses
     # GET /expenses.json
     def index
@@ -25,9 +27,13 @@ class ExpensesController < ApplicationController
     # GET /expenses/new.json
     def new
 	@expense = Expense.new
+	# Set amount to nil, we want user to fill something
+	@expense.amount=nil
+
 	@pay_methods = PayMethod.order("name").all
 	@reasons = Reason.order("name").all
 	@stores = Store.order("name").all
+	@groups = Group.order('name').all
 
 	respond_to do |format|
 	    format.html # new.html.erb
@@ -44,15 +50,18 @@ class ExpensesController < ApplicationController
     # POST /expenses.json
     def create
 	@expense = Expense.new(params[:expense])
+	# Set user
+	@expense.user_id=session[:user_id]
 
 	respond_to do |format|
 	    if @expense.save
-		format.html { redirect_to @expense, notice: 'Expense was successfully created.' }
+		format.html { redirect_to "#{expenses_path}/new", notice: 'Expense was successfully created.' }
 		format.json { render json: @expense, status: :created, location: @expense }
 	    else
 		@pay_methods = PayMethod.order("name").all
 		@reasons = Reason.order("name").all
 		@stores = Store.order("name").all
+		@groups = Group.order('name').all
 		format.html { render action: "new" }
 		format.json { render json: @expense.errors, status: :unprocessable_entity }
 	    end

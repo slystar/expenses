@@ -1,4 +1,3 @@
-= @expense.errors.messages
 = form_for(@expense) do |f|
   - if @expense.errors.any?
     #error_explanation
@@ -31,7 +30,7 @@
   .field
     = f.label :group_id
     %br/
-    = f.number_field :group_id
+    = f.collection_select :group_id, @groups, "id","name", prompt: '--'
   .field
     = f.label :amount
     %br/
