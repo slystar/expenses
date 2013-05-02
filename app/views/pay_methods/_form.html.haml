@@ -7,7 +7,15 @@
           %li= msg
 
   .field
-    = f.label :pay_method
-    = f.text_field :pay_method
+    = f.label :name
+    = f.text_field :name
   .actions
     = f.submit 'Save'
+%hr
+%h2
+  Existing Pay Methods:
+  %ul
+    - @pay_methods.each do |p|
+      %li
+        = p.name
+

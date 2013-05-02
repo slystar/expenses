@@ -71,7 +71,84 @@ describe "Expenses" do
 		current_path.should == @add_path
 	    end
 
-	    pending "shold show an error with invalid attributes" do
+	    it "shold show an error with invalid attributes" do
+		# Fill information
+		page.fill_in "expense_description", with: 'test description'
+		page.select @e.pay_method.name, from: 'expense_pay_method_id'
+		page.select @e.reason.name, from: 'expense_reason_id'
+		page.select @e.group.name, from: 'expense_group_id'
+		page.fill_in "expense_amount", with: 10
+		# Test: Record created
+		lambda{
+		    page.click_button 'Create Expense'
+		}.should change(Expense,:count).by(0)
+		# Test: path
+		page.should have_content("Store can't be blank")
+	    end
+
+	    describe 'add pay method' do
+		before(:each) do
+		    # Variables
+		    @test_description='test desc'
+		    @new_pay_method='zzz'
+		    @path_add_pay_method="#{pay_methods_path}/new"
+		    # Fill some info
+		    page.fill_in "expense_description", with: @test_description
+		    page.select @e.reason.name, from: 'expense_reason_id'
+		    # Click to add
+		    page.click_button 'Add Pay Method'
+		end
+
+		it "should be able to add pay_method" do
+		    # Test
+		    current_path.should == @path_add_pay_method
+		    # Fill in info
+		    page.fill_in "pay_method_name", with: @new_pay_method
+		    # Test:
+		    lambda{
+			page.click_button "Save"
+		    }.should change(PayMethod,:count).by(1)
+		    # Test: should redirect to add expense
+		    current_path.should == "#{expenses_path}/new"
+		    page.should have_content('Pay method was successfully created')
+		    page.should have_content(@test_description)
+		    find_field('expense_pay_method_id').find('option[selected]').text.should == @new_pay_method
+		    find_field('expense_reason_id').find('option[selected]').text.should == @e.reason.name
+		end
+
+		it "should show an error message when adding an invalid store" do
+		    # 2nd message
+		    pay_method2=@new_pay_method + 'a'
+		    # Fill in info
+		    page.fill_in "pay_method_name", with: @new_pay_method
+		    # Test:
+		    lambda{
+			page.click_button "Save"
+		    }.should change(PayMethod,:count).by(1)
+		    # Add another store
+		    page.click_button 'Add Pay Method'
+		    # Fill in info
+		    page.fill_in "pay_method_name", with: @new_pay_method
+		    # Test:
+		    lambda{
+			page.click_button "Save"
+		    }.should change(PayMethod,:count).by(0)
+		    # Test: should redirect to add expense
+		    current_path.should == "#{pay_methods_path}"
+		    page.should have_content('Name has already been taken')
+		    # Change name
+		    page.fill_in "pay_method_name", with: pay_method2
+		    # Test:
+		    lambda{
+			page.click_button "Save"
+		    }.should change(PayMethod,:count).by(1)
+		    # Test: should redirect to add expense
+		    current_path.should == "#{expenses_path}/new"
+		    page.should have_content('Pay method was successfully created')
+		    page.should have_content(@test_description)
+		    find_field('expense_pay_method_id').find('option[selected]').text.should == pay_method2
+		    find_field('expense_reason_id').find('option[selected]').text.should == @e.reason.name
+		end
 	    end
 	end
     end

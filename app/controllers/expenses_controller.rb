@@ -1,5 +1,5 @@
 class ExpensesController < ApplicationController
-    before_filter :login_required, :except => [:new, :create]
+    before_filter :login_required
 
     # GET /expenses
     # GET /expenses.json
@@ -26,7 +26,15 @@ class ExpensesController < ApplicationController
     # GET /expenses/new
     # GET /expenses/new.json
     def new
-	@expense = Expense.new
+	# Get previous expense
+	prev_expense=session[:current_expense]
+	# Check for previous expense
+	if prev_expense.nil?
+	    @expense = Expense.new
+	else
+	    @expense = prev_expense
+	    session[:current_expense]=nil
+	end
 	# Set amount to nil, we want user to fill something
 	@expense.amount=nil
 
@@ -53,17 +61,29 @@ class ExpensesController < ApplicationController
 	# Set user
 	@expense.user_id=session[:user_id]
 
-	respond_to do |format|
-	    if @expense.save
-		format.html { redirect_to "#{expenses_path}/new", notice: 'Expense was successfully created.' }
-		format.json { render json: @expense, status: :created, location: @expense }
-	    else
-		@pay_methods = PayMethod.order("name").all
-		@reasons = Reason.order("name").all
-		@stores = Store.order("name").all
-		@groups = Group.order('name').all
-		format.html { render action: "new" }
-		format.json { render json: @expense.errors, status: :unprocessable_entity }
+	# Get submit button pressed
+	submit_button=params[:commit]
+	# Process submit button
+	if submit_button == "Add Pay Method"
+	    # Save existing objects in session
+	    session[:current_expense]=@expense
+	    # Redirect to add
+	    redirect_to "#{pay_methods_path}/new"
+	elsif submit_button == "Add Reason"
+	elsif submit_button == "Add Store"
+	else
+	    respond_to do |format|
+		if @expense.save
+		    format.html { redirect_to "#{expenses_path}/new", notice: 'Expense was successfully created.' }
+		    format.json { render json: @expense, status: :created, location: @expense }
+		else
+		    @pay_methods = PayMethod.order("name").all
+		    @reasons = Reason.order("name").all
+		    @stores = Store.order("name").all
+		    @groups = Group.order('name').all
+		    format.html { render action: "new" }
+		    format.json { render json: @expense.errors, status: :unprocessable_entity }
+		end
 	    end
 	end
     end

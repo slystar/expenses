@@ -19,6 +19,7 @@
     = f.label :pay_method_id
     %br/
     = f.collection_select :pay_method_id, @pay_methods, :id,:name, :prompt => '--'
+    = f.submit value: "Add Pay Method"
   .field
     = f.label :reason_id
     %br/
