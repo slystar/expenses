@@ -44,7 +44,10 @@ describe "Expenses" do
 	    page.should have_link("Logout")
 	end
 
-	describe "Add" do
+	pending "should be able to process duplicates" do
+	end
+
+	describe "New" do
 
 	    before(:each) do
 		# Variables
@@ -87,6 +90,9 @@ describe "Expenses" do
 	    end
 
 	    pending "should show a warning on possible duplicate entry" do
+	    end
+
+	    pending "should only show visible groups" do
 	    end
 
 	    describe 'add pay method' do
