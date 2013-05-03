@@ -7,7 +7,15 @@
           %li= msg
 
   .field
-    = f.label :reason
-    = f.text_field :reason
+    = f.label :name
+    = f.text_field :name
   .actions
     = f.submit 'Save'
+%hr
+%h2
+  Existing Pay Methods:
+  %ul
+    - @reasons.each do |p|
+      %li
+        = p.name
+

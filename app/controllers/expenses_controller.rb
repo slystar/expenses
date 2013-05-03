@@ -70,7 +70,15 @@ class ExpensesController < ApplicationController
 	    # Redirect to add
 	    redirect_to "#{pay_methods_path}/new"
 	elsif submit_button == "Add Reason"
+	    # Save existing objects in session
+	    session[:current_expense]=@expense
+	    # Redirect to add
+	    redirect_to "#{reasons_path}/new"
 	elsif submit_button == "Add Store"
+	    # Save existing objects in session
+	    session[:current_expense]=@expense
+	    # Redirect to add
+	    redirect_to "#{stores_path}/new"
 	else
 	    respond_to do |format|
 		if @expense.save

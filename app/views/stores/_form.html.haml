@@ -7,9 +7,17 @@
       %ul
         - @store.errors.full_messages.each do |msg|
           %li= msg
+
   .field
     = f.label :name
-    %br/
     = f.text_field :name
   .actions
-    = f.submit
+    = f.submit 'Save'
+%hr
+%h2
+  Existing Stores:
+  %ul
+    - @stores.each do |p|
+      %li
+        = p.name
+

@@ -94,7 +94,6 @@ describe "Expenses" do
 		    # Variables
 		    @test_description='test desc'
 		    @new_pay_method='zzz'
-		    @path_add_pay_method="#{pay_methods_path}/new"
 		    # Fill some info
 		    page.fill_in "expense_description", with: @test_description
 		    page.select @e.reason.name, from: 'expense_reason_id'
@@ -134,7 +133,7 @@ describe "Expenses" do
 
 		it "should allow adding a corrected invalid pay method" do
 		    # 2nd message
-		    pay_method2=@new_pay_method + 'a'
+		    item2=@new_pay_method + 'a'
 		    # Add item
 		    add_pay_method(@new_pay_method,1)
 		    # Add existing item
@@ -143,7 +142,7 @@ describe "Expenses" do
 		    current_path.should == "#{pay_methods_path}"
 		    page.should have_content('Name has already been taken')
 		    # Change name
-		    page.fill_in "pay_method_name", with: pay_method2
+		    page.fill_in "pay_method_name", with: item2
 		    # Test:
 		    lambda{
 			page.click_button "Save"
@@ -152,8 +151,142 @@ describe "Expenses" do
 		    current_path.should == "#{expenses_path}/new"
 		    page.should have_content('Pay method was successfully created')
 		    page.should have_content(@test_description)
-		    find_field('expense_pay_method_id').find('option[selected]').text.should == pay_method2
+		    find_field('expense_pay_method_id').find('option[selected]').text.should == item2
 		    find_field('expense_reason_id').find('option[selected]').text.should == @e.reason.name
+		end
+	    end
+
+	    describe 'add reason' do
+		before(:each) do
+		    # Variables
+		    @test_description='test desc'
+		    @new_reason='zzz'
+		    # Fill some info
+		    page.fill_in "expense_description", with: @test_description
+		    page.select @e.pay_method.name, from: 'expense_pay_method_id'
+		end
+
+		def add_reason(name,record_increase)
+		    # Add another item
+		    page.click_button 'Add Reason'
+		    # Fill in info
+		    page.fill_in "reason_name", with: name
+		    # Test:
+		    lambda{
+			page.click_button "Save"
+		    }.should change(Reason,:count).by(record_increase)
+		end
+
+		it "should be able to add reason" do
+		    # Add item
+		    add_reason(@new_reason,1)
+		    # Test: should redirect to add expense
+		    current_path.should == "#{expenses_path}/new"
+		    page.should have_content('Reason was successfully created')
+		    page.should have_content(@test_description)
+		    find_field('expense_reason_id').find('option[selected]').text.should == @new_reason
+		    find_field('expense_pay_method_id').find('option[selected]').text.should == @e.pay_method.name
+		end
+
+		it "should show an error message when adding an invalid reason" do
+		    # Add item
+		    add_reason(@new_reason,1)
+		    # Add another item
+		    add_reason(@new_reason,0)
+		    # Test: should redirect to add expense
+		    current_path.should == "#{reasons_path}"
+		    page.should have_content('Name has already been taken')
+		end
+
+		it "should allow adding a corrected invalid reason" do
+		    # 2nd message
+		    item2=@new_reason + 'a'
+		    # Add item
+		    add_reason(@new_reason,1)
+		    # Add existing item
+		    add_reason(@new_reason,0)
+		    # Test: should redirect to add expense
+		    current_path.should == "#{reasons_path}"
+		    page.should have_content('Name has already been taken')
+		    # Change name
+		    page.fill_in "reason_name", with: item2
+		    # Test:
+		    lambda{
+			page.click_button "Save"
+		    }.should change(Reason,:count).by(1)
+		    # Test: should redirect to add expense
+		    current_path.should == "#{expenses_path}/new"
+		    page.should have_content('Reason was successfully created')
+		    page.should have_content(@test_description)
+		    find_field('expense_reason_id').find('option[selected]').text.should == item2
+		    find_field('expense_pay_method_id').find('option[selected]').text.should == @e.pay_method.name
+		end
+	    end
+
+	    describe 'add store' do
+		before(:each) do
+		    # Variables
+		    @test_description='test desc'
+		    @new_store='zzz'
+		    # Fill some info
+		    page.fill_in "expense_description", with: @test_description
+		    page.select @e.pay_method.name, from: 'expense_pay_method_id'
+		end
+
+		def add_store(name,record_increase)
+		    # Add another item
+		    page.click_button 'Add Store'
+		    # Fill in info
+		    page.fill_in "store_name", with: name
+		    # Test:
+		    lambda{
+			page.click_button "Save"
+		    }.should change(Store,:count).by(record_increase)
+		end
+
+		it "should be able to add Store" do
+		    # Add item
+		    add_store(@new_store,1)
+		    # Test: should redirect to add expense
+		    current_path.should == "#{expenses_path}/new"
+		    page.should have_content('Store was successfully created')
+		    page.should have_content(@test_description)
+		    find_field('expense_store_id').find('option[selected]').text.should == @new_store
+		    find_field('expense_pay_method_id').find('option[selected]').text.should == @e.pay_method.name
+		end
+
+		it "should show an error message when adding an invalid store" do
+		    # Add item
+		    add_store(@new_store,1)
+		    # Add another item
+		    add_store(@new_store,0)
+		    # Test: should redirect to add expense
+		    current_path.should == "#{stores_path}"
+		    page.should have_content('Name has already been taken')
+		end
+
+		it "should allow adding a corrected invalid store" do
+		    # 2nd message
+		    item2=@new_store + 'a'
+		    # Add item
+		    add_store(@new_store,1)
+		    # Add existing item
+		    add_store(@new_store,0)
+		    # Test: should redirect to add expense
+		    current_path.should == "#{stores_path}"
+		    page.should have_content('Name has already been taken')
+		    # Change name
+		    page.fill_in "store_name", with: item2
+		    # Test:
+		    lambda{
+			page.click_button "Save"
+		    }.should change(Store,:count).by(1)
+		    # Test: should redirect to add expense
+		    current_path.should == "#{expenses_path}/new"
+		    page.should have_content('Store was successfully created')
+		    page.should have_content(@test_description)
+		    find_field('expense_store_id').find('option[selected]').text.should == item2
+		    find_field('expense_pay_method_id').find('option[selected]').text.should == @e.pay_method.name
 		end
 	    end
 	end
