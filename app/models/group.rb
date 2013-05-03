@@ -1,6 +1,6 @@
 class Group < ActiveRecord::Base
     # Accessible attributes
-    attr_accessible :name, :description, :display_order
+    attr_accessible :name, :description, :display_order, :hidden
 
     # Relationships
     has_many :expenses
