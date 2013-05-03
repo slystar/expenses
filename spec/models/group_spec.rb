@@ -49,6 +49,11 @@ describe Group do
 	group.should_not be_valid
     end
 
+    it "should have hidden false on creation" do
+	g=Group.create!(@attr)
+	g.hidden.should == false
+    end
+
     it "should respond to expenses" do
 	group=Group.new(@attr)
 	group.should respond_to(:expenses)
