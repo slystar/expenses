@@ -5,8 +5,7 @@ class SessionsController < ApplicationController
     def create
 	user = User.find_by_user_name(params[:user_name].downcase)
 	if user && user.authenticate(params[:password])
-	    session[:user_id] = user.id
-	    session[:user_name] = user.user_name
+	    login(user)
 	    redirect_to menu_path, :notice => "Logged in"
 	else
 	    flash.now[:error] = 'Invalid user/password combination'

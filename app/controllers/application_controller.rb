@@ -9,6 +9,12 @@ class ApplicationController < ActionController::Base
 
     private
 
+    # Method to login user
+    def login(user)
+	session[:user_id] = user.id
+	session[:user_name] = user.user_name
+    end
+
     # Method to check for authenticated user
     def login_required
 	if current_user.nil?
