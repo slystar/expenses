@@ -86,6 +86,9 @@ describe "Expenses" do
 		page.should have_content("Store can't be blank")
 	    end
 
+	    pending "should show a warning on possible duplicate entry" do
+	    end
+
 	    describe 'add pay method' do
 		before(:each) do
 		    # Variables
@@ -95,19 +98,22 @@ describe "Expenses" do
 		    # Fill some info
 		    page.fill_in "expense_description", with: @test_description
 		    page.select @e.reason.name, from: 'expense_reason_id'
-		    # Click to add
-		    page.click_button 'Add Pay Method'
 		end
 
-		it "should be able to add pay_method" do
-		    # Test
-		    current_path.should == @path_add_pay_method
+		def add_pay_method(name,record_increase)
+		    # Add another item
+		    page.click_button 'Add Pay Method'
 		    # Fill in info
-		    page.fill_in "pay_method_name", with: @new_pay_method
+		    page.fill_in "pay_method_name", with: name
 		    # Test:
 		    lambda{
 			page.click_button "Save"
-		    }.should change(PayMethod,:count).by(1)
+		    }.should change(PayMethod,:count).by(record_increase)
+		end
+
+		it "should be able to add pay_method" do
+		    # Add item
+		    add_pay_method(@new_pay_method,1)
 		    # Test: should redirect to add expense
 		    current_path.should == "#{expenses_path}/new"
 		    page.should have_content('Pay method was successfully created')
@@ -116,23 +122,23 @@ describe "Expenses" do
 		    find_field('expense_reason_id').find('option[selected]').text.should == @e.reason.name
 		end
 
-		it "should show an error message when adding an invalid store" do
+		it "should show an error message when adding an invalid pay method" do
+		    # Add item
+		    add_pay_method(@new_pay_method,1)
+		    # Add another item
+		    add_pay_method(@new_pay_method,0)
+		    # Test: should redirect to add expense
+		    current_path.should == "#{pay_methods_path}"
+		    page.should have_content('Name has already been taken')
+		end
+
+		it "should allow adding a corrected invalid pay method" do
 		    # 2nd message
 		    pay_method2=@new_pay_method + 'a'
-		    # Fill in info
-		    page.fill_in "pay_method_name", with: @new_pay_method
-		    # Test:
-		    lambda{
-			page.click_button "Save"
-		    }.should change(PayMethod,:count).by(1)
-		    # Add another store
-		    page.click_button 'Add Pay Method'
-		    # Fill in info
-		    page.fill_in "pay_method_name", with: @new_pay_method
-		    # Test:
-		    lambda{
-			page.click_button "Save"
-		    }.should change(PayMethod,:count).by(0)
+		    # Add item
+		    add_pay_method(@new_pay_method,1)
+		    # Add existing item
+		    add_pay_method(@new_pay_method,0)
 		    # Test: should redirect to add expense
 		    current_path.should == "#{pay_methods_path}"
 		    page.should have_content('Name has already been taken')
