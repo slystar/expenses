@@ -21,6 +21,10 @@ require 'spec_helper'
 describe ExpensesController do
     before(:each) do
 	@attr=get_attr_expense
+	# Login a user
+	@new_user_id=0
+	user=get_next_user
+	request.session[:user_id] = user.id
     end
 
   # This should return the minimal set of attributes required to create a valid
@@ -77,7 +81,7 @@ describe ExpensesController do
 
       it "redirects to the created expense" do
         post :create, :expense => valid_attributes
-        response.should redirect_to(Expense.last)
+	response.should redirect_to("#{expenses_path}/new")
       end
     end
 
