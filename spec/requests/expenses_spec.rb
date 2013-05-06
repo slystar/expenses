@@ -39,9 +39,12 @@ describe "Expenses" do
 	    # Visit page
 	    visit(menu_path)
 	    # Test
+	    page.should have_link("Logout")
 	    page.should have_link("Add expense")
 	    page.should have_link("Edit user")
-	    page.should have_link("Logout")
+	end
+
+	pending "edit groups should appear only for admins" do
 	end
 
 	pending "should be able to process duplicates" do
@@ -92,7 +95,25 @@ describe "Expenses" do
 	    pending "should show a warning on possible duplicate entry" do
 	    end
 
-	    pending "should only show visible groups" do
+	    it "should only show visible groups" do
+		# Variables
+		group_name='zzz'
+		# Add group
+		new_group=Group.new({:name => group_name})
+		# Save
+		new_group.save!
+		# Re-visit page
+		visit @add_path
+		# Test: should show up in select
+		page.has_select?(:expense_group_id, :with_options => [group_name]).should == true
+		# Set hidden to true
+		new_group.hidden=true
+		# Save group
+		new_group.save
+		# Re-visit page
+		visit @add_path
+		# Test: should show up in select
+		page.has_select?(:expense_group_id, :with_options => [group_name]).should == false
 	    end
 
 	    describe 'add pay method' do

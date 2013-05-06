@@ -41,7 +41,7 @@ class ExpensesController < ApplicationController
 	@pay_methods = PayMethod.order("name").all
 	@reasons = Reason.order("name").all
 	@stores = Store.order("name").all
-	@groups = Group.order('name').all
+	@groups = Group.order('name').where(:hidden => false).all
 
 	respond_to do |format|
 	    format.html # new.html.erb
@@ -88,7 +88,7 @@ class ExpensesController < ApplicationController
 		    @pay_methods = PayMethod.order("name").all
 		    @reasons = Reason.order("name").all
 		    @stores = Store.order("name").all
-		    @groups = Group.order('name').all
+		    @groups = Group.order('name').where(:hidden => false).all
 		    format.html { render action: "new" }
 		    format.json { render json: @expense.errors, status: :unprocessable_entity }
 		end
