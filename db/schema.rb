@@ -11,7 +11,7 @@
 #
 # It's strongly recommended to check this file into your version control system.
 
-ActiveRecord::Schema.define(:version => 20130503172601) do
+ActiveRecord::Schema.define(:version => 20130509163324) do
 
   create_table "backups", :force => true do |t|
     t.datetime "backup_date"
@@ -45,6 +45,7 @@ ActiveRecord::Schema.define(:version => 20130503172601) do
     t.datetime "duplication_check_reviewed_date"
     t.boolean  "duplication_check_processed",                                    :default => false
     t.integer  "expense_note_id"
+    t.string   "affected_users"
   end
 
   add_index "expenses", ["duplication_check_hash"], :name => "index_expenses_on_duplication_check_hash"

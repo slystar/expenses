@@ -73,6 +73,7 @@ class Expense < ActiveRecord::Base
 	# Set process fields
 	self.process_date=Time.now
 	self.process_flag=true
+	self.affected_users=members.collect{|u| u.id}.sort.join(',')
 	self.save!
     end
 

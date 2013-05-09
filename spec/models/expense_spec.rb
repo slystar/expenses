@@ -251,6 +251,7 @@ describe Expense do
 	# Test process fields
 	expense.process_flag.should == true
 	expense.process_date.strftime("%Y-%m-%d").should == today
+	expense.affected_users.should == "#{u1.id},#{u2.id},#{u3.id}"
     end
 
     it "should not allow amount to be modified if it has been processed" do
