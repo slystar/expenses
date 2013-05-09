@@ -35,9 +35,6 @@ describe "Expenses ->" do
 	    page.click_button "Log in"
 	end
 
-	pending "should be able to process duplicates" do
-	end
-
 	describe "Menu ->" do
 
 	    describe "Logout ->" do
@@ -63,6 +60,17 @@ describe "Expenses ->" do
 		pending "should appear only for admins" do
 		end
 	    end
+
+	    describe "View ->" do
+		pending "should display expenses" do
+		end
+	    end
+
+	    describe "Process duplicates ->" do
+		pending "should show duplicates" do
+		end
+	    end
+
 
 	    describe "Add expense ->" do
 
