@@ -1,13 +1,19 @@
 class UserBalance < ActiveRecord::Base
+    include SharedMethods
+
     # Relationships
     belongs_to :from_user, :class_name => 'User'
     belongs_to :to_user, :class_name => 'User' 
     belongs_to :update_balance_history
 
+    # Before validations
+    before_validation :set_app_version
+
     # Validations
     validates :from_user, :presence => true
     validates :to_user, :presence => true
     validates :amount, :presence => true, :numericality => true
+    validates :app_version, :presence => true
     # Custom validation
     validate :check_from_and_to
 

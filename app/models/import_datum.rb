@@ -1,4 +1,6 @@
 class ImportDatum < ActiveRecord::Base
+    include SharedMethods
+
     # Accessible attributes
     attr_accessible :unique_id, :unique_hash, :mapped_fields, :expense_id
 
@@ -11,10 +13,14 @@ class ImportDatum < ActiveRecord::Base
     belongs_to :import_history
     belongs_to :expense
 
+    # Before validations
+    before_validation :set_app_version
+
     # Validations
     validates :unique_id, :uniqueness => true
     validates :unique_hash, :presence => true, :uniqueness => true
     validates :mapped_fields, :presence => true
+    validates :app_version, :presence => true
     # Validations: relationships
     validates :user, :presence => true
     validates :import_history, :presence => true

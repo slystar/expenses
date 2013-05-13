@@ -1,4 +1,6 @@
 class Group < ActiveRecord::Base
+    include SharedMethods
+
     # Accessible attributes
     attr_accessible :name, :description, :display_order, :hidden
 
@@ -7,8 +9,12 @@ class Group < ActiveRecord::Base
     has_many :group_members
     has_many :users, :through => :group_members
 
+    # Before validations
+    before_validation :set_app_version
+
     # Validations
     validates :name, :presence => true, :uniqueness => {:case_sensitive => false}, :length => {:maximum => 50}
+    validates :app_version, :presence => true
 
     # Callbacks
     before_destroy :check_for_users

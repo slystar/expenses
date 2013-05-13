@@ -1,12 +1,18 @@
 class ExpenseNote < ActiveRecord::Base
+    include SharedMethods
+
     # Accessible attributes
     attr_accessible :note
 
     # Relationshipts
     has_many :expenses
 
+    # Before validations
+    before_validation :set_app_version
+
     # Validations
     validates :note, :presence => true
+    validates :app_version, :presence => true
 
     # before save
     before_save :update_version

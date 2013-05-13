@@ -1,4 +1,6 @@
 class GroupMember < ActiveRecord::Base
+    include SharedMethods
+
     # Accessible attributes
     attr_accessible :user_id, :group_id
 
@@ -6,9 +8,13 @@ class GroupMember < ActiveRecord::Base
     belongs_to :user
     belongs_to :group
 
+    # Before validations
+    before_validation :set_app_version
+
     # Validations
     validates :user_id, :presence => true
     validates :group_id, :presence => true, :uniqueness => {:scope => :user_id}
+    validates :app_version, :presence => true
     validates_presence_of :user
     validates_presence_of :group
 

@@ -1,4 +1,6 @@
 class ImportConfig < ActiveRecord::Base
+    include SharedMethods
+
     # Accessible attributes
     attr_accessible :title, :description, :field_mapping, :file_type, :unique_id_field, :unique_id_hash_fields, :date_type
 
@@ -13,6 +15,9 @@ class ImportConfig < ActiveRecord::Base
     # Relationships
     belongs_to :user
 
+    # Before validations
+    before_validation :set_app_version
+
     # Validations
     validates :title, :presence => true
     validates :description, :presence => true
@@ -21,6 +26,7 @@ class ImportConfig < ActiveRecord::Base
     validates :unique_id_field, :presence => true
     validates :unique_id_hash_fields, :presence => true
     validates :date_type, :presence => true
+    validates :app_version, :presence => true
     # Validations: relationships
     validates :user, :presence => true
     # Validations: Custom

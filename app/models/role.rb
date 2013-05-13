@@ -1,4 +1,6 @@
 class Role < ActiveRecord::Base
+    include SharedMethods
+
     # Accessible attributes
     attr_accessible :name, :description
 
@@ -6,9 +8,13 @@ class Role < ActiveRecord::Base
     has_many :user_roles
     has_many :users, :through => :user_roles
 
+    # Before validations
+    before_validation :set_app_version
+
     # Validations
     validates :name, :presence => true, :uniqueness => {:case_sensitive => false}
     validates :description, :presence => true
+    validates :app_version, :presence => true
 
     # Callbacks
     before_destroy :check_for_users

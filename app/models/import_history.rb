@@ -1,6 +1,8 @@
 class ImportHistory < ActiveRecord::Base
     require 'csv'
 
+    include SharedMethods
+
     # Accessible attributes
     attr_accessible :import_config_id, :original_file_name
 
@@ -8,8 +10,12 @@ class ImportHistory < ActiveRecord::Base
     belongs_to :import_config
     belongs_to :user
 
+    # Before validations
+    before_validation :set_app_version
+
     # Validations
     validates :original_file_name, :presence => true
+    validates :app_version, :presence => true
     # Validations: relationships
     validates :user, :presence => true
     validates :import_config, :presence => true

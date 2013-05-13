@@ -1,4 +1,6 @@
 class Expense < ActiveRecord::Base
+    include SharedMethods
+
     # Accessible attributes
     attr_accessible :date_purchased, :store_id, :pay_method_id, :reason_id, :user_id, :group_id, :amount, :description
 
@@ -11,6 +13,9 @@ class Expense < ActiveRecord::Base
     has_many :user_depts
     belongs_to :expense_note
 
+    # Before validations
+    before_validation :set_app_version
+
     # Validations
     validates :date_purchased, :presence => true, :custom_valid_datetime => true
     validates :store_id, :presence => true
@@ -19,6 +24,7 @@ class Expense < ActiveRecord::Base
     validates :user_id, :presence => true
     validates :group_id, :presence => true
     validates :amount, :presence => true, :numericality => true
+    validates :app_version, :presence => true
     validates_presence_of :store
     validates_presence_of :pay_method
     validates_presence_of :reason

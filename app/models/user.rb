@@ -1,4 +1,6 @@
 class User < ActiveRecord::Base
+    include SharedMethods
+
     # Options
     has_secure_password
 
@@ -18,9 +20,13 @@ class User < ActiveRecord::Base
     has_many :user_balances_from, :class_name => 'UserBalance', :foreign_key => 'from_user_id'
     has_many :user_balances_to, :class_name => 'UserBalance', :foreign_key => 'to_user_id'
 
+    # Before validations
+    before_validation :set_app_version
+
     # Validations
     validates :user_name, :presence => true, :uniqueness => {:case_sensitive => false}
     validates :password, :presence => true, :length => {:minimum => 8}
+    validates :app_version, :presence => true, :numericality => true
 
     # Callbacks
     # before_destroy: see observer check_for_expenses_observer.rb
