@@ -36,6 +36,23 @@ describe UserBalance do
 	ub.save.should == true
     end
 
+    it "should have a default app_version" do
+	object=get_new_user_balance
+	object.save!
+	object.app_version.should == 2
+    end
+
+    it "should be able to have a different app_version" do
+	app_version=1
+	object=get_new_user_balance
+	object.app_version = app_version
+	# Save
+	object.save!
+	object.reload
+	# Test
+	object.app_version.should == app_version
+    end
+
     it "should create a new instance with previous_user_balance_id = 0" do
 	# get object
 	ub=get_new_user_balance

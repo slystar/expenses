@@ -41,6 +41,23 @@ describe PaymentNote do
 	p.save.should == true
     end
 
+    it "should have a default app_version" do
+	object=get_new_payment_note
+	object.save!
+	object.app_version.should == 2
+    end
+
+    it "should be able to have a different app_version" do
+	app_version=1
+	object=get_new_payment_note
+	object.app_version = app_version
+	# Save
+	object.save!
+	object.reload
+	# Test
+	object.app_version.should == app_version
+    end
+
     it "should not have a blank note" do
 	# Create object
 	p=PaymentNote.new(@attr)

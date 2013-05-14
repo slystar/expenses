@@ -20,6 +20,22 @@ describe Store do
 	@object.should be_valid
     end
 
+    it "should have a default app_version" do
+	object=Store.create!(@attr)
+	object.app_version.should == 2
+    end
+
+    it "should be able to have a different app_version" do
+	app_version=1
+	object=Store.new(@attr)
+	object.app_version = app_version
+	# Save
+	object.save!
+	object.reload
+	# Test
+	object.app_version.should == app_version
+    end
+
     it "should require a store name" do
 	FactoryGirl.build(:store, name: nil).should_not be_valid
     end

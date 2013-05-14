@@ -12,6 +12,22 @@ describe UserRole do
 	UserRole.create!(@attr)
     end
 
+    it "should have a default app_version" do
+	object=UserRole.create!(@attr)
+	object.app_version.should == 2
+    end
+
+    it "should be able to have a different app_version" do
+	app_version=1
+	object=UserRole.new(@attr)
+	object.app_version = app_version
+	# Save
+	object.save!
+	object.reload
+	# Test
+	object.app_version.should == app_version
+    end
+
     it "should not allow users to be in the same role more than once" do
 	# Create user_role
 	ur=UserRole.create!(@attr)

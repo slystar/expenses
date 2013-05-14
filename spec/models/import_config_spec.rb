@@ -13,6 +13,23 @@ describe ImportConfig do
 	ic.save!
     end
 
+    it "should have a default app_version" do
+	object=get_valid_import_config
+	object.save!
+	object.app_version.should == 2
+    end
+
+    it "should be able to have a different app_version" do
+	app_version=1
+	object=get_valid_import_config
+	object.app_version = app_version
+	# Save
+	object.save!
+	object.reload
+	# Test
+	object.app_version.should == app_version
+    end
+
     it "should require a valid user" do
 	# Get ImportConfig
 	ic=get_valid_import_config()

@@ -19,6 +19,22 @@ describe Reason do
 	Reason.create!(@attr)
     end
 
+    it "should have a default app_version" do
+	object=Reason.create!(@attr)
+	object.app_version.should == 2
+    end
+
+    it "should be able to have a different app_version" do
+	app_version=1
+	object=Reason.new(@attr)
+	object.app_version = app_version
+	# Save
+	object.save!
+	object.reload
+	# Test
+	object.app_version.should == app_version
+    end
+
     it "should require a reason" do
 	no_reason=Reason.new(@attr.merge(:name => ""))
 	no_reason.should_not be_valid

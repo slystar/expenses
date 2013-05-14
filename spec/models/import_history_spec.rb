@@ -50,6 +50,23 @@ describe ImportHistory do
 	ih.save!
     end
 
+    it "should have a default app_version" do
+	object=get_valid_import_history
+	object.save!
+	object.app_version.should == 2
+    end
+
+    it "should be able to have a different app_version" do
+	app_version=1
+	object=get_valid_import_history
+	object.app_version = app_version
+	# Save
+	object.save!
+	object.reload
+	# Test
+	object.app_version.should == app_version
+    end
+
     it "should require a user_id" do
 	ih=get_valid_import_history()
 	# Set field

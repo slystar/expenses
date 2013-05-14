@@ -11,6 +11,22 @@ describe Expense do
 	Expense.create!(@attr)
     end
 
+    it "should have a default app_version" do
+	object=Expense.create!(@attr)
+	object.app_version.should == 2
+    end
+
+    it "should be able to have a different app_version" do
+	app_version=1
+	object=Expense.new(@attr)
+	object.app_version = app_version
+	# Save
+	object.save!
+	object.reload
+	# Test
+	object.app_version.should == app_version
+    end
+
     it "should have a date_purchased" do
 	expense=Expense.new(@attr.merge(:date_purchased => nil))
 	expense.should_not be_valid

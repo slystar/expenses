@@ -31,6 +31,23 @@ describe UserDept do
 	ud.save.should == true
     end
 
+    it "should have a default app_version" do
+	object=get_new_user_dept
+	object.save!
+	object.app_version.should == 2
+    end
+
+    it "should be able to have a different app_version" do
+	app_version=1
+	object=get_new_user_dept
+	object.app_version = app_version
+	# Save
+	object.save!
+	object.reload
+	# Test
+	object.app_version.should == app_version
+    end
+
     it "should require a valid from_user_id" do
 	# Variables
 	invalid_user_id=99999

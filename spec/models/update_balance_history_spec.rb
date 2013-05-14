@@ -13,6 +13,22 @@ describe UpdateBalanceHistory do
 	UpdateBalanceHistory.create!(@attr)
     end
 
+    it "should have a default app_version" do
+	object=UpdateBalanceHistory.create!(@attr)
+	object.app_version.should == 2
+    end
+
+    it "should be able to have a different app_version" do
+	app_version=1
+	object=UpdateBalanceHistory.new(@attr)
+	object.app_version = app_version
+	# Save
+	object.save!
+	object.reload
+	# Test
+	object.app_version.should == app_version
+    end
+
     it "should require a user" do
 	obj=UpdateBalanceHistory.new(@attr.merge(:user_id => nil))
 	obj.should_not be_valid
