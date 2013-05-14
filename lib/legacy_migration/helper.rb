@@ -14,4 +14,9 @@ module LegacyHelper
 	# Raise error
 	raise("Exiting, import failed")
     end
+
+    # Method to get app_version
+    def get_app_version
+	return 1
+    end
 end

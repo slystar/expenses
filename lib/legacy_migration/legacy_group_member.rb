@@ -37,6 +37,7 @@ class LegacyGroupMember < LegacyBase
 	    puts("error: #{self.class}-> GroupMember : #{self.id}")
 	    exit
 	end
+	new_group.app_version=get_app_version
 	# Save record
 	new_group.save!
 	# Return id map
@@ -72,6 +73,7 @@ class LegacyGroupMember < LegacyBase
 	    self.raise_error('group',old_1,new_1) if new_group.name.downcase != old_group.group_name.downcase
 	    self.raise_error('created_at',old_1,new_1) if new_1.created_at != old_1.created_on
 	    self.raise_error('updated_at',old_1,new_1) if new_1.updated_at != old_1.updated_on
+	    self.raise_error('app_version',old_1,new_1) if new_1.app_version != get_app_version
 	end
 	self.raise_error('counts',@old_1,@new_1) if (all.count - skipped) != GroupMember.all.count
 	# Ok

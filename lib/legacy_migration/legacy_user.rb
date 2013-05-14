@@ -28,6 +28,7 @@ class LegacyUser < LegacyBase
 	current_timestamp_setting=ActiveRecord::Base.record_timestamps
 	# Turn on timestamp because User creates groups and group_membershipts
 	ActiveRecord::Base.record_timestamps = true
+	new_user.app_version=get_app_version
 	# Save record
 	new_user.save!
 	# Turn timestamp back to previous setting
@@ -51,6 +52,7 @@ class LegacyUser < LegacyBase
 	    self.raise_error('name',@old_1,@new_1) if @new_1.name != @old_1.login
 	    self.raise_error('created_at',@old_1,@new_1) if @new_1.created_at != @old_1.created_on
 	    self.raise_error('updated_at',@old_1,@new_1) if @new_1.updated_at != @old_1.updated_on
+	    self.raise_error('app_version',@old_1,@new_1) if @new_1.app_version != get_app_version
 	end
 	# Test counts
 	self.raise_error('counts',@old_1,@new_1) if all.count != User.all.count

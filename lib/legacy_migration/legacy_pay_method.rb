@@ -20,6 +20,7 @@ class LegacyPayMethod < LegacyBase
 	    puts("Exiting")
 	    exit
 	end
+	new_object.app_version=get_app_version
 	# Save record
 	new_object.save!
 	# Return id map
@@ -41,6 +42,7 @@ class LegacyPayMethod < LegacyBase
 	    self.raise_error('name',old_1,new_1) if new_1.name != old_1.pay_method
 	    self.raise_error('created_at',old_1,new_1) if new_1.created_at != old_1.created_on
 	    self.raise_error('updated_at',old_1,new_1) if new_1.updated_at != old_1.updated_on
+	    self.raise_error('app_version',old_1,new_1) if new_1.app_version != get_app_version
 	end
 	# Test counts
 	self.raise_error('counts',old_1,new_1) if all.count != PayMethod.all.count

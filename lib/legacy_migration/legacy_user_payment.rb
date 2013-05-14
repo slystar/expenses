@@ -25,6 +25,7 @@ class LegacyUserPayment < LegacyBase
 	    puts("Exiting")
 	    exit
 	end
+	new_object.app_version=get_app_version
 	# Save record
 	new_object.save!
 	# Set process info
@@ -109,6 +110,7 @@ class LegacyUserPayment < LegacyBase
 	    self.raise_error('approved',old_1,new_1) if new_1.approved != old_1.approved
 	    self.raise_error('approved_date',old_1,new_1) if new_1.approved_date.strftime(strftime_string) != old_1.approved_date.strftime(strftime_string)
 	    self.raise_error('process_flag',old_1,new_1) if new_1.process_flag != old_1.approved
+	    self.raise_error('app_version',old_1,new_1) if new_1.app_version != get_app_version
 	    if u.approved
 		self.raise_error('process_date',old_1,new_1) if new_1.process_date.strftime(strftime_string) != old_1.approved_date.strftime(strftime_string)
 	    end

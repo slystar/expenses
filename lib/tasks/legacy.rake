@@ -125,6 +125,14 @@ namespace :legacy do
 	process_model(LegacyGroup, group_map)
 	# --------------- GROUP_MEMBER --------------
 	process_model(LegacyGroupMember, group_member_map, [user_map,group_map])
+	# -- Get group members
+	group_members={}
+	Group.all.each do |g|
+	    # Get user ids
+	    uids=g.user_ids
+	    # Set hash
+	    group_members[g.id]=uids
+	end
 	# --------------- PAY_METHOD --------------
 	process_model(LegacyPayMethod, pay_method_map)
 	# --------------- REASON --------------
@@ -132,7 +140,7 @@ namespace :legacy do
 	# --------------- STORE --------------
 	process_model(LegacyStore, store_map)
 	# --------------- EXPENSE --------------
-	process_model(LegacyExpense, expense_map)
+	process_model(LegacyExpense, expense_map, group_members)
 	# --------------- USER_PAYMENT --------------
 	process_model(LegacyUserPayment, user_payment_map)
 	# --------------- USER_CHARGE --------------

@@ -10,7 +10,13 @@ class LegacyExpense < LegacyBase
     }
 
     # Method to migrate self
-    def migrate_me!
+    def migrate_me!(*g_map)
+	# Variables
+	group_map={}
+	# Convert group_map to hash
+	g_map.each do |gid,uids|
+	    group_map[gid]=uids.join(',')
+	end
 	# Create new Object
 	new_object=Expense.new(
 	    :date_purchased => self.date_bought,
@@ -60,6 +66,8 @@ class LegacyExpense < LegacyBase
 	    puts("Exiting")
 	    exit
 	end
+	new_object.affected_users=group_map[new_object.group_id]
+	new_object.app_version=get_app_version
 	# Save record
 	new_object.save!
 	# Add after creation fields
@@ -127,6 +135,7 @@ class LegacyExpense < LegacyBase
 	    self.raise_error('process_date',old_1,new_1) if new_1.process_date != old_1.process_date
 	    self.raise_error('process_flag',old_1,new_1) if new_1.process_flag != old_1.process_flag
 	    self.raise_error('created_at',old_1,new_1) if new_1.created_at != old_1.created_on
+	    self.raise_error('app_version',old_1,new_1) if new_1.app_version != get_app_version
 	    if new_1.updated_at != old_1.updated_on 
 		if new_1.updated_at != old_1.created_on
 		    self.raise_error('updated_at',old_1,new_1)

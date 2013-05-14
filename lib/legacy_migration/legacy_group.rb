@@ -34,6 +34,8 @@ class LegacyGroup < LegacyBase
 	    puts(new_group.errors.messages)
 	    exit
 	end
+	# Set app version
+	new_group.app_version=get_app_version
 	# Save record
 	new_group.save!
 	# Return id map
@@ -54,6 +56,7 @@ class LegacyGroup < LegacyBase
 	    self.raise_error('name',old_1,new_1) if new_1.name.downcase != old_1.group_name.downcase
 	    self.raise_error('display_order',old_1,new_1) if new_1.display_order != old_1.display_order
 	    self.raise_error('created_at',old_1,new_1) if new_1.created_at != old_1.created_on
+	    self.raise_error('app_version',old_1,new_1) if new_1.app_version != get_app_version
 	    if new_1.updated_at != old_1.updated_on 
 		if new_1.updated_at != old_1.created_on
 		    self.raise_error('updated_at',old_1,new_1)

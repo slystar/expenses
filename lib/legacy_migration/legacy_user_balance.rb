@@ -70,6 +70,7 @@ class LegacyUserBalance
 		    ub.updated_at=Time.now
 		    ub.previous_user_balance_id=0
 		    ub.current=true
+		    ub.app_version=get_app_version
 		    # Save record
 		    ub.save!
 		end
@@ -91,6 +92,8 @@ class LegacyUserBalance
 	    opposite=UserBalance.find(:all,:conditions => {:from_user_id=>ub.to_user_id,:to_user_id=>ub.from_user_id,:current => true})
 	    # Check size
 	    raise("Error: opposite should not have more than 1 record") if opposite.size > 1
+	    # Check app_version
+	    raise("Error: app_version should be 1") if ub.app_version != get_app_version
 	    # Get record
 	    opposite_rec=opposite.first
 	    # Test
