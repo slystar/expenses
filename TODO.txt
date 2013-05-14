@@ -3,7 +3,6 @@ Models:
 - how to handle returns (ex: you return something to the store after it's been processed)
 - expense history (user_id, expense_id, group_id), could allow group deletion
     - possibly use papertrail gem
-- add app_version column to each table to track legacy entries
 
 Features:
 - notify user about updates
