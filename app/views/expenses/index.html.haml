@@ -1,5 +1,16 @@
 %h1 Listing expenses
-%table
+%h2 Filters
+=form_tag expenses_path, :method => :get do
+  Date purchased less than
+  = text_field_tag "date_purchased_months_ago", @filters[:date_purchased_months_ago], :size =>2
+  Months ago
+  %br
+  = submit_tag "Search"
+
+#flash_alert
+  This view is causing massive amounts of select statements.
+%p
+%table{:border => "1"}
   %tr
     %th Date purchased
     %th Description
@@ -18,16 +29,15 @@
     %tr
       %td= expense.date_purchased
       %td= expense.description
-      %td= expense.pay_method_id
-      %td= expense.reason_id
-      %td= expense.store_id
-      %td= expense.user_id
-      %td= expense.group_id
+      %td= expense.pay_method.name
+      %td= expense.reason.name
+      %td= expense.store.name
+      %td= expense.user.user_name
+      %td= expense.group.name
       %td= expense.amount
       %td= expense.process_date
       %td= expense.process_flag
       %td= link_to 'Show', expense
       %td= link_to 'Edit', edit_expense_path(expense)
-      %td= link_to 'Destroy', expense, confirm: 'Are you sure?', method: :delete
 %br/
 = link_to 'New Expense', new_expense_path

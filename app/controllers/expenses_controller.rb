@@ -4,7 +4,19 @@ class ExpensesController < ApplicationController
     # GET /expenses
     # GET /expenses.json
     def index
-	@expenses = Expense.all
+	# Params
+	date_purchased_months_ago=params[:date_purchased_months_ago]
+	# Default values
+	if date_purchased_months_ago.nil? or date_purchased_months_ago.empty?
+	    date_purchased_months_ago=6
+	else
+	    date_purchased_months_ago=date_purchased_months_ago.to_i
+	end
+	# Filters
+	@filters={}
+	@filters[:date_purchased_months_ago]=date_purchased_months_ago
+	# Get last 6 months
+	@expenses = Expense.find(:all, :conditions => ["date_purchased > ?",@filters[:date_purchased_months_ago].month.ago.to_date], :order => "date_purchased desc")
 
 	respond_to do |format|
 	    format.html # index.html.erb
@@ -16,6 +28,10 @@ class ExpensesController < ApplicationController
     # GET /expenses/1.json
     def show
 	@expense = Expense.find(params[:id])
+	@pay_methods = PayMethod.order("name").all
+	@reasons = Reason.order("name").all
+	@stores = Store.order("name").all
+	@groups = Group.order('name').where(:hidden => false).all
 
 	respond_to do |format|
 	    format.html # show.html.erb
@@ -52,6 +68,10 @@ class ExpensesController < ApplicationController
     # GET /expenses/1/edit
     def edit
 	@expense = Expense.find(params[:id])
+	@pay_methods = PayMethod.order("name").all
+	@reasons = Reason.order("name").all
+	@stores = Store.order("name").all
+	@groups = Group.order('name').where(:hidden => false).all
     end
 
     # POST /expenses
@@ -106,6 +126,10 @@ class ExpensesController < ApplicationController
 		format.html { redirect_to @expense, notice: 'Expense was successfully updated.' }
 		format.json { head :ok }
 	    else
+		@pay_methods = PayMethod.order("name").all
+		@reasons = Reason.order("name").all
+		@stores = Store.order("name").all
+		@groups = Group.order('name').where(:hidden => false).all
 		format.html { render action: "edit" }
 		format.json { render json: @expense.errors, status: :unprocessable_entity }
 	    end

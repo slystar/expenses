@@ -62,7 +62,24 @@ describe "Expenses ->" do
 	    end
 
 	    describe "View ->" do
-		pending "should display expenses" do
+		it "should have a link" do
+		    visit(menu_path)
+		    page.should have_link("View expenses")
+		end
+		
+		it "should display expenses" do
+		    # Create expense
+		    e=get_valid_expense
+		    visit(expenses_path)
+		    page.should have_content("Listing expenses")
+		    page.should have_button("Search")
+		    page.should have_content(e.date_purchased.to_date)
+		    page.should have_content(e.description)
+		    page.should have_content(e.pay_method.name)
+		    page.should have_content(e.reason.name)
+		    page.should have_content(e.store.name)
+		    page.should have_content(e.user.user_name)
+		    page.should have_content(e.group.name)
 		end
 	    end
 
