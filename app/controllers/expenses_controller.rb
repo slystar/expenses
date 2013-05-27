@@ -4,6 +4,7 @@ class ExpensesController < ApplicationController
     # GET /expenses
     # GET /expenses.json
     def index
+	@start_time=Time.now
 	# Params
 	date_purchased_months_ago=params[:date_purchased_months_ago]
 	# Default values
@@ -16,7 +17,7 @@ class ExpensesController < ApplicationController
 	@filters={}
 	@filters[:date_purchased_months_ago]=date_purchased_months_ago
 	# Get last 6 months
-	@expenses = Expense.includes(:store).includes(:pay_method).includes(:reason).includes(:group).includes(:user).find(:all, :conditions => ["date_purchased > ?",@filters[:date_purchased_months_ago].month.ago.to_date], :order => "date_purchased desc")
+	@expenses = Expense.includes(:store).includes(:pay_method).includes(:reason).includes(:group).includes(:user).find(:all, :conditions => ["date_purchased > ?",@filters[:date_purchased_months_ago].month.ago.to_date], :order => "user_id, date_purchased desc")
 
 
 	respond_to do |format|

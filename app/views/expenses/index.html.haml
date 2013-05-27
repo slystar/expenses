@@ -1,4 +1,3 @@
-- start_time=Time.now
 %h1 Listing expenses
 = @expenses.size
 records found
@@ -10,8 +9,6 @@ records found
   %br
   = submit_tag "Search"
 
-#flash_alert
-  This view is causing massive amounts of select statements.
 %p
 %table{:border => "1"}
   %tr
@@ -45,4 +42,5 @@ records found
 = link_to 'New Expense', new_expense_path
 %p
   Load time:
-  = Time.now - start_time
+  = Time.now - @start_time
+  seconds

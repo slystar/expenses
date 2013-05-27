@@ -89,6 +89,18 @@ describe "Expenses ->" do
 	    end
 
 
+	    describe "Import expenses ->" do
+
+		it "should have a link" do
+		    visit(menu_path)
+		    page.should have_link("Import expenses")
+		end
+
+		pending "should import expenses" do
+		end
+	    end
+
+
 	    describe "Add expense ->" do
 
 		before(:each) do
