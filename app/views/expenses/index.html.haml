@@ -1,4 +1,7 @@
+- start_time=Time.now
 %h1 Listing expenses
+= @expenses.size
+records found
 %h2 Filters
 =form_tag expenses_path, :method => :get do
   Date purchased less than
@@ -24,7 +27,6 @@
     %th Process flag
     %th
     %th
-    %th
   - @expenses.each do |expense|
     %tr
       %td= expense.date_purchased
@@ -41,3 +43,6 @@
       %td= link_to 'Edit', edit_expense_path(expense)
 %br/
 = link_to 'New Expense', new_expense_path
+%p
+  Load time:
+  = Time.now - start_time
