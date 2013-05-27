@@ -16,7 +16,8 @@ class ExpensesController < ApplicationController
 	@filters={}
 	@filters[:date_purchased_months_ago]=date_purchased_months_ago
 	# Get last 6 months
-	@expenses = Expense.find(:all, :conditions => ["date_purchased > ?",@filters[:date_purchased_months_ago].month.ago.to_date], :order => "date_purchased desc")
+	@expenses = Expense.includes(:store).includes(:pay_method).includes(:reason).includes(:group).includes(:user).find(:all, :conditions => ["date_purchased > ?",@filters[:date_purchased_months_ago].month.ago.to_date], :order => "date_purchased desc")
+
 
 	respond_to do |format|
 	    format.html # index.html.erb
