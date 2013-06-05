@@ -1,6 +1,7 @@
 Models:
 - do we need a process_flag on user_payment?
 - how to handle returns (ex: you return something to the store after it's been processed)
+    - Import should have the option to return also for payment lines
 - expense history (user_id, expense_id, group_id), could allow group deletion
     - possibly use papertrail gem
 
