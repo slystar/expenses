@@ -8,36 +8,50 @@ records found
   Months ago
   %br
   = submit_tag "Search"
+  %a{:href => "/expenses"} Reset filters
 
-%p
-%table{:border => "1"}
-  %tr
-    %th Date purchased
-    %th Description
-    %th Pay method
-    %th Reason
-    %th Store
-    %th User
-    %th Group
-    %th Amount
-    %th Process date
-    %th Process flag
-    %th
-    %th
-  - @expenses.each do |expense|
+  %p
+  %table{:border => "1"}
     %tr
-      %td= expense.date_purchased
-      %td= expense.description
-      %td= expense.pay_method.name
-      %td= expense.reason.name
-      %td= expense.store.name
-      %td= expense.user.user_name
-      %td= expense.group.name
-      %td= expense.amount
-      %td= expense.process_date
-      %td= expense.process_flag
-      %td= link_to 'Show', expense
-      %td= link_to 'Edit', edit_expense_path(expense)
+      %th Date purchased
+      %th Description
+      %th Pay method
+      %th Reason
+      %th Store
+      %th User
+      %th Group
+      %th Amount
+      %th Process date
+      %th Process flag
+      %th
+      %th
+    %tr
+      %td
+      %td
+      %td= select_tag(:filter_pay_method, options_for_select(@pay_method_names, :selected => @filters[:filter_pay_method]),:prompt => '--')
+      %td= select_tag(:filter_reason, options_for_select(@reason_names, :selected => @filters[:filter_reason]),:prompt => '--')
+      %td= select_tag(:filter_store, options_for_select(@store_names, :selected => @filters[:filter_store]),:prompt => '--')
+      %td
+      %td
+      %td
+      %td
+      %td
+      %td
+      %td
+    - @expenses.each do |expense|
+      %tr
+        %td= expense.date_purchased
+        %td= expense.description
+        %td= expense.pay_method.name
+        %td= expense.reason.name
+        %td= expense.store.name
+        %td= expense.user.user_name
+        %td= expense.group.name
+        %td= expense.amount
+        %td= expense.process_date
+        %td= expense.process_flag
+        %td= link_to 'Show', expense
+        %td= link_to 'Edit', edit_expense_path(expense)
 %br/
 = link_to 'New Expense', new_expense_path
 %p

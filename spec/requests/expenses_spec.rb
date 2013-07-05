@@ -71,6 +71,7 @@ describe "Expenses ->" do
 		    # Create expense
 		    e=get_valid_expense
 		    visit(expenses_path)
+		    # Tests
 		    page.should have_content("Listing expenses")
 		    page.should have_button("Search")
 		    page.should have_content(e.date_purchased.to_date)
@@ -80,6 +81,12 @@ describe "Expenses ->" do
 		    page.should have_content(e.store.name)
 		    page.should have_content(e.user.user_name)
 		    page.should have_content(e.group.name)
+		    # Test: should have column filters
+		    page.should have_select(:filter_store, :with_options => [e.store.name])
+		    page.should have_select(:filter_pay_method, :with_options => [e.pay_method.name])
+		    page.should have_select(:filter_reason, :with_options => [e.reason.name])
+		    # Test: should have a reset filters link
+		    page.should have_link("Reset filters")
 		end
 	    end
 

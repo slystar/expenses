@@ -4,21 +4,51 @@ class ExpensesController < ApplicationController
     # GET /expenses
     # GET /expenses.json
     def index
+	# Variables
 	@start_time=Time.now
+	@debug_info=[]
+	# Filters
+	filter_names=[:filter_pay_method, :filter_reason, :filter_store]
 	# Params
 	date_purchased_months_ago=params[:date_purchased_months_ago]
+
 	# Default values
 	if date_purchased_months_ago.nil? or date_purchased_months_ago.empty?
 	    date_purchased_months_ago=6
 	else
 	    date_purchased_months_ago=date_purchased_months_ago.to_i
 	end
-	# Filters
+
+	# Set Filters variable for view
 	@filters={}
 	@filters[:date_purchased_months_ago]=date_purchased_months_ago
-	# Get last 6 months
-	@expenses = Expense.includes(:store).includes(:pay_method).includes(:reason).includes(:group).includes(:user).find(:all, :conditions => ["date_purchased > ?",@filters[:date_purchased_months_ago].month.ago.to_date], :order => "user_id, date_purchased desc")
 
+	# Prepare Data
+	@expenses = Expense.includes(:store).includes(:pay_method).includes(:reason).includes(:group).includes(:user)
+	# Loop over filter names
+	filter_names.each do |filter_name|
+	    # Get filter value
+	    filter_value=params[filter_name]
+	    # Check if we have a filter_value to process
+	    unless filter_value.nil? or filter_value.empty?
+		# Add to filters variable
+		@filters[filter_name]=filter_value
+		# Get column name
+		col_name=filter_name.to_s.gsub('filter_','').gsub(/$/,'_id')
+		# Filter data
+		@expenses=@expenses.where("#{col_name}" => filter_value)
+	    end
+	end
+	# Get data
+	@expenses = @expenses.find(:all, :conditions => ["date_purchased > ?",@filters[:date_purchased_months_ago].month.ago.to_date], :order => "user_id, date_purchased desc")
+	
+
+	# Get data for filters
+	@pay_method_names=@expenses.map{|e| [e.pay_method.name,e.pay_method.id]}.sort{|a,b| a[0]<=>b[0]}.uniq
+	@reason_names=@expenses.map{|e| [e.reason.name,e.reason.id]}.sort{|a,b| a[0]<=>b[0]}.uniq
+	@store_names=@expenses.map{|e| [e.store.name,e.store.id]}.sort{|a,b| a[0]<=>b[0]}.uniq
+
+	@debug_info.push([params, @filters]).flatten
 
 	respond_to do |format|
 	    format.html # index.html.erb
