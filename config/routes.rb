@@ -12,6 +12,8 @@ Expenses::Application.routes.draw do
 
     # Expenses
     get "menu" => "expenses#menu", :as => 'menu'
+    get "expenses/import" => "expenses#import", :as => 'import'
+    post "expenses/import" => "expenses#file_upload"
     resources :expenses
     resources :user_payments
     resources :pay_methods

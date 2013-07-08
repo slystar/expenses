@@ -183,4 +183,21 @@ class ExpensesController < ApplicationController
     # GET /menu
     def menu
     end
+
+    # Import
+    def import
+	@supported_configs=ImportConfig.select(:title).select(:description).all
+    end
+
+    # File import
+    def file_upload
+	# File data
+	file_tmp=params[:file_upload][:my_file].tempfile
+	File.open(file_tmp,"r") do |fout|
+	    # Loop over each line
+	    fout.each_line do |line|
+		p line
+	    end
+	end
+    end
 end

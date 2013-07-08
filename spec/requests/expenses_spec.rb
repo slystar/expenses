@@ -98,9 +98,15 @@ describe "Expenses ->" do
 
 	    describe "Import expenses ->" do
 
+		before(:each) do
+		    @import_path="#{expenses_path}/import"
+		end
+
 		it "should have a link" do
 		    visit(menu_path)
 		    page.should have_link("Import expenses")
+		    visit(@import_path)
+		    current_path.should == @import_path
 		end
 
 		pending "should import expenses" do
