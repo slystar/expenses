@@ -2,7 +2,12 @@
   Import expenses
 
 = form_for :file_upload, :html => {:multipart => true} do |f|
+  = f.label :my_file, "Select import file"
   = f.file_field :my_file
+  %br
+  = f.label :import_config, "Select import config type"
+  = f.collection_select :import_config, @supported_configs, :id, :title, prompt: "--"
+  %br
   = f.submit "Upload"
 
 %h2

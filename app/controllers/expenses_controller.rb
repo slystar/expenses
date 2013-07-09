@@ -186,18 +186,57 @@ class ExpensesController < ApplicationController
 
     # Import
     def import
-	@supported_configs=ImportConfig.select(:title).select(:description).all
+	@supported_configs=ImportConfig.select(:id).select(:title).select(:description).all
     end
 
     # File import
     def file_upload
-	# File data
-	file_tmp=params[:file_upload][:my_file].tempfile
-	File.open(file_tmp,"r") do |fout|
-	    # Loop over each line
-	    fout.each_line do |line|
-		p line
-	    end
+	# Variables
+	errors=[]
+	# Get PARAMS
+	file_info=params[:file_upload][:my_file]
+	ic_id=params[:file_upload][:import_config]
+	# Check if we have a file
+	if file_info.nil?
+	    # Add to errors
+	    errors << "Missing file"
+	else
+	    # Get import file handle
+	    file_handle=file_info.tempfile
+	    # Get original filename
+	    file_original_name=file_info.original_filename
 	end
+	# Check for config
+	if ic_id.nil? or ic_id.empty?
+	    # Add to errors
+	    errors << "Please select an 'import config'"
+	end
+	# Check for errors
+	if errors.size > 0
+	    # Redirect to import
+	    redirect_to :import, :alert => errors and return
+	end
+	# Get an import_history object
+	ih=ImportHistory.new({:import_config_id => ic_id, :original_file_name => file_original_name})
+	# Get current user
+	user_id=session[:user_id]
+	# Set user
+	ih.user_id=user_id
+	# Save ImportHistory
+	if not ih.save
+	    # Error
+	    redirect_to :import, :alert => ih.errors.messages and return
+	end
+	# Get import_config
+	ic=ih.import_config
+	# Import data
+	if not ih.import_data(file_handle,ic,user_id)
+	    # Error
+	    #redirect_to :import, :alert => ih.errors.messages and return
+	    @debug_info=ih
+	end
+	# TEMP
+	@supported_configs=ImportConfig.select(:id).select(:title).select(:description).all
+	render :import
     end
 end
