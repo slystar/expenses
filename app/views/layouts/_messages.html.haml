@@ -1,3 +1,17 @@
 - flash.each do |name, msg|
   - if msg.is_a?(String)
     = content_tag :div, msg, :id => "flash_#{name}"
+  - elsif msg.is_a?(Array)
+    %div{:id => "flash_#{name}"}
+      %ul
+        - msg.each do |text|
+          %li
+            = text
+  - elsif msg.is_a?(Hash)
+    %div{:id => "flash_#{name}"}
+      %ul
+        - msg.each do |key,value|
+          %li
+            = "#{key}: #{value}"
+  - else
+    = content_tag :div, "Unhandled message class #{msg.class}", :id => "flash_#{name}"
