@@ -6,6 +6,9 @@ class ImportHistory < ActiveRecord::Base
     # Accessible attributes
     attr_accessible :import_config_id, :original_file_name
 
+    # Virtual attributes
+    attr_accessor :import_accepted, :import_rejected
+
     # Relationships
     belongs_to :import_config
     belongs_to :user
@@ -103,6 +106,10 @@ class ImportHistory < ActiveRecord::Base
 
     # Method to import CSV data
     def import_csv(filename, import_config, user_id)
+	# Variables
+	self.import_accepted=[]
+	self.import_rejected=[]
+	line_count=0
 	# Get unique hash fields
 	unique_hash_ids=import_config[:unique_id_hash_fields]
 	# Read file
@@ -115,6 +122,9 @@ class ImportHistory < ActiveRecord::Base
 	    # Variables
 	    unique_hash_str=''
 	    mapped_fields={}
+	    records_to_import=[]
+	    # Increment line count
+	    line_count += 1
 	    # Get unique id column
 	    unique_id_col=import_config[:unique_id_field].to_i if not import_config[:unique_id_field].nil?
 	    # Collect fields for unique_hash
@@ -130,6 +140,8 @@ class ImportHistory < ActiveRecord::Base
 	    date_purchased=mapped_fields[:date_purchased]
 	    # Check amount
 	    if not amount_positive(amount)
+		# Add to rejected
+		add_import_info(line_count,row,"Positive amount")
 		# Skip negative amounts since those are payments
 		next
 	    end
@@ -168,15 +180,41 @@ class ImportHistory < ActiveRecord::Base
 	    # check if record is valid
 	    if id.valid?
 		# Save record
-		id.save!
+		if id.save
+		    # Keep track
+		    add_import_info(line_count,row)
+		else
+		    # Keep track
+		    add_import_info(line_count,row,"Error creating ImportData: #{id.errors.messages}")
+		end
 	    else
-		# Add row info
-		err_msg="ID: #{unique_id},"
-		# Prepare message
-		err_msg << id.errors.messages.to_s
-		# Not valid, add to errors
-		self.errors.add(:base,err_msg)
+		# Look for duplicate entry.
+		dup=ImportDatum.where(:unique_id => id.unique_id).find(:first)
+		# Check duplicate
+		if not dup.nil?
+		    # Keep track
+		    add_import_info(line_count,row,"Record already imported on #{dup.created_at}")
+		else
+		    # Add row info
+		    err_msg="ID: #{unique_id},"
+		    # Prepare message
+		    err_msg << id.errors.messages.to_s
+		    # Not valid, add to errors
+		    self.errors.add(:base,err_msg)
+		    # Keep track
+		    add_import_info(line_count,row,"Error: invalid ImportData: #{id.errors.messages}")
+		end
 	    end
+	end
+    end
+
+    # Method to keep track of imported rows
+    def add_import_info(line_num,file_row,msg=nil)
+	# Check for accepted row
+	if msg.nil?
+	    self.import_accepted.push([line_num,file_row,'OK'])
+	else
+	    self.import_rejected.push([line_num,file_row,msg])
 	end
     end
 end

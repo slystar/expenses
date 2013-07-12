@@ -29,7 +29,7 @@ describe ImportHistory do
 	# Import config attributes
 	@attr_ic={:title => 'Amex', :description => 'CSV export of amex', :field_mapping => {:date_purchased => 0, :amount => 2, :store => 3}, :file_type => 'csv', :unique_id_field => 1, :unique_id_hash_fields => [0,2,3], :date_type => 0}
 	# Import file
-	filename='spec/imports/amex.csv'
+	@filename='spec/imports/amex.csv'
 	# Get import history
 	ih=get_valid_import_history()
 	# Save import_history
@@ -39,7 +39,7 @@ describe ImportHistory do
 	# Get user
 	u=ih.user_id
 	# Import data
-	ih.import_data(filename,ic,u)
+	ih.import_data(@filename,ic,u)
 	# Return ImportHistory
 	return ih
     end
@@ -175,6 +175,15 @@ describe ImportHistory do
     it "should be able to import csv from amex" do
 	# Import data
 	ih=import_amex
+	# Get line count
+	file_line_count=File.open(@filename,'r'){|fin| fin.lines.count}
+	# Get sizes
+	ok_records=ih.import_accepted
+	bad_records=ih.import_rejected
+	# Test: should have list of imported and rejected rows
+	ok_records.size.should > 0
+	bad_records.size.should > 0
+	(ok_records.size + bad_records.size).should == file_line_count
 	# Get all ImportData
 	id=ImportDatum.all
 	# ImportData should contain 3 new rows
@@ -245,8 +254,8 @@ describe ImportHistory do
 	id=ImportDatum.all
 	# ImportData should still contain 3 new rows
 	id.size.should == 3
-	# Test
-	ih2.errors.size.should == 3
+	# Test: errors should still be zero, because it's not an error
+	ih2.errors.size.should == 0
     end
 
     it "should be able to provide a list or records to be processed" do
