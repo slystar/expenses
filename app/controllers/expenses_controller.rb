@@ -6,7 +6,6 @@ class ExpensesController < ApplicationController
     def index
 	# Variables
 	@start_time=Time.now
-	@debug_info=[]
 	# Filters
 	filter_names=[:filter_pay_method, :filter_reason, :filter_store]
 	# Params
@@ -47,8 +46,6 @@ class ExpensesController < ApplicationController
 	@pay_method_names=@expenses.map{|e| [e.pay_method.name,e.pay_method.id]}.sort{|a,b| a[0]<=>b[0]}.uniq
 	@reason_names=@expenses.map{|e| [e.reason.name,e.reason.id]}.sort{|a,b| a[0]<=>b[0]}.uniq
 	@store_names=@expenses.map{|e| [e.store.name,e.store.id]}.sort{|a,b| a[0]<=>b[0]}.uniq
-
-	@debug_info.push([params, @filters]).flatten
 
 	respond_to do |format|
 	    format.html # index.html.erb
@@ -233,10 +230,16 @@ class ExpensesController < ApplicationController
 	if not ih.import_data(file_handle,ic,user_id)
 	    # Error
 	    #redirect_to :import, :alert => ih.errors.messages and return
-	    @debug_info=ih
 	end
-	# TEMP
-	@supported_configs=ImportConfig.select(:id).select(:title).select(:description).all
-	render :import
+	# Redirect
+	redirect_to :process_imports, :notice => "File #{file_original_name} successfully processed"
+    end
+
+    # Process imported records
+    def process_imports
+	# Get user
+	user_id=session[:user_id]
+	# Get records to process
+	@records=ImportDatum.where(:user_id => user_id)
     end
 end

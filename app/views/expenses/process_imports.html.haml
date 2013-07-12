@@ -1,0 +1,13 @@
+- headers=[:id, :import_history_id, :import_config_id, :unique_id, :unique_hash, :mapped_fields, :process_flag, :process_date, :expense_id, :process_notes, :created_at, :updated_at, :approved, :app_version]
+%h1
+  Process imported records
+%table{:border => 1}
+  %tr
+    - headers.each do |h|
+      %th
+        =h
+  - @records.each do |r|
+    %tr
+      - headers.each do |header|
+        %td
+          = r[header]
