@@ -1,0 +1,43 @@
+- ok_records=@ih.import_accepted
+- bad_records=@ih.import_rejected
+%h1 File Import Summary
+
+%p
+  %a{:href => "process_imports"} Process Imports
+
+%h2 
+  Records imported:
+  = ok_records.size
+- if ok_records.size > 0
+  %table{:border => 1}
+    %tr
+      %th
+        Line
+      %th
+        File row
+    - ok_records.each do |data|
+      %tr
+        %td
+          = data[0]
+        %td
+          =data[1]
+%h2 
+  Records rejected:
+  = bad_records.size
+- if bad_records.size > 0
+  %table{:border => 1}
+    %tr
+      %th
+        Line
+      %th
+        File row
+      %th
+        Reason
+    - bad_records.each do |data|
+      %tr
+        %td
+          = data[0]
+        %td
+          = data[1]
+        %td
+          = data[2]

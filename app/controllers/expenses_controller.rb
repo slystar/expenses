@@ -227,12 +227,11 @@ class ExpensesController < ApplicationController
 	# Get import_config
 	ic=ih.import_config
 	# Import data
-	if not ih.import_data(file_handle,ic,user_id)
-	    # Error
-	    #redirect_to :import, :alert => ih.errors.messages and return
-	end
+	ih.import_data(file_handle,ic,user_id)
+	# Save info for view
+	@ih=ih
 	# Redirect
-	redirect_to :process_imports, :notice => "File #{file_original_name} successfully processed"
+	#redirect_to :process_imports, :notice => "File #{file_original_name} successfully processed"
     end
 
     # Process imported records
