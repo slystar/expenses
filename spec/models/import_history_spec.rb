@@ -5,6 +5,7 @@ describe ImportHistory do
     before(:each) do
 	@attr={:import_config_id => 1, :original_file_name => "uploaded_file.csv"}
 	@attr_ic={:user_id => 1, :title => 'Big bank import', :description => 'CSV export of Big Bank', :field_mapping => {:amount => 2, :store => 3}, :file_type => 'csv', :unique_id_field => 4, :unique_id_hash_fields => [2,3,4], :date_type => 0}
+	@attr_ic_amex={:title => 'Amex', :description => 'CSV export of amex', :field_mapping => {:date_purchased => 0, :amount => 2, :store => 3}, :file_type => 'csv', :unique_id_field => 1, :unique_id_hash_fields => [0,2,3], :date_type => 0}
 	@new_user_id=1
     end
 
@@ -27,7 +28,7 @@ describe ImportHistory do
 
     def import_amex()
 	# Import config attributes
-	@attr_ic={:title => 'Amex', :description => 'CSV export of amex', :field_mapping => {:date_purchased => 0, :amount => 2, :store => 3}, :file_type => 'csv', :unique_id_field => 1, :unique_id_hash_fields => [0,2,3], :date_type => 0}
+	@attr_ic=@attr_ic_amex
 	# Import file
 	@filename='spec/imports/amex.csv'
 	# Get import history
@@ -247,13 +248,59 @@ describe ImportHistory do
 	# Get import config
 	ic=ih2.import_config
 	# Get user
-	u=ih2.user_id
+	u=ih.user_id
+	# Test same user
+	u.should == ih.user_id
 	# Import data
 	ih2.import_data(filename,ic,u)
 	# Get all ImportData
 	id=ImportDatum.all
 	# ImportData should still contain 3 new rows
 	id.size.should == 3
+	# Test: errors should still be zero, because it's not an error
+	ih2.errors.size.should == 0
+    end
+
+    it "should be able to imort the same record by each user" do
+	# Variables
+	@new_user_id = 1
+	@attr_ic = @attr_ic_amex
+	# Import file
+	filename='spec/imports/amex.csv'
+	# Get new import history
+	ih=get_valid_import_history()
+	# Set new user
+	ih.user=get_next_user
+	# Save import_history
+	ih.save!
+	# Get import config
+	ic=ih.import_config
+	# Get new user
+	u=ih.user_id
+	# Import data
+	ih.import_data(filename,ic,u)
+	# Get all ImportData
+	id=ImportDatum.all
+	# ImportData should contain 3 new rows
+	id.size.should == 3
+	# Get new import history
+	ih2=get_valid_import_history()
+	# Set new user
+	ih2.user=get_next_user
+	# Save import_history
+	ih2.save!
+	# Get import config
+	ic=ih2.import_config
+	# Get new user
+	u=ih2.user_id
+	# Test: users should be different
+	u.should_not == ih.user_id
+	# Import data
+	ih2.import_data(filename,ic,u)
+	# Get all ImportData
+	id=ImportDatum.all
+	# ImportData should contain 6 new rows
+	id.size.should == 6
 	# Test: errors should still be zero, because it's not an error
 	ih2.errors.size.should == 0
     end

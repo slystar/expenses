@@ -189,7 +189,7 @@ class ImportHistory < ActiveRecord::Base
 		end
 	    else
 		# Look for duplicate entry.
-		dup=ImportDatum.where(:unique_id => id.unique_id).find(:first)
+		dup=ImportDatum.where(:unique_id => id.unique_id).where(:user_id => user_id).find(:first)
 		# Check duplicate
 		if not dup.nil?
 		    # Keep track

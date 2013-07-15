@@ -217,6 +217,8 @@ describe ImportDatum do
 	id.save!
 	# Get new record
 	id2=get_next_valid_import_data_object
+	# Set same user
+	id2.user=id.user
 	# Set fields
 	id2.unique_id='123456'
 	# Should not be valid
@@ -231,6 +233,8 @@ describe ImportDatum do
 	id.save!
 	# Get new record
 	id2=get_next_valid_import_data_object
+	# Set same user
+	id2.user=id.user
 	# Set fields
 	id2.unique_hash='123456'
 	# Should not be valid

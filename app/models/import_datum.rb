@@ -17,8 +17,8 @@ class ImportDatum < ActiveRecord::Base
     before_validation :set_app_version
 
     # Validations
-    validates :unique_id, :uniqueness => true
-    validates :unique_hash, :presence => true, :uniqueness => true
+    validates :unique_id, :uniqueness => {:scope => :user_id}
+    validates :unique_hash, :presence => true, :uniqueness => {:scope => :user_id}
     validates :mapped_fields, :presence => true
     validates :app_version, :presence => true
     # Validations: relationships
