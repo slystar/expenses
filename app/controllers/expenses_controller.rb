@@ -234,8 +234,32 @@ class ExpensesController < ApplicationController
 	#redirect_to :process_imports, :notice => "File #{file_original_name} successfully processed"
     end
 
-    # Process imported records
+    # List imported records that need to be processed
     def process_imports
+	# Get user
+	user_id=session[:user_id]
+	# Get records to process
+	@records=ImportDatum.includes(:import_history).includes(:import_config).where(:user_id => user_id)
+	@debug_info=@records.first.import_config.to_yaml
+    end
+
+    # Process single imported record
+    def process_import
+	# Get id
+	id_to_process=params[:id]
+	# Get user
+	user_id=session[:user_id]
+	# Try to find record
+	record=ImportDatum.find(id_to_process)
+	# Check if it's the correct user
+	if user_id != record.user_id
+	    redirect_to :process_imports, :alert => 'Error: this is not your record' and return
+	end
+	@debug_info=record
+    end
+
+    # Process imported records, multiple records at once
+    def process_imports_multi
 	# Reference: http://railscasts.com/episodes/198-edit-multiple-individually?view=asciicast
 	# Variables
 	@new_expenses=[]
