@@ -1,6 +1,19 @@
 - headers=[:id, :import_history_id, :import_config_id, :unique_id, :unique_hash, :mapped_fields, :process_flag, :process_date, :expense_id, :process_notes, :created_at, :updated_at, :approved, :app_version]
+- required_headers=["Date purchased","Pay Method","Reason","Store","Group","amount","Description"]
 %h1
   Process imported records
+= form_tag "/expenses/add_imported_expenses", :method => :post do
+  %table{:border => 1}
+    %tr
+      -required_headers.each do |h|
+        %th
+          =h
+    - @new_expenses.each do |e|
+      = fields_for "expenses[]", e, child_index: e.object_id do |f|
+        = render 'import_fields', :f => f, :e => e
+  %p
+    = submit_tag "Submit"
+%hr
 %table{:border => 1}
   %tr
     - headers.each do |h|

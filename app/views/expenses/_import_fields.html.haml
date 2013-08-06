@@ -1,0 +1,17 @@
+%tr
+  %td
+    = f.check_box :add_imported, :index => e.object_id
+  %td
+    = f.date_select :date_purchased, :index => e.object_id
+  %td
+    = f.collection_select :pay_method_id, @pay_methods, :id,:name, {:prompt => '--'}, {:index => e.object_id}
+  %td
+    = f.collection_select :reason_id, @reasons, "id","name", {:prompt => '--'}, {:index => e.object_id}
+  %td
+    = f.collection_select :store_id, @stores, "id","name",{:prompt => '--'}, {:index => e.object_id}
+  %td
+    = f.collection_select :group_id, @groups, "id","name",{:prompt => '--'}, {:index => e.object_id}
+  %td
+    = f.text_field :amount, :index => e.object_id
+  %td
+    = f.text_area :description, :rows => 2, :index => e.object_id

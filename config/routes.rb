@@ -15,6 +15,7 @@ Expenses::Application.routes.draw do
     get "expenses/import" => "expenses#import", :as => 'import'
     get "expenses/process_imports" => "expenses#process_imports", :as => 'process_imports'
     post "expenses/import" => "expenses#file_upload"
+    post "expenses/add_imported_expenses" => "expenses#add_imported_expenses"
     resources :expenses
     resources :user_payments
     resources :pay_methods

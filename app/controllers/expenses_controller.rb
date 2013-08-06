@@ -236,9 +236,32 @@ class ExpensesController < ApplicationController
 
     # Process imported records
     def process_imports
+	# Reference: http://railscasts.com/episodes/198-edit-multiple-individually?view=asciicast
+	# Variables
+	@new_expenses=[]
+	# Get required data
+	@pay_methods = PayMethod.order("name").all
+	@reasons = Reason.order("name").all
+	@stores = Store.order("name").all
+	@groups = Group.order('name').where(:hidden => false).all
 	# Get user
 	user_id=session[:user_id]
 	# Get records to process
-	@records=ImportDatum.where(:user_id => user_id)
+	records=ImportDatum.where(:user_id => user_id)
+	# Loop over records
+	records.each do |rec|
+	    # Get attributes
+	    attr=rec.mapped_fields
+	    store_id=Store.find(:first, :conditions => {:name => attr[:store]})
+	    @debug_info=['aaa',attr,store_id]
+	    # We need to create new expenses
+	    @new_expenses.push(Expense.new(attr))
+	end
+	@records=records
+    end
+
+    # Add imported records as expenses
+    def add_imported_expenses
+	@debug_info=params
     end
 end
