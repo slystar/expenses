@@ -11,7 +11,7 @@
 #
 # It's strongly recommended to check this file into your version control system.
 
-ActiveRecord::Schema.define(:version => 20130509170930) do
+ActiveRecord::Schema.define(:version => 20130809170333) do
 
   create_table "backups", :force => true do |t|
     t.datetime "backup_date"
@@ -90,6 +90,7 @@ ActiveRecord::Schema.define(:version => 20130509170930) do
     t.datetime "updated_at",            :null => false
     t.integer  "date_type"
     t.integer  "app_version"
+    t.integer  "pay_method_id"
   end
 
   add_index "import_configs", ["user_id"], :name => "index_import_configs_on_user_id"
