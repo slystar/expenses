@@ -14,7 +14,7 @@ ul.nav li {
     display: inline;
     padding-right: 1em;
 }
-#flash_notice, #flash_alert {
+.flash {
     padding: 5px 8px;
     margin: 10px 0;
 }
@@ -25,4 +25,8 @@ ul.nav li {
 #flash_alert {
     background-color: #FCC;
     border: solid 1px #C66;
+}
+#flash_warning {
+    background-color: #FFFF66;
+    border: solid 1px #FF9900;
 }
