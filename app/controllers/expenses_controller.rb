@@ -245,6 +245,9 @@ class ExpensesController < ApplicationController
 
     # Process single imported record
     def process_import
+	# Variables
+	notices=[]
+	warnings=[]
 	# Get id
 	id_to_process=params[:id]
 	# Get user
@@ -265,6 +268,8 @@ class ExpensesController < ApplicationController
 	record.mapped_fields.each do |sym,val|
 	    # Check if it's a direct attribute
 	    if attr_names.include?(sym.to_s)
+		# Notice
+		notices << "Found #{sym}: #{val}"
 		@expense[sym]=val
 	    elsif supported_additional_attr.include?(sym)
 		begin
@@ -277,13 +282,21 @@ class ExpensesController < ApplicationController
 		# Try to find record
 		store=klass.where(["lower(name) = ?",val.chomp.downcase]).first
 		# Add if found
-		unless store.nil?
+		if store.nil?
+		    # Message
+		    warnings << "Could not find #{klass}: #{val}"
+		else
+		    # Add flash
+		    notices << "Found #{klass}: #{store.name}"
 		    @expense.store=store
 		end
 	    else
 		# Unknown attribute
 		redirect_to :process_imports, :alert => "Error: unknown attribute -> '#{sym}' in record id: #{id_to_process}" and return
 	    end
+	    # Set flash variables
+	    flash[:notice]=notices unless notices.empty?
+	    flash[:warning]=warnings unless warnings.empty?
 	end
 	# Get required info
 	@pay_methods = PayMethod.order("name").all
