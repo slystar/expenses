@@ -255,7 +255,41 @@ class ExpensesController < ApplicationController
 	if user_id != record.user_id
 	    redirect_to :process_imports, :alert => 'Error: this is not your record' and return
 	end
-	@debug_info=record
+	# Create expense object
+	@expense = Expense.new
+	# Get attribute names
+	attr_names=@expense.attribute_names
+	# Supported additional attributes
+	supported_additional_attr=[:store, :pay_method, :reason, :group]
+	# Add information
+	record.mapped_fields.each do |sym,val|
+	    # Check if it's a direct attribute
+	    if attr_names.include?(sym.to_s)
+		@expense[sym]=val
+	    elsif supported_additional_attr.include?(sym)
+		begin
+		# Try to convert to class
+		klass=Object.const_get(sym.to_s.camelcase)
+		rescue => e
+		    # Redirect with error
+		    redirect_to :process_imports, :alert => "Error: unknown class -> '#{sym}' in mapped_fields for record id: #{id_to_process}" and return
+		end
+		# Try to find record
+		store=klass.where(["lower(name) = ?",val.chomp.downcase]).first
+		# Add if found
+		unless store.nil?
+		    @expense.store=store
+		end
+	    else
+		# Unknown attribute
+		redirect_to :process_imports, :alert => "Error: unknown attribute -> '#{sym}' in record id: #{id_to_process}" and return
+	    end
+	end
+	# Get required info
+	@pay_methods = PayMethod.order("name").all
+	@reasons = Reason.order("name").all
+	@stores = Store.order("name").all
+	@groups = Group.order('name').where(:hidden => false).all
     end
 
     # Process imported records, multiple records at once
