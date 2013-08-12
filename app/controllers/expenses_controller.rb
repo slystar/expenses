@@ -240,7 +240,7 @@ class ExpensesController < ApplicationController
 	user_id=session[:user_id]
 	# Get records to process
 	@records=ImportDatum.includes(:import_history).includes(:import_config).where(:user_id => user_id)
-	@debug_info=@records.first.import_config.to_yaml
+	#@debug_info=@records.first.import_config.to_yaml if @records
     end
 
     # Process single imported record
@@ -298,6 +298,8 @@ class ExpensesController < ApplicationController
 	    flash[:notice]=notices unless notices.empty?
 	    flash[:warning]=warnings unless warnings.empty?
 	end
+	# Add Pay method
+	@expense.pay_method_id=record.import_config.pay_method_id
 	# Get required info
 	@pay_methods = PayMethod.order("name").all
 	@reasons = Reason.order("name").all

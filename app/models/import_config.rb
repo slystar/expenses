@@ -14,6 +14,7 @@ class ImportConfig < ActiveRecord::Base
 
     # Relationships
     belongs_to :user
+    belongs_to :pay_method
 
     # Before validations
     before_validation :set_app_version
@@ -29,6 +30,7 @@ class ImportConfig < ActiveRecord::Base
     validates :app_version, :presence => true
     # Validations: relationships
     validates :user, :presence => true
+    validates :pay_method, :presence => true
     # Validations: Custom
     validate :check_field_mapping_type
     validate :check_file_type

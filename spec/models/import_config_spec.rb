@@ -197,7 +197,7 @@ describe ImportConfig do
 	# Get ImportConfig
 	ic=get_valid_import_config()
 	# Set field
-	ic.pay_method=nil
+	ic.pay_method_id=nil
 	# Test
 	ic.should_not be_valid
     end
