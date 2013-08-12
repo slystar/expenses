@@ -2,8 +2,8 @@ module SpecHelpFunctions
     def get_attr_expense
 	# Need these prerequisites
 	@store=Store.create!(:name => Faker::Company.name)
-	@reason=Reason.create!(:name => 'TV')
-	@pay_method=PayMethod.create!(:name => 'cash')
+	@reason=Reason.create!(:name => Faker::Company.name)
+	@pay_method=PayMethod.create!(:name => Faker::Name.name)
 	@user=User.create!(:user_name => Faker::Name.name, :password => 'testpass2')
 	@group=Group.create!(:name => Faker::Company.name, :description => 'Test group')
 	{:date_purchased => Time.now, :store_id=> @store.id, :pay_method_id => @pay_method.id, :reason_id => @reason.id, :user_id => @user.id, :group_id => @group.id, :amount => 10.50}
@@ -77,6 +77,10 @@ module SpecHelpFunctions
 	ic=ImportConfig.new(attr)
 	# Get new user
 	u1=get_next_user
+	# Get expense attr
+	expense_attr=get_attr_expense
+	# Add pay_method
+	ic.pay_method_id=expense_attr[:pay_method_id]
 	# Add user id because it should not be mass assignable
 	ic.user_id=u1.id
 	# Return object
