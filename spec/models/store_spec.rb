@@ -2,8 +2,12 @@ require 'spec_helper'
 
 describe Store do
 
+    def get_store_attr
+	{:name => Faker::Company.name}
+    end
+
     before(:each) do
-	@attr={:name => "Future Shop"}
+	@attr=get_store_attr
 	@object=FactoryGirl.build(:store)
 	@attr_expense={:date_purchased => Time.now, :store_id => 1, :pay_method_id => 1, :reason_id => 1, :user_id => 1, :group_id => 1}
     end
@@ -102,5 +106,38 @@ describe Store do
 	expense.destroy
 	store.destroy
 	store.should be_destroyed
+    end
+
+    it "should have a default parent_id value" do
+	object=Store.create!(@attr)
+	object.parent_id.should == 0
+    end
+
+    it "should only allow valid parents" do
+	# Create stores
+	object=Store.create!(@attr)
+	object2=Store.create!(get_store_attr)
+	# Set invalid parent
+	object.parent_id = Store.last.id + 100
+	# Test
+	object.should_not be_valid
+	# Set valid parent
+	object.parent=object2
+	# Test
+	object.should be_valid
+    end
+
+    it "should not destroy a parent" do
+	# Create stores
+	object=Store.create!(@attr)
+	object2=Store.create!(get_store_attr)
+	# Make parent
+	object2.parent=object
+	# Save 
+	object2.save!
+	# Try to delete first
+	object.destroy
+	# Should not be destroyed
+	object.should_not be_destroyed
     end
 end

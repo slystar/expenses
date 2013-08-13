@@ -11,7 +11,7 @@
 #
 # It's strongly recommended to check this file into your version control system.
 
-ActiveRecord::Schema.define(:version => 20130809170333) do
+ActiveRecord::Schema.define(:version => 20130812172238) do
 
   create_table "backups", :force => true do |t|
     t.datetime "backup_date"
@@ -167,10 +167,11 @@ ActiveRecord::Schema.define(:version => 20130809170333) do
   add_index "roles", ["name"], :name => "index_roles_on_name"
 
   create_table "stores", :force => true do |t|
-    t.string   "name",        :null => false
-    t.datetime "created_at",  :null => false
-    t.datetime "updated_at",  :null => false
+    t.string   "name",                       :null => false
+    t.datetime "created_at",                 :null => false
+    t.datetime "updated_at",                 :null => false
     t.integer  "app_version"
+    t.integer  "parent_id",   :default => 0
   end
 
   add_index "stores", ["name"], :name => "index_stores_on_name"
