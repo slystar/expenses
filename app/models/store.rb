@@ -23,6 +23,21 @@ class Store < ActiveRecord::Base
     before_destroy :check_if_parent
     before_validation :check_parent_id
 
+    # Method to get root store
+    def root_store
+	# Set starting parent to self
+	root_parent=self
+	# Loop while no more parents exists
+	while root_parent.parent
+	    # Set root to new parent
+	    root_parent=root_parent.parent
+	end
+	# Return nil if no parents
+	return nil if root_parent == self
+	# Return parent
+	return root_parent
+    end
+
     private
 
     # Method to check parent id
