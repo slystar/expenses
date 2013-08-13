@@ -127,6 +127,16 @@ describe Store do
 	object.should be_valid
     end
 
+    it "should respond to a parent method" do
+	store=Store.new(@attr)
+	store.should respond_to(:parent)
+    end
+
+    it "should respond to a children method" do
+	store=Store.new(@attr)
+	store.should respond_to(:children)
+    end
+
     it "should not destroy a parent" do
 	# Create stores
 	object=Store.create!(@attr)
@@ -139,5 +149,29 @@ describe Store do
 	object.destroy
 	# Should not be destroyed
 	object.should_not be_destroyed
+    end
+
+    it "should have root_store return the top parent" do
+	# Create stores
+	object=Store.create!(@attr)
+	object2=Store.create!(get_store_attr)
+	object3=Store.create!(get_store_attr)
+	# Make parent
+	object3.parent=object2
+	object3.save!
+	# Make parent
+	object2.parent=object
+	object2.save!
+	# Test
+	object3.parent.should == object2
+	object2.parent.should == object
+	object3.root_store.should == object
+    end
+
+    it "should have root_store return nil if no parent" do
+	# Create stores
+	object=Store.create!(@attr)
+	# Test
+	object.root_store.should be_nil
     end
 end
