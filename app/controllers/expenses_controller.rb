@@ -305,6 +305,63 @@ class ExpensesController < ApplicationController
 	@reasons = Reason.order("name").all
 	@stores = Store.order("name").all
 	@groups = Group.order('name').where(:hidden => false).all
+	# Send import record id
+	@record_id=record.id
+    end
+
+    # Add single imported record as expense
+    def create_from_imported
+	# Get params
+	expense=params[:expense]
+	import_id=params[:import_id]
+	user_id=session[:user_id]
+	# Create expense object
+	@expense = Expense.new(expense)
+	# Set user
+	@expense.user_id=user_id
+	# Get import_datum object
+	id=ImportDatum.find(import_id)
+
+	# Get submit button pressed
+	submit_button=params[:commit]
+	# Process submit button
+	if submit_button == "Add Pay Method"
+	    # Save existing objects in session
+	    session[:current_expense]=@expense
+	    # Redirect to add
+	    redirect_to "#{pay_methods_path}/new"
+	elsif submit_button == "Add Reason"
+	    # Save existing objects in session
+	    session[:current_expense]=@expense
+	    # Redirect to add
+	    redirect_to "#{reasons_path}/new"
+	elsif submit_button == "Add Store"
+	    # Save existing objects in session
+	    session[:current_expense]=@expense
+	    # Redirect to add
+	    redirect_to "#{stores_path}/new"
+	else
+	    respond_to do |format|
+		if id.approve(@expense)
+		    # Look for next record
+		    next_import=ImportDatum.next_import_for_user(user_id,import_id)
+		    # Check if we have a new record
+		    if next_import
+			format.html { redirect_to "#{expenses_path}/process_import/#{next_import.id}", notice: 'Expense was successfully created.' }
+		    else
+			format.html { redirect_to "#{expenses_path}/process_imports", notice: 'Expense was successfully created.' }
+		    end
+		else
+		    @pay_methods = PayMethod.order("name").all
+		    @reasons = Reason.order("name").all
+		    @stores = Store.order("name").all
+		    @groups = Group.order('name').where(:hidden => false).all
+		    # Send import record id
+		    @record_id=import_id
+		    format.html { render action: "process_import" }
+		end
+	    end
+	end
     end
 
     # Process imported records, multiple records at once
@@ -333,7 +390,7 @@ class ExpensesController < ApplicationController
 	@records=records
     end
 
-    # Add imported records as expenses
+    # Add multiple imported records as expenses
     def add_imported_expenses
 	@debug_info=params
     end
