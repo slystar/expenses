@@ -1,2 +1,9 @@
 %h1 Add imported record
-=render 'form'
+= form_for(@expense, :url => "/expenses/create_from_imported") do |f|
+  = hidden_field_tag 'import_id',@record_id
+  =render :partial => "form_fields", :locals => {:f => f}
+  .actions
+    = f.submit
+    = f.submit value: "Add Pay Method"
+    = f.submit value: "Add Reason"
+    = f.submit value: "Add Store"
