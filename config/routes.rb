@@ -17,6 +17,7 @@ Expenses::Application.routes.draw do
     match 'expenses/process_import/:id' => 'expenses#process_import'
     post "expenses/import" => "expenses#file_upload"
     post "expenses/add_imported_expenses" => "expenses#add_imported_expenses"
+    post "expenses/create_from_imported" => "expenses#create_from_imported"
     resources :expenses
     resources :user_payments
     resources :pay_methods
