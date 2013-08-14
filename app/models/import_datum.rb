@@ -36,7 +36,7 @@ class ImportDatum < ActiveRecord::Base
 	# Find records that have not been processed for this user
 	recs=ImportDatum.where(:user_id => user_id).where(:process_flag => false)
 	# Get records
-	return recs.all
+	return recs
     end
 
     # Method to approve imported record
