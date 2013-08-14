@@ -239,7 +239,7 @@ class ExpensesController < ApplicationController
 	# Get user
 	user_id=session[:user_id]
 	# Get records to process
-	@records=ImportDatum.includes(:import_history).includes(:import_config).where(:user_id => user_id)
+	@records=ImportDatum.imports_to_process(user_id).includes(:import_history).includes(:import_config)
 	#@debug_info=@records.first.import_config.to_yaml if @records
     end
 
