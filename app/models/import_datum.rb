@@ -50,21 +50,15 @@ class ImportDatum < ActiveRecord::Base
     end
 
     # Method to approve imported record
-    def approve(expense_data)
-	# Get mapped fields
-	imported_fields=self.mapped_fields
-	# Merge imported data with the rest of the data
-	new_record_data=imported_fields.merge(expense_data)
-	# Create a new expense record
-	expense=Expense.new(new_record_data)
+    def approve(expense_object)
 	# Check if it's valid
-	if expense.valid?
+	if expense_object.valid?
 	    # Try to save expense
-	    if expense.save
+	    if expense_object.save
 		# Process this record
 		self.process_flag=true
 		self.process_date=Time.now
-		self.expense_id=expense.id
+		self.expense_id=expense_object.id
 		self.approved=true
 		# Save self
 		self.save
@@ -73,7 +67,7 @@ class ImportDatum < ActiveRecord::Base
 	    end
 	end
 	# Error
-	self.errors.add(:base,expense.errors.messages)
+	self.errors.add(:base,expense_object.errors.messages)
 	# Return nil
 	return false
     end
