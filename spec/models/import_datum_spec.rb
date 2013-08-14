@@ -360,4 +360,6 @@ describe ImportDatum do
 	id1.expense_id.should == 0
 	id1.approved.should == false
     end
+
+    pending "add stuff for new methods not checked yet"
 end

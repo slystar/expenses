@@ -39,6 +39,16 @@ class ImportDatum < ActiveRecord::Base
 	return recs
     end
 
+    # Method to get next Import record
+    def self.next_import_for_user(user_id,previous_id=0)
+	# Get records
+	recs=self.imports_to_process(user_id)
+	# Add additional where
+	recs=recs.where("id > ?",previous_id).first
+	# Return
+	return recs
+    end
+
     # Method to approve imported record
     def approve(expense_data)
 	# Get mapped fields
