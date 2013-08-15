@@ -280,15 +280,26 @@ class ExpensesController < ApplicationController
 		    redirect_to :process_imports, :alert => "Error: unknown class -> '#{sym}' in mapped_fields for record id: #{id_to_process}" and return
 		end
 		# Try to find record
-		store=klass.where(["lower(name) = ?",val.chomp.downcase]).first
+		klass_record=klass.where(["lower(name) = ?",val.chomp.downcase]).first
 		# Add if found
-		if store.nil?
-		    # Message
-		    warnings << "Could not find #{klass}: #{val}"
+		if klass_record.nil?
+		    # Create object
+		    klass_object=klass.new
+		    klass_object.name=val.capitalize
+		    # Try to save object
+		    if klass_object.save
+			# Message
+			warnings << "Created #{klass}: #{val}"
+			# Set store
+			@expense.send("#{sym}_id=",klass_object.id)
+		    else
+			# Message
+			warnings << "Could not find #{klass}: #{val}"
+		    end
 		else
 		    # Add flash
-		    found_info << "Found #{klass}: #{store.name}"
-		    @expense.store=store
+		    found_info << "Found #{klass}: #{klass_record.name}"
+		    @expense.send("#{sym}_id=",klass_record.id)
 		end
 	    else
 		# Unknown attribute
