@@ -32,8 +32,6 @@ class Store < ActiveRecord::Base
 	    # Set root to new parent
 	    root_parent=root_parent.parent
 	end
-	# Return nil if no parents
-	return nil if root_parent == self
 	# Return parent
 	return root_parent
     end

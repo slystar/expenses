@@ -297,6 +297,18 @@ class ExpensesController < ApplicationController
 			warnings << "Could not find #{klass}: #{val}"
 		    end
 		else
+		    # Exception for store
+		    if klass and klass.name == 'Store'
+			# Try to get root store
+			root_store=klass_record.root_store
+			# Check if we mapped
+			if root_store != klass_record
+			    warnings << "Found parent #{klass}: '#{root_store.name}' of child '#{klass_record.name}'"
+			end
+			# Set new store
+			klass_record=root_store
+		    end
+		    # Check if we mapped
 		    # Add flash
 		    found_info << "Found #{klass}: #{klass_record.name}"
 		    @expense.send("#{sym}_id=",klass_record.id)
@@ -316,8 +328,9 @@ class ExpensesController < ApplicationController
 	@reasons = Reason.order("name").all
 	@stores = Store.order("name").all
 	@groups = Group.order('name').where(:hidden => false).all
-	# Send import record id
+	# Send additional info
 	@record_id=record.id
+	@original_store_id=@expense.store_id
     end
 
     # Add single imported record as expense
@@ -325,7 +338,9 @@ class ExpensesController < ApplicationController
 	# Get params
 	expense=params[:expense]
 	import_id=params[:import_id]
+	original_store_id=params[:original_store_id].to_i
 	user_id=session[:user_id]
+	notices=[]
 	# Create expense object
 	@expense = Expense.new(expense)
 	# Set user
@@ -354,13 +369,29 @@ class ExpensesController < ApplicationController
 	else
 	    respond_to do |format|
 		if id.approve(@expense)
+		    # Check original_store_id
+		    if child_store=Store.where("id=?",original_store_id).first
+			# Check if we need to map store
+			if original_store_id != @expense.store_id
+			    # Map store
+			    child_store=Store.find(original_store_id)
+			    # Set parent
+			    child_store.parent_id=@expense.store_id
+			    # Save
+			    child_store.save!
+			    # Add notice
+			    notices.push("Store '#{@expense.store.name}' is now parent of '#{child_store.name}'")
+			end
+		    end
 		    # Look for next record
 		    next_import=ImportDatum.next_import_for_user(user_id,import_id)
+		    # Prepare notice
+		    notices.push('Expense was successfully created.')
 		    # Check if we have a new record
 		    if next_import
-			format.html { redirect_to "#{expenses_path}/process_import/#{next_import.id}", notice: 'Expense was successfully created.' }
+			format.html { redirect_to "#{expenses_path}/process_import/#{next_import.id}", notice: notices }
 		    else
-			format.html { redirect_to "#{expenses_path}/process_imports", notice: 'Expense was successfully created.' }
+			format.html { redirect_to "#{expenses_path}/process_imports", notice: notices }
 		    end
 		else
 		    @pay_methods = PayMethod.order("name").all
