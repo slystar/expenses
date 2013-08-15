@@ -246,7 +246,7 @@ class ExpensesController < ApplicationController
     # Process single imported record
     def process_import
 	# Variables
-	notices=[]
+	found_info=[]
 	warnings=[]
 	# Get id
 	id_to_process=params[:id]
@@ -269,7 +269,7 @@ class ExpensesController < ApplicationController
 	    # Check if it's a direct attribute
 	    if attr_names.include?(sym.to_s)
 		# Notice
-		notices << "Found #{sym}: #{val}"
+		found_info << "Found #{sym}: #{val}"
 		@expense[sym]=val
 	    elsif supported_additional_attr.include?(sym)
 		begin
@@ -287,7 +287,7 @@ class ExpensesController < ApplicationController
 		    warnings << "Could not find #{klass}: #{val}"
 		else
 		    # Add flash
-		    notices << "Found #{klass}: #{store.name}"
+		    found_info << "Found #{klass}: #{store.name}"
 		    @expense.store=store
 		end
 	    else
@@ -295,7 +295,7 @@ class ExpensesController < ApplicationController
 		redirect_to :process_imports, :alert => "Error: unknown attribute -> '#{sym}' in record id: #{id_to_process}" and return
 	    end
 	    # Set flash variables
-	    flash[:notice]=notices unless notices.empty?
+	    flash[:found]=found_info unless found_info.empty?
 	    flash[:warning]=warnings unless warnings.empty?
 	end
 	# Add Pay method

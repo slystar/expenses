@@ -30,3 +30,7 @@ ul.nav li {
     background-color: #FFFF66;
     border: solid 1px #FF9900;
 }
+#flash_found {
+    background-color: #B0E0E6;
+    border: solid 1px #008080;
+}
