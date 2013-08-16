@@ -51,9 +51,9 @@ class Expense < ActiveRecord::Base
     after_create :process_duplicates
 
     # Method to process expense
-    def process(user_id)
+    def process(processing_user_id)
 	# Verify user
-	if User.where(:id => user_id).first.nil?
+	if User.where(:id => processing_user_id).first.nil?
 	    # Not a valid user, return false
 	    return false
 	end
@@ -78,7 +78,7 @@ class Expense < ActiveRecord::Base
 	    ud.save!
 	end
 	# Update Balance
-	UserBalance.update_balances(user_id)
+	UserBalance.update_balances(self.user_id)
 	# Set process fields
 	self.process_date=Time.now
 	self.process_flag=true
