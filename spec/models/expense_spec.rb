@@ -882,4 +882,33 @@ describe Expense do
 	e1.reload.expense_note.should == note
 	e2.reload.expense_note.should == note
     end
+
+    it "should process an expense properly" do
+	# Amount
+	amount=10
+	# Create users
+	u1=User.find(@attr[:user_id])
+	u2=get_next_user
+	# Create group
+	group=Group.create!({:name => "Group test", :description => 'group 1 desc'})
+	# Add user to group
+	group.add_user(u2)
+	# Create expense
+	expense=Expense.new(@attr)
+	# Set group
+	expense.group_id=group.id
+	# Set amount
+	expense.amount=amount
+	# Save expense
+	expense.save!
+	# Process
+	lambda{
+	    # Process record
+	    expense.process(expense.user_id)
+	}.should change(UserDept,:count).by(1)
+	# Check balances
+	u1.balances.size.should == 2
+	u1.balances.find{|b| b.from_user_id=u2.id and b.to_user_id=u1.id}.amount.should == amount
+	u1.balances.find{|b| b.from_user_id=u1.id and b.to_user_id=u2.id}.amount.should == -amount
+    end
 end
