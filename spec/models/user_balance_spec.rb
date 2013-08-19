@@ -181,6 +181,31 @@ describe UserBalance do
 	    UserBalance.update_balances(99999999).should == false
 	end
 
+	context "with UserDept" do
+	    it "with single dept" do
+		# Set amount
+		money=12.50
+		# Get an expense record
+		expense=get_valid_expense
+		# Get expected balance
+		expected_balance=money
+		# Create users
+		u1=get_next_user
+		u2=get_next_user
+		# Create new UserDept (from: u1, to: u2)
+		# u1 owes u2
+		add_user_dept(u1,u2,money,expense.id)
+		# Test: UserBalance created
+		lambda {
+		    # Update balances
+		    UserBalance.update_balances(u1.id)
+		}.should change(UserBalance,:count).by(2)
+		# Test balances (u1 owes u2)
+		test_balance(u1,u2,expected_balance)
+		test_balance(u2,u1,-(expected_balance))
+	    end
+	end
+
 	context "with UserDept and UserBalance" do
 	    it "with single dept" do
 		# Set amount
