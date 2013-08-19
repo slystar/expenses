@@ -219,55 +219,112 @@ describe Expense do
 	expense.process(999999).should == false
     end
 
-    it "should be able to process itself" do
-	# Variables
-	amount=22.00
-	# Get today
-	today=Time.now.utc.strftime("%Y-%m-%d")
-	# Create users
-	u1=User.create!({:user_name => 'test90', :password => 'testpassword'})
-	u2=User.create!({:user_name => 'test91', :password => 'testpassword'})
-	u3=User.create!({:user_name => 'test92', :password => 'testpassword'})
-	users=[u1,u2,u3]
-	# Create group
-	group=Group.create!({:name => "Group test", :description => 'group 1 desc'})
-	# Add user to group
-	group.add_user(u1)
-	group.add_user(u2)
-	group.add_user(u3)
-	# Create expense
-	expense=Expense.new(@attr)
-	# Set group
-	expense.group_id=group.id
-	# Set amount
-	expense.amount=amount
-	# Save expense
-	expense.save!
-	# Test: UserDept created
-	lambda{
-	    # Process record
-	    expense.process(u1.id)
-	}.should change(UserDept,:count).by(3)
-	# Reload expense
-	expense.reload
-	# Test: Check UserDept
-	users.each do |u|
-	    # Get UserDept
-	    ud=UserDept.where(:from_user_id => expense.user_id).where(:to_user_id => u.id).last
+    context "should be able to process itself" do
+	it "2 users" do
+	    # Variables
+	    amount=22.00
+	    # Get today
+	    today=Time.now.utc.strftime("%Y-%m-%d")
+	    # Create users
+	    u1=User.create!({:user_name => 'test91', :password => 'testpassword'})
+	    u2=User.create!({:user_name => 'test92', :password => 'testpassword'})
+	    users=[u1,u2]
+	    # Create group
+	    group=Group.create!({:name => "Group test", :description => 'group 1 desc'})
+	    # Add user to group
+	    group.add_user(u1)
+	    # Create expense
+	    expense=Expense.new(@attr)
+	    # Set group
+	    expense.group_id=group.id
+	    # Set user
+	    expense.user_id=u2.id
+	    # Set amount
+	    expense.amount=amount
+	    # Save expense
+	    expense.save!
+	    # Test: UserDept created
+	    lambda{
+		# Process record
+		expense.process(u2.id)
+	    }.should change(UserDept,:count).by(1)
+	    # Reload expense
+	    expense.reload
+	    # Test: Check UserDept
+	    ud=UserDept.where(:from_user_id => u1.id).where(:to_user_id => u2.id).last
 	    # Test
-	    ud.amount.should == amount / users.size
-	end
-	# Test: UserBalance Created
-	users.each do |u|
-	    # Get UserDept
-	    ub=UserBalance.where(:from_user_id => expense.user_id).where(:to_user_id => u.id).last
+	    ud.amount.should == amount
+	    # Test: UserBalance Created
+	    ub=UserBalance.where(:from_user_id => u1.id).where(:to_user_id => u2.id).last
 	    # Test
-	    ub.amount.should == amount / users.size
+	    ub.amount.should == amount
+	    # Test process fields
+	    expense.process_flag.should == true
+	    expense.process_date.strftime("%Y-%m-%d").should == today
+	    expense.affected_users.should == "#{u1.id}"
 	end
-	# Test process fields
-	expense.process_flag.should == true
-	expense.process_date.strftime("%Y-%m-%d").should == today
-	expense.affected_users.should == "#{u1.id},#{u2.id},#{u3.id}"
+	it "3 users" do
+	    # Variables
+	    amount=22.00
+	    # Get today
+	    today=Time.now.utc.strftime("%Y-%m-%d")
+	    # Create users
+	    u1=User.create!({:user_name => 'test90', :password => 'testpassword'})
+	    u2=User.create!({:user_name => 'test91', :password => 'testpassword'})
+	    u3=User.create!({:user_name => 'test92', :password => 'testpassword'})
+	    users=[u1,u2,u3]
+	    # Create group
+	    group=Group.create!({:name => "Group test", :description => 'group 1 desc'})
+	    # Add user to group
+	    group.add_user(u1)
+	    group.add_user(u2)
+	    group.add_user(u3)
+	    # Create expense
+	    expense=Expense.new(@attr)
+	    # Set group
+	    expense.group_id=group.id
+	    # Set user
+	    expense.user_id=u1.id
+	    # Set amount
+	    expense.amount=amount
+	    # Save expense
+	    expense.save!
+	    # Test: UserDept created
+	    lambda{
+		# Process record
+		expense.process(u1.id)
+	    }.should change(UserDept,:count).by(2)
+	    # Reload expense
+	    expense.reload
+	    # Test: Check UserDept
+	    users.each do |u|
+		# Get UserDept
+		ud=UserDept.where(:from_user_id => u.id).where(:to_user_id => expense.user_id).last
+		# If self, no dept
+		if u.id == expense.user_id
+		    ud.should be_nil
+		else
+		    # Test
+		    ud.amount.should == amount / users.size
+		end
+	    end
+	    # Test: UserBalance Created
+	    users.each do |u|
+		# Get UserBalance
+		ub=UserBalance.where(:from_user_id => u.id).where(:to_user_id => expense.user_id).last
+		# If self, no Balance
+		if u.id == expense.user_id
+		    ub.should be_nil
+		else
+		    # Test
+		    ub.amount.should == amount / users.size
+		end
+	    end
+	    # Test process fields
+	    expense.process_flag.should == true
+	    expense.process_date.strftime("%Y-%m-%d").should == today
+	    expense.affected_users.should == "#{u1.id},#{u2.id},#{u3.id}"
+	end
     end
 
     it "should not allow amount to be modified if it has been processed" do
@@ -456,6 +513,8 @@ describe Expense do
 	expense=Expense.new(@attr)
 	# Set group
 	expense.group_id=group.id
+	# Set user
+	expense.user_id=u1.id
 	# Set amount
 	expense.amount=amount
 	# Save expense
@@ -464,22 +523,32 @@ describe Expense do
 	lambda{
 	    # Process record
 	    expense.process(expense.user_id)
-	}.should change(UserDept,:count).by(3)
+	}.should change(UserDept,:count).by(2)
 	# Reload expense
 	expense.reload
 	# Test: Check UserDept
 	users.each do |u|
 	    # Get UserDept
-	    ud=UserDept.where(:from_user_id => expense.user_id).where(:to_user_id => u.id).last
-	    # Test
-	    ud.amount.should == amount / users.size
+	    ud=UserDept.where(:from_user_id => u.id).where(:to_user_id => expense.user_id).last
+	    # If self, no dept
+	    if u.id == expense.user_id
+		ud.should be_nil
+	    else
+		# Test
+		ud.amount.should == amount / users.size
+	    end
 	end
 	# Test: UserBalance Created
 	users.each do |u|
-	    # Get UserDept
-	    ub=UserBalance.where(:from_user_id => expense.user_id).where(:to_user_id => u.id).last
-	    # Test
-	    ub.amount.should == amount / users.size
+	    # Get UserBalance
+	    ub=UserBalance.where(:from_user_id => u.id).where(:to_user_id => expense.user_id).last
+	    # If self, no Balance
+	    if u.id == expense.user_id
+		ub.should be_nil
+	    else
+		# Test
+		ub.amount.should == amount / users.size
+	    end
 	end
 	# Test process fields
 	expense.process_flag.should == true
@@ -508,28 +577,40 @@ describe Expense do
 	expense.group_id=group.id
 	# Set amount
 	expense.amount=amount
+	# Set user
+	expense.user_id=u1.id
 	# Save expense
 	expense.save!
-	# Test: UserDept created
+	# Test: UserDept created, 2 should be created
 	lambda{
 	    # Process record
 	    expense.process(expense.user_id)
-	}.should change(UserDept,:count).by(3)
+	}.should change(UserDept,:count).by(2)
 	# Reload expense
 	expense.reload
 	# Test: Check UserDept
 	users.each do |u|
 	    # Get UserDept
-	    ud=UserDept.where(:from_user_id => expense.user_id).where(:to_user_id => u.id).last
-	    # Test
-	    ud.amount.should == amount / users.size.to_f
+	    ud=UserDept.where(:from_user_id => u.id).where(:to_user_id => expense.user_id).last
+	    # If self, no dept
+	    if u.id == expense.user_id
+		ud.should be_nil
+	    else
+		# Test
+		ud.amount.should == amount.to_f / users.size
+	    end
 	end
 	# Test: UserBalance Created
 	users.each do |u|
-	    # Get UserDept
-	    ub=UserBalance.where(:from_user_id => expense.user_id).where(:to_user_id => u.id).last
-	    # Test
-	    ub.amount.should == amount / users.size.to_f
+	    # Get UserBalance
+	    ub=UserBalance.where(:from_user_id => u.id).where(:to_user_id => expense.user_id).last
+	    # If self, no Balance
+	    if u.id == expense.user_id
+		ub.should be_nil
+	    else
+		# Test
+		ub.amount.should == amount.to_f / users.size
+	    end
 	end
 	# Test process fields
 	expense.process_flag.should == true
