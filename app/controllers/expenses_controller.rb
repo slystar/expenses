@@ -179,6 +179,7 @@ class ExpensesController < ApplicationController
 
     # GET /menu
     def menu
+	@balances=current_user.balances
     end
 
     # Import

@@ -16,3 +16,10 @@ Welcome:
   %li
     %a{:href => "/expenses"} 
       View expenses
+%hr
+- unless @balances.empty?
+  %h3 Balances
+  %ul
+  - @balances.each do |b|
+    %li
+      = "#{b.from_user.user_name} owes #{b.to_user.user_name} : #{number_to_currency(b.amount)}"
