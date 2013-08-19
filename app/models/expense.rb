@@ -70,8 +70,8 @@ class Expense < ActiveRecord::Base
 	    # Create new UserDept
 	    ud=UserDept.new()
 	    # Add attributes
-	    ud.from_user_id=self.user_id
-	    ud.to_user_id=member.id
+	    ud.from_user_id=member.id
+	    ud.to_user_id=self.user_id
 	    ud.amount=dept_amount
 	    ud.expense_id=self.id
 	    # Save record
