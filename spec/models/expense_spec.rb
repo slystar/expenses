@@ -883,7 +883,7 @@ describe Expense do
 	e2.reload.expense_note.should == note
     end
 
-    it "should process an expense properly" do
+    it "should process itself properly" do
 	# Amount
 	amount=10
 	# Create users
@@ -906,9 +906,12 @@ describe Expense do
 	    # Process record
 	    expense.process(expense.user_id)
 	}.should change(UserDept,:count).by(1)
+	# Check Depts
+	UserDept.where(:from_user_id => u2.id).where(:to_user_id => u1.id).first.amount.should == amount
+	UserDept.where(:from_user_id => u1.id).where(:to_user_id => u2.id).first.should be_nil
 	# Check balances
 	u1.balances.size.should == 2
-	u1.balances.find{|b| b.from_user_id=u2.id and b.to_user_id=u1.id}.amount.should == amount
-	u1.balances.find{|b| b.from_user_id=u1.id and b.to_user_id=u2.id}.amount.should == -amount
+	u1.balances.find{|b| b.from_user_id==u2.id and b.to_user_id==u1.id}.amount.should == amount
+	u1.balances.find{|b| b.from_user_id==u1.id and b.to_user_id==u2.id}.amount.should == (amount * -1)
     end
 end
