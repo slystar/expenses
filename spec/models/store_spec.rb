@@ -168,10 +168,10 @@ describe Store do
 	object3.root_store.should == object
     end
 
-    it "should have root_store return nil if no parent" do
+    it "should have root_store return itself if no parent" do
 	# Create stores
 	object=Store.create!(@attr)
 	# Test
-	object.root_store.should be_nil
+	object.root_store.should == object
     end
 end
