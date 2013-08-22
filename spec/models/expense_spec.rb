@@ -886,6 +886,7 @@ describe Expense do
     it "should process itself properly" do
 	# Amount
 	amount=10
+	amount2=6
 	# Create users
 	u1=User.find(@attr[:user_id])
 	u2=get_next_user
@@ -913,5 +914,27 @@ describe Expense do
 	u1.balances.size.should == 2
 	u1.balances.find{|b| b.from_user_id==u2.id and b.to_user_id==u1.id}.amount.should == amount
 	u1.balances.find{|b| b.from_user_id==u1.id and b.to_user_id==u2.id}.amount.should == (amount * -1)
+	# Create new expense
+	expense=Expense.new(get_attr_expense)
+	# Set group
+	expense.group_id=group.id
+	# Set user
+	expense.user_id=u1.id
+	# Set amount
+	expense.amount=amount2
+	# Save expense
+	expense.save!
+	# Process
+	lambda{
+	    # Process record
+	    expense.process(expense.user_id)
+	}.should change(UserDept,:count).by(1)
+	# Check Depts
+	UserDept.where(:from_user_id => u2.id).where(:to_user_id => u1.id).last.amount.should == amount2
+	UserDept.where(:from_user_id => u1.id).where(:to_user_id => u2.id).last.should be_nil
+	# Check balances
+	u1.balances.size.should == 2
+	u1.balances.find{|b| b.from_user_id==u2.id and b.to_user_id==u1.id}.amount.should == (amount + amount2)
+	u1.balances.find{|b| b.from_user_id==u1.id and b.to_user_id==u2.id}.amount.should == ((amount + amount2) * -1)
     end
 end
