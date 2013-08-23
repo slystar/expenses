@@ -3,30 +3,36 @@ require 'spec_helper'
 describe UserBalance do
 
     before(:each) do
-	@attr={:from_user_id => 1, :to_user_id => 1, :amount => 11.23}
+	# Set variable for user ids
 	@new_user_id=1
+	# Create users
+	@u1=get_next_user
+	@u2=get_next_user
+	# Create
+	@attr={:from_user_id => @u1.id, :to_user_id => @u2.id, :amount => 11.23}
     end
 
-    def get_new_user_balance
-	# Create user
-	u1=get_next_user
-	u2=get_next_user
+    def get_new_user_balance(attr=@attr)
 	# No methods are mass assignable
 	ub=UserBalance.new()
 	# Add attributes
-	ub.from_user_id=u1.id
-	ub.to_user_id=u2.id
-	ub.amount=@attr[:amount]
+	ub.from_user_id=attr[:from_user_id]
+	ub.to_user_id=attr[:to_user_id]
+	ub.amount=attr[:amount]
 	# Return object
 	return ub
     end
 
     # Test balance
-    def test_balance(u1,u2,amount)
+    def test_balances(u1,u2,amount)
 	    # Get most recent UserBalance for u1 to u2
 	    ub=UserBalance.where(:from_user_id => u1.id, :to_user_id => u2.id).last
 	    # Test: UserBalance amount
 	    ub.amount.should == amount
+	    # Get most recent UserBalance for u2 to u1
+	    ub=UserBalance.where(:from_user_id => u2.id, :to_user_id => u1.id).last
+	    # Test: UserBalance amount should be inverse
+	    ub.amount.should == (amount * -1)
     end
 
     it "should create a new instance given valid attributes" do
@@ -227,41 +233,54 @@ describe UserBalance do
 	UserBalance.should respond_to(:update_balances)
     end
 
-    describe "update balances" do
+    describe "should update balances" do
 
 	it "should return true on success" do
-	    # Get user
-	    u=get_next_user
+	    # Create a dept
+	    add_user_dept(@u1,@u2,10)
+	    # Balance should be empty
+	    UserBalance.all.size.should == 0
 	    # Process
-	    UserBalance.update_balances(u.id).should == true
+	    UserBalance.update_balances(@u1.id).should == true
+	    # Should have 2 records u1->u2 and u2->u1
+	    UserBalance.all.size.should == 2
 	end
 
 	it "should return false on invalid user" do
 	    UserBalance.update_balances(99999999).should == false
 	end
 
+	def add_dept_and_test(u1,u2,amount,expected_balance)
+	    # Create new UserDept (from: u1, to: u2)
+	    add_user_dept(u1,u2,amount)
+	    # Test: UserBalance created
+	    lambda {
+		# Update balances
+		UserBalance.update_balances(u1.id)
+	    }.should change(UserBalance,:count).by(2)
+	    # Test balances (u1 owes u2)
+	    test_balances(u1,u2,expected_balance)
+	end
+
 	context "with UserDept" do
-	    it "with single dept" do
+	    it "and with single dept" do
 		# Set amount
 		money=12.50
-		# Get an expense record
-		expense=get_valid_expense
 		# Get expected balance
 		expected_balance=money
-		# Create users
-		u1=get_next_user
-		u2=get_next_user
-		# Create new UserDept (from: u1, to: u2)
-		# u1 owes u2
-		add_user_dept(u1,u2,money,expense.id)
-		# Test: UserBalance created
-		lambda {
-		    # Update balances
-		    UserBalance.update_balances(u1.id)
-		}.should change(UserBalance,:count).by(2)
-		# Test balances (u1 owes u2)
-		test_balance(u1,u2,expected_balance)
-		test_balance(u2,u1,-(expected_balance))
+		# Add dept and test
+		add_dept_and_test(@u1,@u2,money, expected_balance)
+		# Get expected balance
+		expected_balance=money * 2
+		# Add dept and test
+		add_dept_and_test(@u1,@u2,money, expected_balance)
+		expected_balance=money * 3
+		# Add dept and test
+		add_dept_and_test(@u1,@u2,money, expected_balance)
+		# Extra tests
+		UserDept.all.size.should == 3
+		UserBalance.all.size.should == 6
+		UserBalance.last.amount.to_f.abs.should == expected_balance
 	    end
 	end
 
@@ -270,29 +289,40 @@ describe UserBalance do
 		# Set amount
 		money=12.50
 		existing_balance=5.25
-		# Get an expense record
-		expense=get_valid_expense
 		# Get expected balance
 		# 12.50(new dept) + 5.25(existing dept)
 		expected_balance=money + existing_balance
-		# Create users
-		u1=get_next_user
-		u2=get_next_user
 		# Create new UserDept
-		add_user_dept(u1,u2,money,expense.id)
+		add_user_dept(@u1,@u2,money)
 		# Create new UserBalance
-		add_balance(u1,u2,existing_balance)
+		add_balance(@u1,@u2,existing_balance)
+		puts('_' * 30)
+		p UserDept.where(:from_user_id => @u1.id)
+		p UserBalance.where(:from_user_id => @u1.id)
 		# Test: UserBalance created
 		lambda {
 		    # Update balances
-		    UserBalance.update_balances(u1.id)
+		    UserBalance.update_balances(@u1.id)
 		}.should change(UserBalance,:count).by(2)
 		# Test balances
-		test_balance(u1,u2,expected_balance)
-		test_balance(u2,u1,-(expected_balance))
+		test_balances(@u1,@u2,expected_balance)
+		# Get expected balance
+		# 12.50(new dept) + 5.25(existing dept)
+		expected_balance=(money + existing_balance) * 2
+		# Create new UserDept
+		add_user_dept(@u1,@u2,money)
+		# Create new UserBalance
+		add_balance(@u1,@u2,existing_balance)
+		# Test: UserBalance created
+		lambda {
+		    # Update balances
+		    UserBalance.update_balances(@u1.id)
+		}.should change(UserBalance,:count).by(2)
+		# Test balances
+		test_balances(@u1,@u2,expected_balance)
 	    end
 
-	    it "with multiple dept for a single user" do
+	    pending "with multiple dept for a single user" do
 		# Set amount
 		money1=12.50
 		money2=30.20
