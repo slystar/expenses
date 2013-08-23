@@ -30,6 +30,7 @@ class UserBalance < ActiveRecord::Base
 	# Variables
 	depts={}
 	payments={}
+	balances={}
 	user_ids=[]
 	pre_finals={}
 	records_to_save=[]
@@ -82,6 +83,19 @@ class UserBalance < ActiveRecord::Base
 	    user_ids.push(from_user_id) if not user_ids.include?(from_user_id)
 	    user_ids.push(to_user_id) if not user_ids.include?(to_user_id)
 	end
+	# Get current blance
+	balance_rows=UserBalance.where(:current => true)
+	# Calculate balances
+	balance_rows.each do |row|
+	    # Extract data
+	    from_user_id=row.from_user_id
+	    to_user_id=row.to_user_id
+	    amount=row.amount
+	    # Create hash entry for this user
+	    balances[from_user_id]={} if balances[from_user_id].nil?
+	    # Add to balances
+	    balances[from_user_id][to_user_id]=amount
+	end
 	# Loop over user_ids
 	user_ids.each do |user_id|
 	    # Get other user_ids
@@ -96,63 +110,25 @@ class UserBalance < ActiveRecord::Base
 		i_paid_them=payments[user_id][other_user_id].to_f
 		# They paid me
 		they_paid_me=payments[other_user_id][user_id].to_f
+		# Current balance
+		if balances[user_id].nil? or balances[user_id][other_user_id].nil?
+		    current_balance=0
+		else
+		    current_balance=balances[user_id][other_user_id]
+		end
 		# Calculate totals
 		total_i_owe_them=i_owe_them - i_paid_them
 		total_they_owe_me=they_owe_me - they_paid_me
 		# Resulting global value
-		pre_final_balance=total_i_owe_them - total_they_owe_me
-		# Prepare hash for this user
-		pre_finals[user_id]={} if pre_finals[user_id].nil?
-		# Check if an entry needs to be created
-		if pre_final_balance > 0
-		    pre_finals[user_id][other_user_id]=pre_final_balance
-		else
-		    pre_finals[user_id][other_user_id]=0
-		end
+		pre_final_balance=total_i_owe_them - total_they_owe_me + current_balance
+		puts("iot: #{total_i_owe_them}, tom: #{total_they_owe_me}, bal:#{current_balance}")
+		p UserBalance.all
+		p balance_rows.all
+		# Add to records to save
+		records_to_save.push([user_id,other_user_id,pre_final_balance])
 	    end
 	end
-	# Loop over pre_finals
-	pre_finals.each do |user_id, hash|
-	    # Loop over hash
-	    hash.each do |other_user_id, amount|
-		i_owe_them=pre_finals[user_id][other_user_id].to_f
-		they_owe_me=pre_finals[other_user_id][user_id].to_f
-		total_owe=i_owe_them - they_owe_me
-		# Get Current balance to
-		current_balance_to=UserBalance.where(:from_user_id => user_id, :to_user_id => other_user_id).last
-		# Prepare amount
-		if current_balance_to.nil?
-		    balance_amount_to=0
-		else
-		    balance_amount_to=current_balance_to.amount.to_f
-		    # Create hash entry if it does not exist
-		    old_user_balances[user_id]={} if old_user_balances[user_id].nil?
-		    # Keep track of UserBalances that need to be updated
-		    old_user_balances[user_id][other_user_id]=current_balance_to
-		end
-		# Get Current balance from
-		current_balance_from=UserBalance.where(:from_user_id => other_user_id, :to_user_id => user_id).last
-		# Prepare amount
-		if current_balance_from.nil?
-		    balance_amount_from=0
-		else
-		    balance_amount_from=current_balance_from.amount.to_f
-		    # Create hash entry if it does not exist
-		    old_user_balances[other_user_id]={} if old_user_balances[other_user_id].nil?
-		    # Keep track of UserBalances that need to be updated
-		    old_user_balances[other_user_id][user_id]=current_balance_from
-		end
-		# Get total balance
-		total_balance=balance_amount_to - balance_amount_from
-		# Calculate overall total
-		overall_total=total_owe + total_balance
-		# Check if overall_total is not 0
-		if overall_total != 0
-		    # Keep track of records to save
-		    records_to_save.push([user_id,other_user_id,overall_total])
-		end
-	    end
-	end
+	p records_to_save
 	# Get new UpdateBalanceHistory
 	ubh=UpdateBalanceHistory.create!(:user_id => user_id)
 	# Loop over records to save
