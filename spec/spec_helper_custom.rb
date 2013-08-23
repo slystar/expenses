@@ -27,7 +27,9 @@ module SpecHelpFunctions
     end
 
     # Add a UserDept entry
-    def add_user_dept(u1,u2,amount,expense_id)
+    def add_user_dept(u1,u2,amount,expense_id=nil)
+	# Create expense if required
+	expense_id=get_valid_expense.id if expense_id.nil?
 	# Create new UserDept
 	ud=UserDept.new()
 	# Add attributes
