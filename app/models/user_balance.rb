@@ -1,6 +1,9 @@
 class UserBalance < ActiveRecord::Base
     include SharedMethods
 
+    # Accessible attributes
+    attr_accessible :amount
+
     # Relationships
     belongs_to :from_user, :class_name => 'User'
     belongs_to :to_user, :class_name => 'User' 
