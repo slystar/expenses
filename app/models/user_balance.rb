@@ -21,6 +21,9 @@ class UserBalance < ActiveRecord::Base
     validate :check_from_and_to
     validate :block_update, :on => :update
 
+    # Callbacks
+    after_save :create_opposite_record
+
     # Method to update balance
     def self.update_balances(user_id)
 	# Verify user
@@ -178,6 +181,28 @@ class UserBalance < ActiveRecord::Base
 	    errors.add(:to_user, "can't be the same as from_user")
 	end
     end
+
+    # Method to create reverse balance
+    def create_opposite_record
+	# Check if we need to create reverse balance
+	if self.reverse_balance_id == 0
+	    # Create reverse balance
+	    ub=UserBalance.new()
+	    ub.from_user_id=self.to_user_id
+	    ub.to_user_id=self.from_user_id
+	    ub.amount=(self.amount * -1)
+	    ub.reverse_balance_id=self.id
+	    # Save record
+	    ub.save!
+	    # Reload self
+	    self.reload
+	    # Update self
+	    self.reverse_balance_id=ub.id
+	    # Save self
+	    self.save!
+	end
+    end
+
     # Method to block update
     def block_update
 	# Exception
