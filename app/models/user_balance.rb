@@ -19,6 +19,7 @@ class UserBalance < ActiveRecord::Base
     validates :app_version, :presence => true
     # Custom validation
     validate :check_from_and_to
+    validate :block_update, :on => :update
 
     # Method to update balance
     def self.update_balances(user_id)
@@ -175,6 +176,20 @@ class UserBalance < ActiveRecord::Base
     def check_from_and_to
 	if from_user_id == to_user_id
 	    errors.add(:to_user, "can't be the same as from_user")
+	end
+    end
+    # Method to block update
+    def block_update
+	# Exception
+	exceptions=['reverse_balance_id']
+	# Loop over changed attribute names
+	self.changed.each do |name|
+	    # Skip exceptions
+	    next if exceptions.include?(name)
+	    # Add error
+	    self.errors.add(name.to_sym, "updating is not allowed")
+	    # Return false, change found
+	    return false
 	end
     end
 end
