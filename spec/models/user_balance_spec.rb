@@ -170,70 +170,78 @@ describe UserBalance do
 	today.should == d1
     end
 
-    describe "should save reverse balance" do
-	it "on create" do
-	    # Test
-	    UserBalance.all.size.should == 0
-	    # Create object
-	    get_new_user_balance.save!
-	    # Test
-	    UserBalance.all.size.should == 2
-	    # Get records
-	    ub1=UserBalance.first
-	    ub2=UserBalance.last
-	    # Test: should be opposite balance
-	    ub1.amount.should == (ub2.amount * -1)
-	end
-
-	it "on update" do
-	    # Create object
-	    ub1=get_new_user_balance
-	    ub1.save!
-	    # Get original amount
-	    original_amount=ub1.amount
-	    # Modify first balance
-	    ub1.amount = ub1.amount + 10
-	    # Save
-	    ub1.save!
-	    # Reload
-	    ub1.reload
-	    # Test
-	    UserBalance.all.size.should == 2
-	    # Get records
-	    ub2=UserBalance.last
-	    # Test: should be opposite balance
-	    ub1.amount.should == (ub2.amount * -1)
-	    ub1.amount.should_not == original_amount
-	end
+    it "should not allow any field except revers_balance_id to be modified" do
+	# Create object
+	ub=get_new_user_balance
+	# Sae 
+	ub.save!
+	# Reload
+	ub.reload
+	# Change amount
+	ub.amount=ub.amount + 10
+	# Try to save
+	ub.save.should == false
     end
 
-    describe "should mark current balances" do
-	it "on create" do
-	    # Get record
-	    ub1=get_new_user_balance
-	    # Save
-	    ub1.save!
-	    # Test
-	    ub1.current.should == true
-	    # Get 2nd record
-	    ub2=get_new_user_balance
-	    # Save
-	    ub2.save!
-	    # Test
-	    ub2.should_not == ub1
-	    ub2.current.should == true
-	    ub1.current.should == false
-	end
+    it "should create reverse balance on create" do
+	# Test
+	UserBalance.all.size.should == 0
+	# Create object
+	get_new_user_balance.save!
+	# Test
+	UserBalance.all.size.should == 2
+	# Get records
+	ub1=UserBalance.first
+	ub2=UserBalance.last
+	# Test: should be opposite balance
+	ub1.amount.should == (ub2.amount * -1)
+    end
 
-	pending "on update" do
-	end
+    it "should mark current balances on create" do
+	# Get record
+	ub1=get_new_user_balance
+	# Save
+	ub1.save!
+	# Test
+	ub1.current.should == true
+	# Get 2nd record
+	ub2=get_new_user_balance
+	# Save
+	ub2.save!
+	# Test
+	ub2.should_not == ub1
+	ub2.current.should == true
+	ub1.current.should == false
+    end
+
+    it "should not create a new balance if existing balance has same amount" do
+	# Create object
+	ub=get_new_user_balance
+	# Save
+	ub.save!
+	# Test:
+	UserBalance.all.size.should == 2
+	# Add same balance
+	ub=get_new_user_balance
+	# Save
+	ub.save!
+	# Test:
+	UserBalance.all.size.should == 2
+	# Add different balance
+	ub=get_new_user_balance
+	# Change amount
+	ub.amount=ub.amount + 10
+	# Save
+	ub.save!
+	# Test:
+	UserBalance.all.size.should == 4
     end
 
     it "should have an 'update_balances' method" do
 	UserBalance.should respond_to(:update_balances)
     end
 
-    describe "should update balances" do
+    describe "'update_balances'" do
 
 	it "should return true on success" do
 	    # Create a dept
