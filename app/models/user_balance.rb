@@ -1,8 +1,8 @@
 class UserBalance < ActiveRecord::Base
     include SharedMethods
 
-    # Accessible attributes
-    attr_accessible :amount
+    # Accessible attributes (disable mass assignment)
+    attr_accessible :created_at
 
     # Relationships
     belongs_to :from_user, :class_name => 'User'
