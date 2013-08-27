@@ -11,7 +11,7 @@
 #
 # It's strongly recommended to check this file into your version control system.
 
-ActiveRecord::Schema.define(:version => 20130812172238) do
+ActiveRecord::Schema.define(:version => 20130827161325) do
 
   create_table "backups", :force => true do |t|
     t.datetime "backup_date"
@@ -195,6 +195,7 @@ ActiveRecord::Schema.define(:version => 20130812172238) do
     t.boolean  "current",                   :default => false
     t.integer  "update_balance_history_id"
     t.integer  "app_version"
+    t.integer  "reverse_balance_id",        :default => 0
   end
 
   add_index "user_balances", ["amount"], :name => "index_user_balances_on_amount"
