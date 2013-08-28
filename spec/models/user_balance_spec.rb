@@ -208,6 +208,9 @@ describe UserBalance do
 	ub2=get_new_user_balance
 	# Save
 	ub2.save!
+	# Reload
+	ub1.reload
+	ub2.reload
 	# Test
 	ub2.should_not == ub1
 	ub2.current.should == true

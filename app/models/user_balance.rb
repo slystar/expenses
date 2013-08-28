@@ -22,7 +22,8 @@ class UserBalance < ActiveRecord::Base
     validate :block_update, :on => :update
 
     # Callbacks
-    after_save :create_opposite_record
+    before_validation :mark_current
+    after_save :create_opposite_record, :update_current
 
     # Method to update balance
     def self.update_balances(user_id)
@@ -182,6 +183,11 @@ class UserBalance < ActiveRecord::Base
 	end
     end
 
+    # Method to set current
+    def mark_current
+	self.current=true
+    end
+
     # Method to create reverse balance
     def create_opposite_record
 	# Check if we need to create reverse balance
@@ -194,13 +200,15 @@ class UserBalance < ActiveRecord::Base
 	    ub.reverse_balance_id=self.id
 	    # Save record
 	    ub.save!
-	    # Reload self
-	    self.reload
 	    # Update self
-	    self.reverse_balance_id=ub.id
-	    # Save self
-	    self.save!
+	    self.update_attributes(:reverse_balance_id => ub.id)
 	end
+    end
+
+    # Method to mark current balances
+    def update_current
+	# Update old balances
+	UserBalance.where(:from_user_id => self.from_user_id, :to_user_id => self.to_user_id).where(:current => true).where("id not in (?)",[self.id]).update_all(:current => false)
     end
 
     # Method to block update
