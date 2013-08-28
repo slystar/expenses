@@ -22,7 +22,7 @@ class UserBalance < ActiveRecord::Base
     validate :block_update, :on => :update
 
     # Callbacks
-    before_validation :mark_current
+    before_validation :check_for_duplicate, :mark_current
     after_save :create_opposite_record, :update_current
 
     # Method to update balance
@@ -222,6 +222,18 @@ class UserBalance < ActiveRecord::Base
 	    # Add error
 	    self.errors.add(name.to_sym, "updating is not allowed")
 	    # Return false, change found
+	    return false
+	end
+    end
+
+    # Method to check for duplicate balance
+    def check_for_duplicate
+	# Try to find a current balance with same amount
+	dup=UserBalance.where(:current => true, :from_user_id => self.from_user_id, :to_user_id => self.to_user_id, :amount => self.amount).first
+	# Check
+	if dup.nil?
+	    return true
+	else
 	    return false
 	end
     end
