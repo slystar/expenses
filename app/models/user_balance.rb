@@ -126,14 +126,10 @@ class UserBalance < ActiveRecord::Base
 		total_they_owe_me=they_owe_me - they_paid_me
 		# Resulting global value
 		pre_final_balance=total_i_owe_them - total_they_owe_me + current_balance
-		puts("iot: #{total_i_owe_them}, tom: #{total_they_owe_me}, bal:#{current_balance}")
-		p UserBalance.all
-		p balance_rows.all
 		# Add to records to save
 		records_to_save.push([user_id,other_user_id,pre_final_balance])
 	    end
 	end
-	p records_to_save
 	# Get new UpdateBalanceHistory
 	ubh=UpdateBalanceHistory.create!(:user_id => user_id)
 	# Loop over records to save

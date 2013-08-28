@@ -301,6 +301,7 @@ describe UserBalance do
 	    it "with single dept" do
 		# Set amount
 		money=12.50
+		money2=2.11
 		existing_balance=5.25
 		# Get expected balance
 		# 12.50(new dept) + 5.25(existing dept)
@@ -309,9 +310,6 @@ describe UserBalance do
 		add_user_dept(@u1,@u2,money)
 		# Create new UserBalance
 		add_balance(@u1,@u2,existing_balance)
-		puts('_' * 30)
-		p UserDept.where(:from_user_id => @u1.id)
-		p UserBalance.where(:from_user_id => @u1.id)
 		# Test: UserBalance created
 		lambda {
 		    # Update balances
@@ -321,18 +319,30 @@ describe UserBalance do
 		test_balances(@u1,@u2,expected_balance)
 		# Get expected balance
 		# 12.50(new dept) + 5.25(existing dept)
-		expected_balance=(money + existing_balance) * 2
+		expected_balance2=expected_balance + (money + money2)
 		# Create new UserDept
 		add_user_dept(@u1,@u2,money)
-		# Create new UserBalance
-		add_balance(@u1,@u2,existing_balance)
+		add_user_dept(@u1,@u2,money2)
 		# Test: UserBalance created
 		lambda {
 		    # Update balances
 		    UserBalance.update_balances(@u1.id)
 		}.should change(UserBalance,:count).by(2)
 		# Test balances
-		test_balances(@u1,@u2,expected_balance)
+		test_balances(@u1,@u2,expected_balance2)
+		# Add 3rd round test
+		expected_balance3=expected_balance2 + money + existing_balance
+		# Create new UserDept
+		add_user_dept(@u1,@u2,money)
+		# Create new UserBalance
+		add_balance(@u1,@u2,existing_balance + expected_balance2)
+		# Test: UserBalance created
+		lambda {
+		    # Update balances
+		    UserBalance.update_balances(@u1.id)
+		}.should change(UserBalance,:count).by(2)
+		# Test balances
+		test_balances(@u1,@u2,expected_balance3)
 	    end
 
 	    pending "with multiple dept for a single user" do
