@@ -173,6 +173,18 @@ class UserBalance < ActiveRecord::Base
 	return true
     end
 
+    # Method to check for duplicate
+    def has_current_duplicate?
+	# Try to find a current balance with same amount
+	dup=UserBalance.where(:current => true, :from_user_id => self.from_user_id, :to_user_id => self.to_user_id, :amount => self.amount).first
+	# Check
+	if dup.nil?
+	    return false
+	else
+	    return true
+	end
+    end
+
     # Private methods
     private
 
@@ -228,13 +240,12 @@ class UserBalance < ActiveRecord::Base
 
     # Method to check for duplicate balance
     def check_for_duplicate
-	# Try to find a current balance with same amount
-	dup=UserBalance.where(:current => true, :from_user_id => self.from_user_id, :to_user_id => self.to_user_id, :amount => self.amount).first
 	# Check
-	if dup.nil?
-	    return true
-	else
+	if self.has_current_duplicate?
+	    self.errors.add(:base, "can't create duplicate current balance")
 	    return false
+	else
+	    return true
 	end
     end
 end

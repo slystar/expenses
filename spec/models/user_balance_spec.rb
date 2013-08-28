@@ -206,6 +206,8 @@ describe UserBalance do
 	ub1.current.should == true
 	# Get 2nd record
 	ub2=get_new_user_balance
+	# Set new amount
+	ub2.amount = ub1.amount + 10
 	# Save
 	ub2.save!
 	# Reload
@@ -225,9 +227,9 @@ describe UserBalance do
 	# Test:
 	UserBalance.all.size.should == 2
 	# Add same balance
-	ub=get_new_user_balance
+	ub2=get_new_user_balance
 	# Save
-	ub.save!
+	ub2.save.should == false
 	# Test:
 	UserBalance.all.size.should == 2
 	# Add different balance
