@@ -345,260 +345,340 @@ describe UserBalance do
 		test_balances(@u1,@u2,expected_balance3)
 	    end
 
-	    pending "with multiple dept for a single user" do
+	    it "with multiple dept for a single user" do
 		# Set amount
 		money1=12.50
 		money2=30.20
 		money3=2.00
 		existing_balance=5.25
-		# Get an expense record
-		expense=get_valid_expense
+		# Create new UserDept
+		add_user_dept(@u1,@u2,money1)
+		add_user_dept(@u1,@u2,money2)
+		add_user_dept(@u1,@u2,money3)
+		# Create new UserBalance
+		add_balance(@u1,@u2,existing_balance)
+		# Test: UserBalance created
+		lambda {
+		    # Update balances
+		    UserBalance.update_balances(@u1.id)
+		}.should change(UserBalance,:count).by(2)
 		# Get expected balance
 		# existing dept + existing balance
 		expected_balance=money1 + money2 + money3 + existing_balance
-		# Create users
-		u1=get_next_user
-		u2=get_next_user
+		# Test balances
+		test_balances(@u1,@u2,expected_balance)
+		# 2nd round
 		# Create new UserDept
-		add_user_dept(u1,u2,money1,expense.id)
-		add_user_dept(u1,u2,money2,expense.id)
-		add_user_dept(u1,u2,money3,expense.id)
-		# Create new UserBalance
-		add_balance(u1,u2,existing_balance)
+		add_user_dept(@u1,@u2,money1)
+		add_user_dept(@u1,@u2,money2)
+		add_user_dept(@u1,@u2,money3)
 		# Test: UserBalance created
 		lambda {
 		    # Update balances
-		    UserBalance.update_balances(u1.id)
+		    UserBalance.update_balances(@u1.id)
 		}.should change(UserBalance,:count).by(2)
+		# Get expected balance
+		# existing dept + existing balance
+		expected_balance=(money1 + money2 + money3) * 2 + existing_balance
 		# Test balances
-		test_balance(u1,u2,expected_balance)
-		test_balance(u2,u1,-(expected_balance))
+		test_balances(@u1,@u2,expected_balance)
 	    end
 
-	    pending "with multiple dept for multiple users" do
+	    it "with multiple dept for multiple users" do
 		# Set amount
 		money1=12.50
 		money2=30.20
 		money3=2.00
 		existing_balance=5.25
-		# Get an expense record
-		expense=get_valid_expense
-		# Get expected balance
-		expected_balance=(money1 + money2 + existing_balance) - money3
-		# Create users
-		u1=get_next_user
-		u2=get_next_user
 		# Create new UserDept
-		add_user_dept(u1,u2,money1,expense.id)
-		add_user_dept(u1,u2,money2,expense.id)
-		add_user_dept(u2,u1,money3,expense.id)
+		add_user_dept(@u1,@u2,money1)
+		add_user_dept(@u1,@u2,money2)
+		add_user_dept(@u2,@u1,money3)
 		# Create new UserBalance
-		add_balance(u1,u2,existing_balance)
+		add_balance(@u1,@u2,existing_balance)
 		# Test: UserBalance created
 		lambda {
 		    # Update balances
-		    UserBalance.update_balances(u1.id)
+		    UserBalance.update_balances(@u1.id)
 		}.should change(UserBalance,:count).by(2)
+		# Get expected balance
+		# existing dept + existing balance
+		expected_balance=(money1 + money2 + existing_balance) - money3
 		# Test balances
-		test_balance(u1,u2,expected_balance)
-		test_balance(u2,u1,-(expected_balance))
+		test_balances(@u1,@u2,expected_balance)
+		# 2nd round
+		# Create new UserDept
+		add_user_dept(@u2,@u1,money1)
+		add_user_dept(@u1,@u2,money2)
+		# Test: UserBalance created
+		lambda {
+		    # Update balances
+		    UserBalance.update_balances(@u1.id)
+		}.should change(UserBalance,:count).by(2)
+		# Get expected balance
+		# existing dept + existing balance
+		expected_balance=expected_balance + money2 - money1
+		# Test balances
+		test_balances(@u1,@u2,expected_balance)
 	    end
 	end
 
 	context "with UsePayment and UserBalance" do
-	    pending "with single payment" do
+	    it "with single payment" do
 		# Set amount
 		money=12.50
-		existing_balance=5.25
-		# Get expected balance
-		expected_balance=existing_balance - money
-		# Create users
-		u1=get_next_user
-		u2=get_next_user
+		existing_balance=35.25
 		# Create new UserPayment
-		add_user_payment(u1,u2,money)
+		add_user_payment(@u1,@u2,money)
 		# Create new UserBalance
-		add_balance(u1,u2,existing_balance)
+		add_balance(@u1,@u2,existing_balance)
 		# Test: UserBalance created
 		lambda {
 		    # Update balances
-		    UserBalance.update_balances(u1.id)
+		    UserBalance.update_balances(@u1.id)
 		}.should change(UserBalance,:count).by(2)
+		# Get expected balance
+		expected_balance=existing_balance - money
 		# Test balances
-		test_balance(u1,u2,expected_balance)
-		test_balance(u2,u1,-(expected_balance))
+		test_balances(@u1,@u2,expected_balance)
+		# 2nd round
+		# Create new UserPayment
+		add_user_payment(@u1,@u2,money)
+		# Test: UserBalance created
+		lambda {
+		    # Update balances
+		    UserBalance.update_balances(@u1.id)
+		}.should change(UserBalance,:count).by(2)
+		# Get expected balance
+		expected_balance=expected_balance - money
+		# Test balances
+		test_balances(@u1,@u2,expected_balance)
 	    end
 
-	    pending "with multiple payment for a single user" do
+	    it "with multiple payment for a single user" do
 		# Set amount
 		money1=BigDecimal('2.50')
 		money2=BigDecimal('1.20')
 		money3=BigDecimal('0.40')
 		existing_balance=5.25
-		# Get expected balance
-		expected_balance=existing_balance - (money1 + money2 + money3)
-		# Create users
-		u1=get_next_user
-		u2=get_next_user
 		# Create new UserPayment
-		add_user_payment(u1,u2,money1)
-		add_user_payment(u1,u2,money2)
-		add_user_payment(u1,u2,money3)
+		add_user_payment(@u1,@u2,money1)
+		add_user_payment(@u1,@u2,money2)
+		add_user_payment(@u1,@u2,money3)
 		# Create new UserBalance
-		add_balance(u1,u2,existing_balance)
+		add_balance(@u1,@u2,existing_balance)
 		# Test: UserBalance created
 		lambda {
 		    # Update balances
-		    UserBalance.update_balances(u1.id)
+		    UserBalance.update_balances(@u1.id)
 		}.should change(UserBalance,:count).by(2)
+		# Get expected balance
+		expected_balance=existing_balance - (money1 + money2 + money3)
 		# Test balances
-		test_balance(u1,u2,expected_balance)
-		test_balance(u2,u1,-(expected_balance))
+		test_balances(@u1,@u2,expected_balance)
+		# 2nd round
+		# Create new UserPayment
+		add_user_payment(@u1,@u2,money1)
+		add_user_payment(@u1,@u2,money2)
+		# Test: UserBalance created
+		lambda {
+		    # Update balances
+		    UserBalance.update_balances(@u1.id)
+		}.should change(UserBalance,:count).by(2)
+		# Get expected balance
+		expected_balance=expected_balance - (money1 + money2)
+		# Test balances
+		test_balances(@u1,@u2,expected_balance)
 	    end
 
-	    pending "with multiple payment for multiple users" do
+	    it "with multiple payment for multiple users" do
 		# Set amount
 		money1=BigDecimal('2.50')
 		money2=BigDecimal('1.20')
 		money3=BigDecimal('0.40')
 		existing_balance=BigDecimal('5.25')
-		# Get expected balance
-		expected_balance=(existing_balance + money2) - (money1 + money3)
-		# Create users
-		u1=get_next_user
-		u2=get_next_user
 		# Create new UserPayment
-		add_user_payment(u1,u2,money1)
-		add_user_payment(u2,u1,money2)
-		add_user_payment(u1,u2,money3)
+		add_user_payment(@u1,@u2,money1)
+		add_user_payment(@u2,@u1,money2)
+		add_user_payment(@u1,@u2,money3)
 		# Create new UserBalance
-		add_balance(u1,u2,existing_balance)
+		add_balance(@u1,@u2,existing_balance)
 		# Test: UserBalance created
 		lambda {
 		    # Update balances
-		    UserBalance.update_balances(u1.id)
+		    UserBalance.update_balances(@u1.id)
 		}.should change(UserBalance,:count).by(2)
+		# Get expected balance
+		expected_balance=(existing_balance + money2) - (money1 + money3)
 		# Test balances
-		test_balance(u1,u2,expected_balance)
-		test_balance(u2,u1,-(expected_balance))
+		test_balances(@u1,@u2,expected_balance)
+		# 2nd round
+		# Create new UserPayment
+		add_user_payment(@u1,@u2,money1)
+		add_user_payment(@u2,@u1,money2)
+		# Test: UserBalance created
+		lambda {
+		    # Update balances
+		    UserBalance.update_balances(@u1.id)
+		}.should change(UserBalance,:count).by(2)
+		# Get expected balance
+		expected_balance=expected_balance - money1 + money2
+		# Test balances
+		test_balances(@u1,@u2,expected_balance)
 	    end
 	end
 
 	context "with UserDept, UserPayment" do
-	    pending "with single dept" do
+	    it "with single dept" do
 		# Set amount
-		money=12.50
-		payment=5.25
-		# Get an expense record
-		expense=get_valid_expense
-		# Get expected balance
-		expected_balance=money - payment
-		# Create users
-		u1=get_next_user
-		u2=get_next_user
+		money1=12.50
+		payment1=5.25
 		# Create new UserDept
-		add_user_dept(u1,u2,money,expense.id)
+		add_user_dept(@u1,@u2,money1)
 		# Create new UserPayment
-		add_user_payment(u1,u2,payment)
+		add_user_payment(@u1,@u2,payment1)
 		# Test: UserBalance created
 		lambda {
 		    # Update balances
-		    UserBalance.update_balances(u1.id)
+		    UserBalance.update_balances(@u1.id)
 		}.should change(UserBalance,:count).by(2)
+		# Get expected balance
+		expected_balance=money1 - payment1
 		# Test balances
-		test_balance(u1,u2,expected_balance)
-		test_balance(u2,u1,-(expected_balance))
+		test_balances(@u1,@u2,expected_balance)
+		# 2nd round
+		# Create new UserDept
+		add_user_dept(@u1,@u2,money1)
+		# Create new UserPayment
+		add_user_payment(@u1,@u2,payment1)
+		# Test: UserBalance created
+		lambda {
+		    # Update balances
+		    UserBalance.update_balances(@u1.id)
+		}.should change(UserBalance,:count).by(2)
+		# Get expected balance
+		expected_balance=expected_balance + (money1 - payment1)
+		# Test balances
+		test_balances(@u1,@u2,expected_balance)
 	    end
 
-	    pending "with multiple dept for a single user" do
+	    it "with multiple dept for a single user" do
 		# Set amount
 		money1=12.50
 		money2=30.20
 		money3=2.00
-		payment=5.25
-		# Get an expense record
-		expense=get_valid_expense
-		# Get expected balance
-		expected_balance=money1 + money2 + money3 - payment
-		# Create users
-		u1=get_next_user
-		u2=get_next_user
+		payment1=5.25
 		# Create new UserDept
-		add_user_dept(u1,u2,money1,expense.id)
-		add_user_dept(u1,u2,money2,expense.id)
-		add_user_dept(u1,u2,money3,expense.id)
+		add_user_dept(@u1,@u2,money1)
+		add_user_dept(@u1,@u2,money2)
+		add_user_dept(@u1,@u2,money3)
 		# Create new UserPayment
-		add_user_payment(u1,u2,payment)
+		add_user_payment(@u1,@u2,payment1)
 		# Test: UserBalance created
 		lambda {
 		    # Update balances
-		    UserBalance.update_balances(u1.id)
+		    UserBalance.update_balances(@u1.id)
 		}.should change(UserBalance,:count).by(2)
+		# Get expected balance
+		expected_balance=money1 + money2 + money3 - payment1
 		# Test balances
-		test_balance(u1,u2,expected_balance)
-		test_balance(u2,u1,-(expected_balance))
+		test_balances(@u1,@u2,expected_balance)
+		# 2nd round
+		# Create new UserDept
+		add_user_dept(@u1,@u2,money1)
+		add_user_dept(@u1,@u2,money2)
+		add_user_dept(@u1,@u2,money3)
+		# Create new UserPayment
+		add_user_payment(@u1,@u2,payment1)
+		# Test: UserBalance created
+		lambda {
+		    # Update balances
+		    UserBalance.update_balances(@u1.id)
+		}.should change(UserBalance,:count).by(2)
+		# Get expected balance
+		expected_balance=expected_balance + money1 + money2 + money3 - payment1
+		# Test balances
+		test_balances(@u1,@u2,expected_balance)
 	    end
 
-	    pending "with multiple dept for multiple users" do
+	    it "with multiple dept for multiple users" do
 		# Set amount
 		money1=12.50
 		money2=30.20
 		money3=2.00
-		payment=5.25
-		# Get an expense record
-		expense=get_valid_expense
-		# Get expected balance
-		expected_balance=(money1 + money2 - payment) - money3
-		# Create users
-		u1=get_next_user
-		u2=get_next_user
+		payment1=5.25
 		# Create new UserDept
-		add_user_dept(u1,u2,money1,expense.id)
-		add_user_dept(u1,u2,money2,expense.id)
-		add_user_dept(u2,u1,money3,expense.id)
+		add_user_dept(@u1,@u2,money1)
+		add_user_dept(@u1,@u2,money2)
+		add_user_dept(@u2,@u1,money3)
 		# Create new UserPayment
-		add_user_payment(u1,u2,payment)
+		add_user_payment(@u1,@u2,payment1)
 		# Test: UserBalance created
 		lambda {
 		    # Update balances
-		    UserBalance.update_balances(u1.id)
+		    UserBalance.update_balances(@u1.id)
 		}.should change(UserBalance,:count).by(2)
+		# Get expected balance
+		expected_balance=(money1 + money2 - payment1) - money3
 		# Test balances
-		test_balance(u1,u2,expected_balance)
-		test_balance(u2,u1,-(expected_balance))
+		test_balances(@u1,@u2,expected_balance)
+		# 2nd round
+		# Create new UserDept
+		add_user_dept(@u1,@u2,money1)
+		add_user_dept(@u1,@u2,money2)
+		add_user_dept(@u2,@u1,money3)
+		# Create new UserPayment
+		add_user_payment(@u2,@u1,payment1)
+		# Test: UserBalance created
+		lambda {
+		    # Update balances
+		    UserBalance.update_balances(@u1.id)
+		}.should change(UserBalance,:count).by(2)
+		# Get expected balance
+		expected_balance=expected_balance + money1 + money2 - money3 + payment1
+		# Test balances
+		test_balances(@u1,@u2,expected_balance)
 	    end
 	end
 
 	context "with userDept, UserPayment and UserBalance" do
-	    pending "with single dept and single payment" do
+	    it "with single dept and single payment" do
 		# Set amount
 		dept1=12.50
 		payment1=7.30
 		existing_balance=5.25
-		# Get an expense record
-		expense=get_valid_expense
-		# Get expected balance
-		expected_balance=dept1 - payment1 + existing_balance
-		# Create users
-		u1=get_next_user
-		u2=get_next_user
 		# Create new UserDept
-		add_user_dept(u1,u2,dept1,expense.id)
+		add_user_dept(@u1,@u2,dept1)
 		# Create new UserPayment
-		add_user_payment(u1,u2,payment1)
+		add_user_payment(@u1,@u2,payment1)
 		# Create new UserBalance
-		add_balance(u1,u2,existing_balance)
+		add_balance(@u1,@u2,existing_balance)
 		# Test: UserBalance created
 		lambda {
 		    # Update balances
-		    UserBalance.update_balances(u1.id)
+		    UserBalance.update_balances(@u1.id)
 		}.should change(UserBalance,:count).by(2)
+		# Get expected balance
+		expected_balance=dept1 - payment1 + existing_balance
 		# Test balances
-		test_balance(u1,u2,expected_balance)
-		test_balance(u2,u1,-(expected_balance))
+		test_balances(@u1,@u2,expected_balance)
+		# 2nd round
+		# Create new UserDept
+		add_user_dept(@u1,@u2,dept1)
+		# Create new UserPayment
+		add_user_payment(@u1,@u2,payment1)
+		# Test: UserBalance created
+		lambda {
+		    # Update balances
+		    UserBalance.update_balances(@u1.id)
+		}.should change(UserBalance,:count).by(2)
+		# Get expected balance
+		expected_balance=dept1 - payment1 + expected_balance
+		# Test balances
+		test_balances(@u1,@u2,expected_balance)
 	    end
 
-	    pending "with multiple dept and multiple payment for a single user" do
+	    it "with multiple dept and multiple payment for a single user" do
 		# Set amount
 		dept1=12.50
 		dept2=14.50
@@ -607,34 +687,46 @@ describe UserBalance do
 		payment2=1.30
 		payment3=0.95
 		existing_balance=5.25
-		# Get an expense record
-		expense=get_valid_expense
-		# Get expected balance
-		expected_balance=(dept1 + dept2 + dept3) - (payment1 + payment2 + payment3) + existing_balance
-		# Create users
-		u1=get_next_user
-		u2=get_next_user
 		# Create new UserDept
-		add_user_dept(u1,u2,dept1,expense.id)
-		add_user_dept(u1,u2,dept2,expense.id)
-		add_user_dept(u1,u2,dept3,expense.id)
+		add_user_dept(@u1,@u2,dept1)
+		add_user_dept(@u1,@u2,dept2)
+		add_user_dept(@u1,@u2,dept3)
 		# Create new UserPayment
-		add_user_payment(u1,u2,payment1)
-		add_user_payment(u1,u2,payment2)
-		add_user_payment(u1,u2,payment3)
+		add_user_payment(@u1,@u2,payment1)
+		add_user_payment(@u1,@u2,payment2)
+		add_user_payment(@u1,@u2,payment3)
 		# Create new UserBalance
-		add_balance(u1,u2,existing_balance)
+		add_balance(@u1,@u2,existing_balance)
 		# Test: UserBalance created
 		lambda {
 		    # Update balances
-		    UserBalance.update_balances(u1.id)
+		    UserBalance.update_balances(@u1.id)
 		}.should change(UserBalance,:count).by(2)
+		# Get expected balance
+		expected_balance=(dept1 + dept2 + dept3) - (payment1 + payment2 + payment3) + existing_balance
 		# Test balances
-		test_balance(u1,u2,expected_balance)
-		test_balance(u2,u1,-(expected_balance))
+		test_balances(@u1,@u2,expected_balance)
+		# 2nd round
+		# Create new UserDept
+		add_user_dept(@u1,@u2,dept1)
+		add_user_dept(@u1,@u2,dept2)
+		add_user_dept(@u1,@u2,dept3)
+		# Create new UserPayment
+		add_user_payment(@u1,@u2,payment1)
+		add_user_payment(@u1,@u2,payment2)
+		add_user_payment(@u1,@u2,payment3)
+		# Test: UserBalance created
+		lambda {
+		    # Update balances
+		    UserBalance.update_balances(@u1.id)
+		}.should change(UserBalance,:count).by(2)
+		# Get expected balance
+		expected_balance=(dept1 + dept2 + dept3) - (payment1 + payment2 + payment3) + expected_balance
+		# Test balances
+		test_balances(@u1,@u2,expected_balance)
 	    end
 
-	    pending "with multiple payment for multiple users" do
+	    it "with multiple payment for multiple users" do
 		# Set amount
 		dept1=12.50
 		dept2=14.50
@@ -642,36 +734,44 @@ describe UserBalance do
 		payment1=3.30
 		payment2=1.30
 		payment3=220.95
-		existing_balance1=5.25
-		existing_balance2=500.25
-		# Get an expense record
-		expense=get_valid_expense
-		# Get expected balances
-		u1_balance=(dept1 + dept2) - (payment1 + payment3) + existing_balance1
-		u2_balance=(dept3) - (payment2) + existing_balance2
-		expected_balance=u1_balance - u2_balance
-		# Create users
-		u1=get_next_user
-		u2=get_next_user
+		existing_balance=500.25
 		# Create new UserDept
-		add_user_dept(u1,u2,dept1,expense.id)
-		add_user_dept(u1,u2,dept2,expense.id)
-		add_user_dept(u2,u1,dept3,expense.id)
+		add_user_dept(@u1,@u2,dept1)
+		add_user_dept(@u1,@u2,dept2)
+		add_user_dept(@u2,@u1,dept3)
 		# Create new UserPayment
-		add_user_payment(u1,u2,payment1)
-		add_user_payment(u2,u1,payment2)
-		add_user_payment(u1,u2,payment3)
+		add_user_payment(@u1,@u2,payment1)
+		add_user_payment(@u2,@u1,payment2)
+		add_user_payment(@u1,@u2,payment3)
 		# Create new UserBalance
-		add_balance(u1,u2,existing_balance1)
-		add_balance(u2,u1,existing_balance2)
+		add_balance(@u2,@u1,existing_balance)
 		# Test: UserBalance created
 		lambda {
 		    # Update balances
-		    UserBalance.update_balances(u1.id)
+		    UserBalance.update_balances(@u1.id)
 		}.should change(UserBalance,:count).by(2)
+		# Get expected balance
+		expected_balance=dept1 + dept2 - dept3 - payment1 + payment2 - payment3 - existing_balance
 		# Test balances
-		test_balance(u1,u2,expected_balance)
-		test_balance(u2,u1,-(expected_balance))
+		test_balances(@u1,@u2,expected_balance)
+		# 2nd round
+		# Create new UserDept
+		add_user_dept(@u1,@u2,dept1)
+		add_user_dept(@u1,@u2,dept2)
+		add_user_dept(@u2,@u1,dept3)
+		# Create new UserPayment
+		add_user_payment(@u1,@u2,payment1)
+		add_user_payment(@u2,@u1,payment2)
+		add_user_payment(@u1,@u2,payment3)
+		# Test: UserBalance created
+		lambda {
+		    # Update balances
+		    UserBalance.update_balances(@u1.id)
+		}.should change(UserBalance,:count).by(2)
+		# Get expected balance
+		expected_balance=dept1 + dept2 - dept3 - payment1 + payment2 - payment3 + expected_balance
+		# Test balances
+		test_balances(@u1,@u2,expected_balance)
 	    end
 
 	    pending "with multiple balances for multiple users" do
