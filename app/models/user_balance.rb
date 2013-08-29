@@ -171,10 +171,20 @@ class UserBalance < ActiveRecord::Base
 
     # Method to check for duplicate
     def has_current_duplicate?
+	# Variables
+	dup_found=false
 	# Try to find a current balance with same amount
-	dup=UserBalance.where(:current => true, :from_user_id => self.from_user_id, :to_user_id => self.to_user_id, :amount => self.amount).first
+	dup=UserBalance.where(:current => true, :from_user_id => self.from_user_id, :to_user_id => self.to_user_id).all
+	# Loop over records
+	# Note: there issues comparing directly, so we need to compare .to_f instead
+	dup.each do |ub|
+	    if ub.amount.to_f == self.amount.to_f
+		dup_found=true
+		break
+	    end
+	end
 	# Check
-	if dup.nil?
+	unless dup_found
 	    return false
 	else
 	    return true
