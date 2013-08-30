@@ -1,9 +1,9 @@
 module SpecHelpFunctions
     def get_attr_expense
 	# Need these prerequisites
-	@store=Store.create!(:name => Faker::Company.name)
-	@reason=Reason.create!(:name => Faker::Company.name)
-	@pay_method=PayMethod.create!(:name => Faker::Name.name)
+	@store=Store.create!(:name => Faker::Company.name + rand(100).to_s)
+	@reason=Reason.create!(:name => Faker::Company.name + rand(100).to_s)
+	@pay_method=PayMethod.create!(:name => Faker::Name.name + rand(100).to_s)
 	@user=User.create!(:user_name => Faker::Name.name, :password => 'testpass2')
 	@group=Group.create!(:name => Faker::Company.name, :description => 'Test group')
 	{:date_purchased => Time.now, :store_id=> @store.id, :pay_method_id => @pay_method.id, :reason_id => @reason.id, :user_id => @user.id, :group_id => @group.id, :amount => 10.50}
