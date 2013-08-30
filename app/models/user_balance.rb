@@ -144,16 +144,6 @@ class UserBalance < ActiveRecord::Base
 	    ub.to_user_id=to_user_id
 	    ub.amount=row[2]
 	    ub.current=true
-	    # Check if record available for from_user_id
-	    if not old_user_balances[from_user_id].nil?
-		# Get old balance
-		old_ub=old_user_balances[from_user_id][to_user_id]
-		# Check if record available
-		if not old_ub.nil?
-		    # Update balance
-		    ub.previous_user_balance_id=old_ub.id
-		end
-	    end
 	    # Save UserBalance
 	    if ub.save
 		# Update process_flags
