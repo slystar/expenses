@@ -846,6 +846,7 @@ describe UserBalance do
     it "should link to UpdateBalanceHistory" do
 	# Set amount
 	dept1=12.50
+	dept2=2.11
 	existing_balance=5.25
 	# Create new UserDept
 	add_user_dept(@u1,@u2,dept1)
@@ -863,8 +864,32 @@ describe UserBalance do
 	# Get last UpdateBalanceHistory
 	ubh=UpdateBalanceHistory.last
 	# Test
-	UserBalance.all[-2,2].each do |ub|
+	UserBalance.all.each do |ub|
 	    ub.update_balance_history.should == ubh
+	end
+	# 2nd round
+	# Create new UserDept
+	add_user_dept(@u1,@u2,dept2)
+	# Test: UserBalance created
+	lambda {
+	    # Update balances
+	    UserBalance.update_balances(@u1.id)
+	}.should change(UserBalance,:count).by(2)
+	# Get expected balance
+	expected_balance=dept2 + expected_balance
+	# Test balances
+	test_balances(@u1,@u2,expected_balance)
+	# Get last UpdateBalanceHistory
+	ubh2=UpdateBalanceHistory.last
+	# Get all UserBalances
+	ubs=UserBalance.all
+	# Test: First 2 should remain the same
+	ubs[0,2].each do |ub|
+	    ub.update_balance_history_id.should == ubh.id
+	end
+	# Test: last 2 + 2 new should have the same id
+	ubs[2,4].each do |ub|
+	    ub.update_balance_history_id.should == ubh2.id
 	end
     end
 

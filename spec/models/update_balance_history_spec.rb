@@ -137,16 +137,10 @@ describe UpdateBalanceHistory do
 	payment1=3.30
 	payment2=1.30
 	payment3=220.95
-	existing_balance1_1=15.25
-	existing_balance1_2=5.25
-	existing_balance1_3=35.25
-	existing_balance2=500.25
+	existing_balance=500.25
+	existing_balance1_1=50.11
 	# Get an expense record
 	expense=get_valid_expense
-	# Get expected balances
-	u1_balance=(dept1 + dept2) - (payment1 + payment3) + existing_balance1_3
-	u2_balance=(dept3) - (payment2) + existing_balance2
-	expected_balance=u1_balance - u2_balance
 	# Create users
 	u1=get_next_user
 	u2=get_next_user
@@ -159,10 +153,7 @@ describe UpdateBalanceHistory do
 	up2=add_user_payment(u2,u1,payment2)
 	up3=add_user_payment(u1,u2,payment3)
 	# Create new UserBalance
-	ub1=add_balance(u1,u2,existing_balance1_1)
-	ub2=add_balance(u1,u2,existing_balance1_2)
-	ub3=add_balance(u1,u2,existing_balance1_3)
-	ub4=add_balance(u2,u1,existing_balance2)
+	ub=add_balance(u2,u1,existing_balance)
 	# Test: UserBalance created
 	lambda {
 	    # Update balances
@@ -177,10 +168,11 @@ describe UpdateBalanceHistory do
 	up1.reload.update_balance_history_id.should == ubh.id
 	up2.reload.update_balance_history_id.should == ubh.id
 	up3.reload.update_balance_history_id.should == ubh.id
-	ub1.reload.update_balance_history_id.should == ubh.id
-	ub2.reload.update_balance_history_id.should == ubh.id
-	ub3.reload.update_balance_history_id.should == ubh.id
-	ub4.reload.update_balance_history_id.should == ubh.id
+	ub.reload.update_balance_history_id.should == ubh.id
+	# Last UserBalances should have ids as well
+	UserBalance.all[-2,2].each do |ub_rec|
+	    ub_rec.update_balance_history_id.should == ubh.id
+	end
 	# Run again
 	# Create new UserDept
 	ud4=add_user_dept(u1,u2,dept1,expense.id)
@@ -199,5 +191,6 @@ describe UpdateBalanceHistory do
 	ud4.reload.update_balance_history_id.should == ubh.id
 	up4.reload.update_balance_history_id.should == ubh.id
 	ub4.reload.update_balance_history_id.should == ubh.id
+	ub5.reload.update_balance_history_id.should == ubh.id
     end
 end

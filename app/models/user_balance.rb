@@ -223,7 +223,7 @@ class UserBalance < ActiveRecord::Base
     # Method to mark current balances
     def update_current
 	# Update old balances
-	UserBalance.where(:from_user_id => self.from_user_id, :to_user_id => self.to_user_id).where(:current => true).where("id not in (?)",[self.id]).update_all(:current => false)
+	UserBalance.where(:from_user_id => self.from_user_id, :to_user_id => self.to_user_id).where(:current => true).where("id not in (?)",[self.id]).update_all(:current => false, :update_balance_history_id => self.update_balance_history_id)
     end
 
     # Method to block update
