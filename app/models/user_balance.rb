@@ -143,20 +143,26 @@ class UserBalance < ActiveRecord::Base
 	    ub.from_user_id=from_user_id
 	    ub.to_user_id=to_user_id
 	    ub.amount=row[2]
-	    ub.current=true
+	    ub.update_balance_history_id=ubh.id
 	    # Save UserBalance
-	    if ub.save
+	    if ub.save_non_duplicates
 		# Update process_flags
 		UserPayment.where(:process_flag => false, :approved=> true).update_all(process_flag: true, update_balance_history_id: ubh.id)
 		UserDept.where(:process_flag => false).update_all(process_flag: true, update_balance_history_id: ubh.id)
-		# Set old balances to not current
-		UserBalance.where('id != ?',ub.id).where(:from_user_id => from_user_id, :to_user_id => to_user_id, :current => true).update_all(current: false, update_balance_history_id: ubh.id)
-		# Set UpdateBalanceHistory
-		UserBalance.where('id != ?',ub.id).where(:from_user_id => from_user_id, :to_user_id => to_user_id, :current => false).update_all(update_balance_history_id: ubh.id)
 	    end
 	end
 	# Return true
 	return true
+    end
+
+    # Method to save non duplicate
+    def save_non_duplicates
+	# Check if duplicates
+	if has_current_duplicate?
+	    return true
+	else
+	    return self.save
+	end
     end
 
     # Method to check for duplicate
@@ -206,6 +212,7 @@ class UserBalance < ActiveRecord::Base
 	    ub.to_user_id=self.from_user_id
 	    ub.amount=(self.amount * -1)
 	    ub.reverse_balance_id=self.id
+	    ub.update_balance_history_id=self.update_balance_history_id
 	    # Save record
 	    ub.save!
 	    # Update self
