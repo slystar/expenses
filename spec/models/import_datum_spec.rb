@@ -297,12 +297,14 @@ describe ImportDatum do
 	expense_attr=get_attr_expense
 	# Merge current mapped_fields
 	expense_attr=expense_attr.merge(id1.mapped_fields)
+	# Get expense object
+	expense=Expense.new(expense_attr)
 	# Save record
 	id1.save!
 	# Reload
 	id1.reload
 	# Approve record
-	id1.approve(expense_attr)
+	id1.approve(expense)
 	# Reload
 	id1.reload
 	# Get fields
@@ -330,12 +332,14 @@ describe ImportDatum do
 	expense_attr={}
 	# Merge current mapped_fields
 	expense_attr=expense_attr.merge(id1.mapped_fields)
+	# Get expense object
+	expense=Expense.new(expense_attr)
 	# Save record
 	id1.save!
 	# Reload
 	id1.reload
 	# Approve record
-	result=id1.approve(expense_attr)
+	result=id1.approve(expense)
 	# Test
 	result.should == false
 	id1.errors.size.should > 0
