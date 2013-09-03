@@ -107,7 +107,6 @@ describe UpdateBalanceHistory do
     it "should link to user_balances" do
 	# Set amount
 	existing_balance1_1=15.25
-	existing_balance1_2=5.25
 	dept1=12.50
 	dept2=14.50
 	# Create users
@@ -120,13 +119,12 @@ describe UpdateBalanceHistory do
 	ud2=add_user_dept(u1,u2,dept2,expense.id)
 	# Create new UserBalance
 	ub1=add_balance(u1,u2,existing_balance1_1)
-	ub2=add_balance(u1,u2,existing_balance1_2)
 	# Update balances
 	UserBalance.update_balances(u1.id)
 	# Get last UpdateBalanceHistory
 	ubh=UpdateBalanceHistory.last
 	# Should link to user_balances
-	ubh.user_balances.size.should == 2
+	ubh.user_balances.size.should == 4
     end
 
     it "should link all rows used in 'update_balance'" do
@@ -168,7 +166,7 @@ describe UpdateBalanceHistory do
 	up1.reload.update_balance_history_id.should == ubh.id
 	up2.reload.update_balance_history_id.should == ubh.id
 	up3.reload.update_balance_history_id.should == ubh.id
-	ub.reload.update_balance_history_id.should == ubh.id
+	ub.reload.update_balance_history_id.should== ubh.id
 	# Last UserBalances should have ids as well
 	UserBalance.all[-2,2].each do |ub_rec|
 	    ub_rec.update_balance_history_id.should == ubh.id
@@ -190,7 +188,6 @@ describe UpdateBalanceHistory do
 	# Test updatebalancehistoryid
 	ud4.reload.update_balance_history_id.should == ubh.id
 	up4.reload.update_balance_history_id.should == ubh.id
-	ub4.reload.update_balance_history_id.should == ubh.id
 	ub5.reload.update_balance_history_id.should == ubh.id
     end
 end
