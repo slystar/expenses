@@ -264,11 +264,11 @@ describe User do
 	add_user_dept(u1,u2,dept1,expense.id)
 	add_user_dept(u1,u2,dept2,expense.id)
 	add_user_dept(u1,u3,dept3,expense.id)
-	# Test: UserBalance created
+	# Test: UserBalance created (3 users x 2 records = 6)
 	lambda {
 	    # Update balances
 	    UserBalance.update_balances(u1.id)
-	}.should change(UserBalance,:count).by(4)
+	}.should change(UserBalance,:count).by(6)
 	# Get u1 depts
 	u1_depts=u1.depts
 	# Test: get depts
@@ -310,7 +310,7 @@ describe User do
 	lambda {
 	    # Update balances
 	    UserBalance.update_balances(u1.id)
-	}.should change(UserBalance,:count).by(4)
+	}.should change(UserBalance,:count).by(6)
 	# Test: get credits
 	u1.credits.size.should == 0
 	u2.credits.size.should == 1
@@ -350,10 +350,11 @@ describe User do
 	lambda {
 	    # Update balances
 	    UserBalance.update_balances(u1.id)
-	}.should change(UserBalance,:count).by(4)
+	}.should change(UserBalance,:count).by(6)
 	# Test: get balances
-	u1.balances.size.should == 4
+	u1.balances.size.should == 2
 	u2.balances.size.should == 2
+	u3.balances.each{|b| puts;pp b}
 	u3.balances.size.should == 2
 	# Get depts per users
 	u1_u2=u1.balances.select{|row| row[:to_user_id] == u2.id}
