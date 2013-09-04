@@ -911,8 +911,8 @@ describe Expense do
 	UserDept.where(:from_user_id => u2.id).where(:to_user_id => u1.id).first.amount.should == amount
 	UserDept.where(:from_user_id => u1.id).where(:to_user_id => u2.id).first.should be_nil
 	# Check balances
-	u1.balances.size.should == 2
-	u1.balances.find{|b| b.from_user_id==u2.id and b.to_user_id==u1.id}.amount.should == amount
+	u1.balances.size.should == 1
+	u1.balances.find{|b| b.from_user_id==u2.id and b.to_user_id==u1.id}.should be_nil
 	u1.balances.find{|b| b.from_user_id==u1.id and b.to_user_id==u2.id}.amount.should == (amount * -1)
 	# Create new expense
 	expense=Expense.new(get_attr_expense)
@@ -933,8 +933,8 @@ describe Expense do
 	UserDept.where(:from_user_id => u2.id).where(:to_user_id => u1.id).last.amount.should == amount2
 	UserDept.where(:from_user_id => u1.id).where(:to_user_id => u2.id).last.should be_nil
 	# Check balances
-	u1.balances.size.should == 2
-	u1.balances.find{|b| b.from_user_id==u2.id and b.to_user_id==u1.id}.amount.should == (amount + amount2)
+	u1.balances.size.should == 1
+	u1.balances.find{|b| b.from_user_id==u2.id and b.to_user_id==u1.id}.should be_nil
 	u1.balances.find{|b| b.from_user_id==u1.id and b.to_user_id==u2.id}.amount.should == ((amount + amount2) * -1)
     end
 end
