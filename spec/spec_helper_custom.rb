@@ -10,8 +10,8 @@ module SpecHelpFunctions
     end
 
     # Create a valid expense object
-    def get_valid_expense
-	attr=get_attr_expense
+    def get_valid_expense(custom_attr={})
+	attr=get_attr_expense.merge(custom_attr)
 	e=Expense.create!(attr)
 	return e
     end
