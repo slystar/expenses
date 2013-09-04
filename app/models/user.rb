@@ -49,7 +49,7 @@ class User < ActiveRecord::Base
     # Method to get user's current balances (what they owe others and what others owe them)
     def balances
 	# Get balances where user owes money
-	UserBalance.where('to_user_id = ? or from_user_id = ?',self.id,self.id).where(:current => true).includes(:from_user).includes(:to_user)
+	UserBalance.where('from_user_id = ?',self.id).where(:current => true).includes(:from_user).includes(:to_user)
     end
 
     # Method to check if is admin

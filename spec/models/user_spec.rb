@@ -331,13 +331,10 @@ describe User do
 	dept2=5.0
 	dept3=22.00
 	existing_balance=3.50
-	# Expected depts
-	expected_credit_2_1=dept1 + dept2 + existing_balance
-	expected_credit_3_1=dept3
 	# Get an expense record
 	expense=get_valid_expense
 	# Create users
-	u1=get_next_user
+	u1=expense.user
 	u2=get_next_user
 	u3=get_next_user
 	# Create new UserBalance just to add more rows
@@ -346,6 +343,13 @@ describe User do
 	add_user_dept(u1,u2,dept1,expense.id)
 	add_user_dept(u1,u2,dept2,expense.id)
 	add_user_dept(u1,u3,dept3,expense.id)
+	# Expected balances
+	expected_balance_1_2=dept1 + dept2 + existing_balance
+	expected_balance_2_1=-expected_balance_1_2
+	expected_balance_1_3=dept3
+	expected_balance_3_1=-expected_balance_1_3
+	expected_balance_2_3=0
+	expected_balance_3_2=0
 	# Test: UserBalance created
 	lambda {
 	    # Update balances
@@ -354,32 +358,29 @@ describe User do
 	# Test: get balances
 	u1.balances.size.should == 2
 	u2.balances.size.should == 2
-	u3.balances.each{|b| puts;pp b}
 	u3.balances.size.should == 2
-	# Get depts per users
-	u1_u2=u1.balances.select{|row| row[:to_user_id] == u2.id}
-	u1_u3=u1.balances.select{|row| row[:to_user_id] == u3.id}
-	# Get opposit depts per users
-	u1_u2_o=u1.balances.select{|row| row[:from_user_id] == u2.id}
-	u1_u3_o=u1.balances.select{|row| row[:from_user_id] == u3.id}
-	# Get credits per users
-	u2_u1=u2.balances.select{|row| row[:to_user_id] == u2.id}
-	u3_u1=u3.balances.select{|row| row[:to_user_id] == u3.id}
+	# Get balances
+	b_1_2=u1.balances.select{|b| b.to_user_id == u2.id}.first.amount
+	b_1_3=u1.balances.select{|b| b.to_user_id == u3.id}.first.amount
+	b_2_1=u2.balances.select{|b| b.to_user_id == u1.id}.first.amount
+	b_2_3=u2.balances.select{|b| b.to_user_id == u3.id}.first.amount
+	b_3_1=u3.balances.select{|b| b.to_user_id == u1.id}.first.amount
+	b_3_2=u3.balances.select{|b| b.to_user_id == u2.id}.first.amount
 	# Test: credit amounts
-	u2_u1.size.should == 1
-	u2_u1.first[:amount].to_f.should == expected_credit_2_1
-	u3_u1.size.should == 1
-	u3_u1.first[:amount].to_f.should == expected_credit_3_1
-	# Test: dept amounts
-	u1_u2.size.should == 1
-	u1_u2.first[:amount].to_f.should == expected_credit_2_1
-	u1_u3.size.should == 1
-	u1_u3.first[:amount].to_f.should == expected_credit_3_1
-	# Test oposite balances
-	u1_u2_o.size.should == 1
-	u1_u2_o.first[:amount].to_f.should == (expected_credit_2_1 * -1)
-	u1_u3_o.size.should == 1
-	u1_u3_o.first[:amount].to_f.should == (expected_credit_3_1 * -1)
+	b_2_1.should == expected_balance_2_1
+	b_2_1.should < 0
+	b_3_1.should == expected_balance_3_1
+	b_3_1.should < 0
+	# Test: depts
+	b_1_2.should == expected_balance_1_2
+	b_1_2.should > 0
+	b_1_3.should == expected_balance_1_3
+	b_1_3.should > 0
+	# Test: zero
+	b_2_3.should == expected_balance_2_3
+	b_2_3.should == 0
+	b_3_2.should == expected_balance_3_2
+	b_3_2.should == 0
     end
 
     it "should have method is_admin?" do
