@@ -384,12 +384,27 @@ describe User do
     end
 
     it "should have method is_admin?" do
-	 user1=User.create!(@attr)
-	 user2=get_next_user
-	 user1.is_admin?.should == true
-	 user2.is_admin?.should == false
+	user1=User.create!(@attr)
+	user2=get_next_user
+	user1.is_admin?.should == true
+	user2.is_admin?.should == false
     end
 
-    pending "should be able to rename user_name" do
+    it "should be able to rename user_name" do
+	# Get user
+	u1=User.create!(@attr)
+	# Reload
+	u1.reload
+	# Get name info
+	old_name=u1.user_name
+	new_name=old_name + 'abcd'
+	# Set new name
+	u1.user_name=new_name
+	# Test
+	u1.save.should == true
+	# Reload
+	u1.reload
+	# Test
+	u1.user_name.should_not == old_name
     end
 end
