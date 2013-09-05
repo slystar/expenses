@@ -617,9 +617,48 @@ describe Expense do
 	expense.process_date.strftime("%Y-%m-%d").should == today
     end
 
-    pending "should pass the master check of update_balances" do
+    it "should pass the master check of update_balances" do
+	# Variables
+	dept1=3.33
+	dept2=5
+	dept3=11.43
+	dept4=2.22
 	# Add users
+	u1=User.find(@attr[:user_id])
+	u2=get_next_user
+	u3=get_next_user
+	# Create group
+	g_all=Group.create!(:name => Faker::Company.name, :description => 'Test group all')
+	# Add group members
+	g_all.users = [u1,u2,u3]
+	# Test groups
+	g_all.group_members.size.should == 3
+	# Create expense records
+	get_valid_expense({:amount => dept1, :user_id => u1.id, :group_id => g_all.id})
+	get_valid_expense({:amount => dept2, :user_id => u1.id, :group_id => g_all.id})
+	get_valid_expense({:amount => dept3, :user_id => u2.id, :group_id => g_all.id})
+	get_valid_expense({:amount => dept4, :user_id => u1.id, :group_id => u2.self_group.id})
+	# Get records to process
+	need_process=Expense.where(:process_flag => false)
+	# Test
+	need_process.size.should == 4
 	# Add dept
+	need_process.each{|e| e.process(e.user_id)}
+	# Test
+	expected_dept_1_2=(dept3 / 3.0)
+	expected_dept_1_3=0
+	expected_dept_2_1=(dept1 / 3.0) + (dept2 / 3.0) + dept4
+	expected_dept_2_3=0
+	expected_dept_3_1=(dept1 / 3.0) + (dept2 / 3.0)
+	expected_dept_3_2=(dept3 / 3.0)
+#UserDept.all.each{|ud| puts("#{ud.from_user_id}->#{ud.to_user_id} = #{ud.amount} , #{ud.expense_id}")}
+	UserDept.all.size.should == 7
+	UserDept.where(:from_user_id => u1.id, :to_user_id => u2.id).inject(0){|sum,ud| sum + ud.amount}.should == expected_dept_1_2
+	UserDept.where(:from_user_id => u1.id, :to_user_id => u3.id).inject(0){|sum,ud| sum + ud.amount}.should == expected_dept_1_3
+	UserDept.where(:from_user_id => u2.id, :to_user_id => u1.id).inject(0){|sum,ud| sum + ud.amount}.should == expected_dept_2_1
+	UserDept.where(:from_user_id => u2.id, :to_user_id => u3.id).inject(0){|sum,ud| sum + ud.amount}.should == expected_dept_2_3
+	UserDept.where(:from_user_id => u3.id, :to_user_id => u1.id).inject(0){|sum,ud| sum + ud.amount}.should == expected_dept_3_1
+	UserDept.where(:from_user_id => u3.id, :to_user_id => u2.id).inject(0){|sum,ud| sum + ud.amount}.should == expected_dept_3_2
 	# Add payment
 	# Update balances
 	# Test
@@ -635,6 +674,7 @@ describe Expense do
 	# Add payment
 	# Update balances
 	# Test
+	1.should == 5
     end
 
     it "should require duplication_check_hash" do
