@@ -52,6 +52,12 @@ class User < ActiveRecord::Base
 	UserBalance.where('from_user_id = ?',self.id).where(:current => true).includes(:from_user).includes(:to_user)
     end
 
+    # Method to get self group
+    def self_group
+	# Get group representing self
+	self.groups.select{|g| g.name == self.user_name}.first
+    end
+
     # Method to check if is admin
     def is_admin?
 	if roles.detect{|r| r.name =~ /Admin/i}

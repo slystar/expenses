@@ -407,4 +407,13 @@ describe User do
 	# Test
 	u1.user_name.should_not == old_name
     end
+
+    it "should have a method to fetch self group" do
+	# Get user
+	u1=User.create!(@attr)
+	# Get group representing self
+	self_group=Group.where(:name => u1.user_name).first
+	# Test
+	u1.self_group.should == self_group
+    end
 end
