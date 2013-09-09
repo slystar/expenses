@@ -23,26 +23,6 @@ describe UserBalance do
 	return ub
     end
 
-    # Test balance
-    def test_balances(u1,u2,amount)
-	    # Get most recent UserBalance for u1 to u2
-	    ub=UserBalance.where(:from_user_id => u1.id, :to_user_id => u2.id).last
-	    # Test: UserBalance amount
-	    ub.amount.should == amount
-	    # Get most recent UserBalance for u2 to u1
-	    ub=UserBalance.where(:from_user_id => u2.id, :to_user_id => u1.id).last
-	    # Test: UserBalance amount should be inverse
-	    ub.amount.should == (amount * -1)
-	    # UserPayments should all be set to processed
-	    UserPayment.all.each do |up|
-		up.process_flag.should == true
-	    end
-	    # userDepts should all be set to processed
-	    UserDept.all.each do |ud|
-		ud.process_flag.should == true
-	    end
-    end
-
     it "should create a new instance given valid attributes" do
 	# get object
 	ub=get_new_user_balance
@@ -251,6 +231,36 @@ describe UserBalance do
 
 	it "should return false on invalid user" do
 	    UserBalance.update_balances(99999999).should == false
+	end
+
+	it "should update process_flag and process_date on user_dept" do
+	    # Variables
+	    today=Time.now.utc.strftime("%Y-%m-%d")
+	    # Create a dept
+	    add_user_dept(@u1,@u2,10)
+	    # Balance should be empty
+	    UserBalance.all.size.should == 0
+	    # Process
+	    UserBalance.update_balances(@u1.id).should == true
+	    # Check flags
+	    ud=UserDept.last
+	    ud.process_flag.should == true
+	    ud.process_date.utc.strftime("%Y-%m-%d").should == today
+	end
+
+	it "should update process_flag and process_date on user_payment" do
+	    # Variables
+	    today=Time.now.utc.strftime("%Y-%m-%d")
+	    # Create a dept
+	    add_user_payment(@u1,@u2,10)
+	    # Balance should be empty
+	    UserBalance.all.size.should == 0
+	    # Process
+	    UserBalance.update_balances(@u1.id).should == true
+	    # Check flags
+	    ud=UserPayment.last
+	    ud.process_flag.should == true
+	    ud.process_date.utc.strftime("%Y-%m-%d").should == today
 	end
 
 	def add_dept_and_test(u1,u2,amount,expected_balance)

@@ -93,4 +93,24 @@ module SpecHelpFunctions
     def get_valid_new_user()
 	User.new({:user_name => 'test', :password => 'testpassword'})
     end
+
+    # Test balance
+    def test_balances(u1,u2,amount)
+	    # Get most recent UserBalance for u1 to u2
+	    ub=UserBalance.where(:from_user_id => u1.id, :to_user_id => u2.id).last
+	    # Test: UserBalance amount
+	    ub.amount.should == amount
+	    # Get most recent UserBalance for u2 to u1
+	    ub=UserBalance.where(:from_user_id => u2.id, :to_user_id => u1.id).last
+	    # Test: UserBalance amount should be inverse
+	    ub.amount.should == (amount * -1)
+	    # UserPayments should all be set to processed
+	    UserPayment.all.each do |up|
+		up.process_flag.should == true
+	    end
+	    # userDepts should all be set to processed
+	    UserDept.all.each do |ud|
+		ud.process_flag.should == true
+	    end
+    end
 end

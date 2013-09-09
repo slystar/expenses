@@ -147,8 +147,8 @@ class UserBalance < ActiveRecord::Base
 	    # Save UserBalance
 	    if ub.save_non_duplicates
 		# Update process_flags
-		UserPayment.where(:process_flag => false, :approved=> true).update_all(process_flag: true, update_balance_history_id: ubh.id)
-		UserDept.where(:process_flag => false).update_all(process_flag: true, update_balance_history_id: ubh.id)
+		UserPayment.where(:process_flag => false, :approved=> true).update_all(process_flag: true, process_date: Time.now, update_balance_history_id: ubh.id)
+		UserDept.where(:process_flag => false).update_all(process_flag: true, process_date: Time.now,  update_balance_history_id: ubh.id)
 	    end
 	end
 	# Return true
