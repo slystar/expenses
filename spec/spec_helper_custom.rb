@@ -99,11 +99,11 @@ module SpecHelpFunctions
 	    # Get most recent UserBalance for u1 to u2
 	    ub=UserBalance.where(:from_user_id => u1.id, :to_user_id => u2.id).last
 	    # Test: UserBalance amount
-	    ub.amount.should == amount
+	    ub.amount.to_f.round(2).should == amount.to_f.round(2)
 	    # Get most recent UserBalance for u2 to u1
 	    ub=UserBalance.where(:from_user_id => u2.id, :to_user_id => u1.id).last
 	    # Test: UserBalance amount should be inverse
-	    ub.amount.should == (amount * -1)
+	    ub.amount.to_f.round(2).should == (amount.to_f * -1).round(2)
 	    # UserPayments should all be set to processed
 	    UserPayment.all.each do |up|
 		up.process_flag.should == true
