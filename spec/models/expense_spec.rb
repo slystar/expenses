@@ -623,6 +623,9 @@ describe Expense do
 	dept2=5
 	dept3=11.43
 	dept4=2.22
+	payment1=4.44
+	payment2=20
+	payment3=2.33
 	# Add users
 	u1=User.find(@attr[:user_id])
 	u2=get_next_user
@@ -644,14 +647,13 @@ describe Expense do
 	need_process.size.should == 4
 	# Add dept
 	need_process.each{|e| e.process(e.user_id)}
-	# Test
+	# Test: depts
 	expected_dept_1_2=(dept3 / 3.0)
 	expected_dept_1_3=0
 	expected_dept_2_1=(dept1 / 3.0) + (dept2 / 3.0) + dept4
 	expected_dept_2_3=0
 	expected_dept_3_1=(dept1 / 3.0) + (dept2 / 3.0)
 	expected_dept_3_2=(dept3 / 3.0)
-#UserDept.all.each{|ud| puts("#{ud.from_user_id}->#{ud.to_user_id} = #{ud.amount} , #{ud.expense_id}")}
 	UserDept.all.size.should == 7
 	UserDept.where(:from_user_id => u1.id, :to_user_id => u2.id).inject(0){|sum,ud| sum + ud.amount}.should == expected_dept_1_2
 	UserDept.where(:from_user_id => u1.id, :to_user_id => u3.id).inject(0){|sum,ud| sum + ud.amount}.should == expected_dept_1_3
@@ -659,22 +661,135 @@ describe Expense do
 	UserDept.where(:from_user_id => u2.id, :to_user_id => u3.id).inject(0){|sum,ud| sum + ud.amount}.should == expected_dept_2_3
 	UserDept.where(:from_user_id => u3.id, :to_user_id => u1.id).inject(0){|sum,ud| sum + ud.amount}.should == expected_dept_3_1
 	UserDept.where(:from_user_id => u3.id, :to_user_id => u2.id).inject(0){|sum,ud| sum + ud.amount}.should == expected_dept_3_2
+	# Get last dept
+	last_dept=UserDept.last
+	# Test: balances
+	expected_balance_1_2=expected_dept_1_2 - expected_dept_2_1
+	expected_balance_1_3=expected_dept_1_3 - expected_dept_3_1
+	expected_balance_2_3=expected_dept_1_3 - expected_dept_3_2
+	test_balances(u1,u2,expected_balance_1_2)
+	test_balances(u1,u3,expected_balance_1_3)
+	test_balances(u2,u3,expected_balance_2_3)
 	# Add payment
+	add_user_payment(u1,u2,payment1)
+	add_user_payment(u2,u1,payment2)
+	add_user_payment(u1,u2,payment3)
 	# Update balances
+	lambda {
+	    # Update balances
+	    UserBalance.update_balances(u1.id)
+	}.should change(UserBalance,:count).by(2)
+	# Get expected balance
+	expected_balance_1_2=expected_balance_1_2 - payment1 -payment3 + payment2
 	# Test
+	test_balances(u1,u2,expected_balance_1_2)
+	test_balances(u1,u3,expected_balance_1_3)
+	test_balances(u2,u3,expected_balance_2_3)
 	# Add dept
-	# Update balances
+	get_valid_expense({:amount => dept1, :user_id => u2.id, :group_id => g_all.id})
+	get_valid_expense({:amount => dept2, :user_id => u2.id, :group_id => g_all.id})
+	get_valid_expense({:amount => dept3, :user_id => u3.id, :group_id => g_all.id})
+	# Get records to process
+	need_process=Expense.where(:process_flag => false)
 	# Test
-	# Update balances
-	# Test
-	# Add payment
-	# Update balances
-	# Test
+	need_process.size.should == 3
 	# Add dept
-	# Add payment
-	# Update balances
+	need_process.each{|e| e.process(e.user_id)}
+	# Get expected depts
+	expected_dept_1_2=(dept1 / 3.0) + (dept2 / 3.0)
+	expected_dept_1_3=dept3 / 3.0
+	expected_dept_2_1=0
+	expected_dept_2_3=dept3 / 3.0
+	expected_dept_3_1=0
+	expected_dept_3_2=(dept1 / 3.0) + (dept2 / 3.0)
+	# Test: depts
+	UserDept.all.size.should == 13
+	UserDept.where(:from_user_id => u1.id, :to_user_id => u2.id).where("id > ?",last_dept.id).inject(0){|sum,ud| sum + ud.amount}.to_f.should == expected_dept_1_2.to_f
+	UserDept.where(:from_user_id => u1.id, :to_user_id => u3.id).where("id > ?",last_dept.id).inject(0){|sum,ud| sum + ud.amount}.should == expected_dept_1_3
+	UserDept.where(:from_user_id => u2.id, :to_user_id => u1.id).where("id > ?",last_dept.id).inject(0){|sum,ud| sum + ud.amount}.should == expected_dept_2_1
+	UserDept.where(:from_user_id => u2.id, :to_user_id => u3.id).where("id > ?",last_dept.id).inject(0){|sum,ud| sum + ud.amount}.should == expected_dept_2_3
+	UserDept.where(:from_user_id => u3.id, :to_user_id => u1.id).where("id > ?",last_dept.id).inject(0){|sum,ud| sum + ud.amount}.should == expected_dept_3_1
+	UserDept.where(:from_user_id => u3.id, :to_user_id => u2.id).where("id > ?",last_dept.id).inject(0){|sum,ud| sum + ud.amount}.should == expected_dept_3_2
+	# Get last dept
+	last_dept=UserDept.last
+	# Update balances: done automatically by Expense.process
+	expected_balance_1_2=expected_balance_1_2 + expected_dept_1_2 - expected_dept_2_1
+	expected_balance_1_3=expected_balance_1_3 + expected_dept_1_3 - expected_dept_3_1
+	expected_balance_2_3=expected_balance_2_3 + expected_dept_2_3 - expected_dept_3_2
 	# Test
-	1.should == 5
+	test_balances(u1,u2,expected_balance_1_2)
+	test_balances(u1,u3,expected_balance_1_3)
+	test_balances(u2,u3,expected_balance_2_3)
+	# Add payment
+	add_user_payment(u3,u2,payment1)
+	add_user_payment(u3,u1,payment2)
+	add_user_payment(u2,u1,payment3)
+	# Update balances
+	lambda {
+	    # Update balances
+	    UserBalance.update_balances(u1.id)
+	}.should change(UserBalance,:count).by(6)
+	# Get expected balance
+	expected_balance_1_2=expected_balance_1_2 + payment3
+	expected_balance_1_3=expected_balance_1_3 + payment2
+	expected_balance_2_3=expected_balance_2_3 + payment1
+	# Test
+	test_balances(u1,u2,expected_balance_1_2)
+	test_balances(u1,u3,expected_balance_1_3)
+	test_balances(u2,u3,expected_balance_2_3)
+	# Add dept
+	get_valid_expense({:amount => dept1, :user_id => u2.id, :group_id => u1.self_group.id})
+	get_valid_expense({:amount => dept2, :user_id => u2.id, :group_id => u1.self_group.id})
+	get_valid_expense({:amount => dept3, :user_id => u1.id, :group_id => g_all.id})
+	# Should allow duplicate
+	get_valid_expense({:amount => dept3, :user_id => u1.id, :group_id => g_all.id})
+	# Get records to process
+	need_process=Expense.where(:process_flag => false)
+	# Test
+	need_process.size.should == 4
+	# Add dept
+	need_process.each{|e| e.process(e.user_id)}
+	# Get expected depts
+	expected_dept_1_2=dept1 + dept2
+	expected_dept_1_3=0
+	expected_dept_2_1=(dept3 / 3.0) * 2
+	expected_dept_2_3=0
+	expected_dept_3_1=(dept3 / 3.0) * 2
+	expected_dept_3_2=0
+	# Test: depts
+	UserDept.all.size.should == 19
+	UserDept.where(:from_user_id => u1.id, :to_user_id => u2.id).where("id > ?",last_dept.id).inject(0){|sum,ud| sum + ud.amount}.to_f.should == expected_dept_1_2.to_f
+	UserDept.where(:from_user_id => u1.id, :to_user_id => u3.id).where("id > ?",last_dept.id).inject(0){|sum,ud| sum + ud.amount}.should == expected_dept_1_3
+	UserDept.where(:from_user_id => u2.id, :to_user_id => u1.id).where("id > ?",last_dept.id).inject(0){|sum,ud| sum + ud.amount}.should == expected_dept_2_1
+	UserDept.where(:from_user_id => u2.id, :to_user_id => u3.id).where("id > ?",last_dept.id).inject(0){|sum,ud| sum + ud.amount}.should == expected_dept_2_3
+	UserDept.where(:from_user_id => u3.id, :to_user_id => u1.id).where("id > ?",last_dept.id).inject(0){|sum,ud| sum + ud.amount}.should == expected_dept_3_1
+	UserDept.where(:from_user_id => u3.id, :to_user_id => u2.id).where("id > ?",last_dept.id).inject(0){|sum,ud| sum + ud.amount}.should == expected_dept_3_2
+	# Update balances: done automatically by Expense.process
+	expected_balance_1_2=expected_balance_1_2 + expected_dept_1_2 - expected_dept_2_1
+	expected_balance_1_3=expected_balance_1_3 + expected_dept_1_3 - expected_dept_3_1
+	expected_balance_2_3=expected_balance_2_3 + expected_dept_2_3 - expected_dept_3_2
+	# Test
+	test_balances(u1,u2,expected_balance_1_2)
+	test_balances(u1,u3,expected_balance_1_3)
+	test_balances(u2,u3,expected_balance_2_3)
+	# Add payment
+	add_user_payment(u1,u2,1000)
+	add_user_payment(u1,u2,16)
+	add_user_payment(u2,u1,payment3)
+	add_user_payment(u3,u1,payment3)
+	# Update balances
+	lambda {
+	    # Update balances
+	    UserBalance.update_balances(u1.id)
+	}.should change(UserBalance,:count).by(4)
+	# Get expected balance
+	expected_balance_1_2=expected_balance_1_2 - 1000 - 16 + payment3
+	expected_balance_1_3=expected_balance_1_3 + payment3
+	expected_balance_2_3=expected_balance_2_3
+	# Test
+	test_balances(u1,u2,expected_balance_1_2)
+	test_balances(u1,u3,expected_balance_1_3)
+	test_balances(u2,u3,expected_balance_2_3)
     end
 
     it "should require duplication_check_hash" do
