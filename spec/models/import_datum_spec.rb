@@ -365,5 +365,31 @@ describe ImportDatum do
 	id1.approved.should == false
     end
 
-    pending "add stuff for new methods not checked yet"
+    it "should provide next import for user" do
+	# Create 2 records
+	id1=get_next_valid_import_data_object
+	id2=get_next_valid_import_data_object
+	# Get user
+	u1=id1.user_id
+	# Set fields
+	id2.user_id=u1
+	# Try to save
+	lambda{
+	    id1.save!
+	    id2.save!
+	}.should change(ImportDatum,:count).by(2)
+	# Test
+	ImportDatum.next_import_for_user(u1).should == id1
+	ImportDatum.next_import_for_user(u1,id1.id).should == id2
+	# Get expense attributes
+	expense_attr=get_attr_expense
+	# Merge current mapped_fields
+	expense_attr=expense_attr.merge(id1.mapped_fields)
+	# Get expense object
+	expense=Expense.new(expense_attr)
+	# Approve record
+	id1.approve(expense)
+	# Test
+	ImportDatum.next_import_for_user(u1).should == id2
+    end
 end
