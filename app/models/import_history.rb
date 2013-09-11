@@ -7,7 +7,7 @@ class ImportHistory < ActiveRecord::Base
     attr_accessible :import_config_id, :original_file_name
 
     # Virtual attributes
-    attr_accessor :import_accepted, :import_rejected
+    attr_accessor :import_accepted, :import_rejected, :file_empty
 
     # Relationships
     belongs_to :import_config
@@ -15,6 +15,7 @@ class ImportHistory < ActiveRecord::Base
 
     # Before validations
     before_validation :set_app_version
+    before_save :check_new_file_name
 
     # Validations
     validates :original_file_name, :presence => true
@@ -25,8 +26,12 @@ class ImportHistory < ActiveRecord::Base
 
     # method to generate new filename
     def save_file(file_content,target_dir)
+	# Set default file_empty
+	self.file_empty=true
 	# Check file content
 	if file_content.nil? or file_content.empty?
+	    # Add error
+	    self.errors.add(:base,"File cannot be empty")
 	    return nil
 	end
 	# Get current datetime
@@ -48,6 +53,8 @@ class ImportHistory < ActiveRecord::Base
 	end
 	# Set new name
 	self.new_file_name=new_name
+	# Set flag
+	self.file_empty=false
 	# Return true
 	return true
     end
@@ -215,6 +222,17 @@ class ImportHistory < ActiveRecord::Base
 	    self.import_accepted.push([line_num,file_row,'OK'])
 	else
 	    self.import_rejected.push([line_num,file_row,msg])
+	end
+    end
+
+    # Method to check new file name
+    def check_new_file_name
+	# Check attribute
+	if self.file_empty
+	    # add error
+	    self.errors.add(:base,"No file content was imported, possibly due to missing or empty import file")
+	    # return false
+	    return false
 	end
     end
 end

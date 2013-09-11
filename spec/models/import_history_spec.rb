@@ -143,7 +143,7 @@ describe ImportHistory do
 	File.delete(File.join(storage_dir,filename))
     end
 
-    pending "should require upload with content" do
+    it "should require upload with content" do
 	# Set target dir
 	storage_dir=Dir.tmpdir
 	# Simulate empty file
@@ -151,7 +151,7 @@ describe ImportHistory do
 	# Get object
 	ih=get_valid_import_history()
 	# Save file
-	ih.save_file(file_content,storage_dir)
+	ih.save_file(file_content,storage_dir).should == nil
 	# Save record
 	ih.save.should == false
 	# Test
