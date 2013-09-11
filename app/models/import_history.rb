@@ -68,18 +68,28 @@ class ImportHistory < ActiveRecord::Base
     def import_data(file, import_config,user_id)
 	# Get file type
 	file_type=import_config.file_type.downcase
-	# Import based on filetype
-	case file_type
-	when 'csv'
-	    import_csv(file,import_config,user_id)
+	# Check if file exists
+	if File.exist?(file)
+	    # Read file
+	    file_content=File.read(file)
+	    # Import based on filetype
+	    case file_type
+	    when 'csv'
+		import_csv(file_content,import_config,user_id)
+	    else
+		# Unknown import filetype
+		self.errors.add(:base,"Unknown import filetype: #{file_type}")
+		# Return nil
+		return false
+	    end
+	    # Success
+	    return true
 	else
 	    # Unknown import filetype
-	    self.errors.add(:base,"Unknown import filetype: #{file_type}")
+	    self.errors.add(:base,"File does not exist: #{file}")
 	    # Return nil
 	    return false
 	end
-	# Success
-	return true
     end
 
     # Private methods
@@ -112,15 +122,13 @@ class ImportHistory < ActiveRecord::Base
     end
 
     # Method to import CSV data
-    def import_csv(filename, import_config, user_id)
+    def import_csv(file_content, import_config, user_id)
 	# Variables
 	self.import_accepted=[]
 	self.import_rejected=[]
 	line_count=0
 	# Get unique hash fields
 	unique_hash_ids=import_config[:unique_id_hash_fields]
-	# Read file
-	file_content=File.read(filename)
 	# Clean file
 	file_content.gsub!(/ ,/,',')
 	file_content.gsub!(/, /,',')

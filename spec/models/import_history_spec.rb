@@ -159,6 +159,8 @@ describe ImportHistory do
     end
 
     it "should generate an error when importing an unknown filetype" do
+	# Get temp file name
+	temp_file=File.join(Dir.tmpdir,'tmp.docx')
 	# Get import history
 	ih=get_valid_import_history()
 	# Get import config
@@ -166,13 +168,33 @@ describe ImportHistory do
 	# Set new filetype
 	ic.file_type='docx'
 	# Import file
-	result=ih.import_data('test.docx',ic,ih.user_id)
+	result=ih.import_data(temp_file,ic,ih.user_id)
 	# Test
 	result.should == false
 	# Errors should exist
 	ih.errors.size.should > 0
+	# Error message
+	ih.errors.messages.to_s.should =~ /Unknown import filetype/i
     end
 
+    it "should generate an error when importing a non existing file" do
+	# Get temp file name
+	temp_file='aaa.txt'
+	# Get import history
+	ih=get_valid_import_history()
+	# Get import config
+	ic=ih.import_config
+	# Set new filetype
+	ic.file_type='docx'
+	# Import file
+	result=ih.import_data(temp_file,ic,ih.user_id)
+	# Test
+	result.should == false
+	# Errors should exist
+	ih.errors.size.should > 0
+	# Error message
+	ih.errors.messages.to_s.should =~ /File does not exist/i
+    end
     it "should be able to import csv from amex" do
 	# Import data
 	ih=import_amex
