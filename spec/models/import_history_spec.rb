@@ -41,6 +41,8 @@ describe ImportHistory do
 	u=ih.user_id
 	# Import data
 	ih.import_data(@filename,ic,u)
+	# Remove any saved files
+	ih.remove_saved_file.should == true
 	# Return ImportHistory
 	return ih
     end
@@ -175,6 +177,8 @@ describe ImportHistory do
 	ih.errors.size.should > 0
 	# Error message
 	ih.errors.messages.to_s.should =~ /Unknown import filetype/i
+	# Remove any saved files
+	ih.remove_saved_file.should == true
     end
 
     it "should generate an error when importing a non existing file" do
@@ -194,6 +198,8 @@ describe ImportHistory do
 	ih.errors.size.should > 0
 	# Error message
 	ih.errors.messages.to_s.should =~ /File does not exist/i
+	# Remove any saved files
+	ih.remove_saved_file.should == true
     end
     it "should be able to import csv from amex" do
 	# Import data
@@ -252,6 +258,8 @@ describe ImportHistory do
 	id1.mapped_fields[:amount].should == "34.74"
 	# Check Store
 	id1.mapped_fields[:store].should == "store 1"
+	# Remove any saved files
+	ih.remove_saved_file.should == true
     end
 
     it "should be able to ignore duplicate entries during import" do
@@ -281,6 +289,8 @@ describe ImportHistory do
 	id.size.should == 3
 	# Test: errors should still be zero, because it's not an error
 	ih2.errors.size.should == 0
+	# Remove any saved files
+	ih.remove_saved_file.should == true
     end
 
     it "should be able to imort the same record by each user" do
@@ -325,6 +335,8 @@ describe ImportHistory do
 	id.size.should == 6
 	# Test: errors should still be zero, because it's not an error
 	ih2.errors.size.should == 0
+	# Remove any saved files
+	ih.remove_saved_file.should == true
     end
 
     it "should be able to provide a list or records to be processed" do
@@ -340,5 +352,34 @@ describe ImportHistory do
 	records=ImportDatum.imports_to_process(user_id)
 	# Check size
 	records.size.should == id.size
+    end
+
+    it "should have a method to remove it's saved file" do
+	# Get instance
+	ih=get_valid_import_history
+	# Test
+	ih.should respond_to(:remove_saved_file)
+    end
+
+    it "should be able to remove it's saved file" do
+	# Info: this method if for testing only, not real world usage
+	# Set target dir
+	storage_dir=Dir.tmpdir
+	# Get object
+	ih=get_valid_import_history()
+	# Set file content
+	file_content='This is a test file content'
+	# Save file
+	result=ih.save_file(file_content,storage_dir)
+	# Test
+	result.should == true
+	# Get full path
+	file_path=File.join(ih.target_dir, ih.new_file_name)
+	# Test: file is created
+	File.exist?(file_path).should == true
+	# Remove file
+	ih.remove_saved_file.should == true
+	# Test: file is removed
+	File.exist?(file_path).should == false
     end
 end

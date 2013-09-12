@@ -7,7 +7,7 @@ class ImportHistory < ActiveRecord::Base
     attr_accessible :import_config_id, :original_file_name
 
     # Virtual attributes
-    attr_accessor :import_accepted, :import_rejected, :file_empty
+    attr_accessor :import_accepted, :import_rejected, :file_empty, :target_dir
 
     # Relationships
     belongs_to :import_config
@@ -55,8 +55,34 @@ class ImportHistory < ActiveRecord::Base
 	self.new_file_name=new_name
 	# Set flag
 	self.file_empty=false
+	# Set target dir
+	self.target_dir=target_dir
 	# Return true
 	return true
+    end
+
+    # Method to remove saved file
+    def remove_saved_file
+	# Check if we have a target_dir
+	if not self.target_dir.nil?
+	    # Get full path
+	    full_path=File.join(self.target_dir,new_file_name)
+	    # Remove file
+	    if File.delete(full_path)
+		# Return true
+		return true
+	    else
+		return false
+	    end
+	elsif self.new_file_name.nil?
+	    # No file was saved to start with
+	    return true
+	else
+	    # Raise error, maybe this should be saved in database
+	    raise "No value in virtual attribute target_dir"
+	    # Return false
+	    return false
+	end
     end
 
     # Method to create field digest
@@ -82,6 +108,8 @@ class ImportHistory < ActiveRecord::Base
 		# Return nil
 		return false
 	    end
+	    # Save file
+	    self.save_file(file_content, Rails.configuration.upload_path)
 	    # Success
 	    return true
 	else
