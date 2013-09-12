@@ -59,5 +59,8 @@ module Expenses
 	  :request_specs => true
       g.fixtrue_replacement :factory_girl, :dir => "spec/factories"
     end
+
+    # Custom application variables
+    Rails.configuration.upload_path = "uploads"
   end
 end
