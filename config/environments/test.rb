@@ -36,4 +36,7 @@ Expenses::Application.configure do
 
   # Print deprecation notices to the stderr
   config.active_support.deprecation = :stderr
+
+    # Custom application variables
+    Rails.configuration.upload_path = Dir.tmpdir
 end
