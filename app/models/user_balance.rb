@@ -130,25 +130,28 @@ class UserBalance < ActiveRecord::Base
 		records_to_save.push([user_id,other_user_id,pre_final_balance])
 	    end
 	end
-	# Get new UpdateBalanceHistory
-	ubh=UpdateBalanceHistory.create!(:user_id => user_id)
-	# Loop over records to save
-	records_to_save.each do |row|
-	    # Get fields
-	    from_user_id=row[0]
-	    to_user_id=row[1]
-	    # Get a UserBalance object
-	    ub=UserBalance.new()
-	    # Set attributes
-	    ub.from_user_id=from_user_id
-	    ub.to_user_id=to_user_id
-	    ub.amount=row[2]
-	    ub.update_balance_history_id=ubh.id
-	    # Save UserBalance
-	    if ub.save_non_duplicates
-		# Update process_flags
-		UserPayment.where(:process_flag => false, :approved=> true).update_all(process_flag: true, process_date: Time.now, update_balance_history_id: ubh.id)
-		UserDept.where(:process_flag => false).update_all(process_flag: true, process_date: Time.now,  update_balance_history_id: ubh.id)
+	# Add transaction
+	transaction do
+	    # Get new UpdateBalanceHistory
+	    ubh=UpdateBalanceHistory.create!(:user_id => user_id)
+	    # Loop over records to save
+	    records_to_save.each do |row|
+		# Get fields
+		from_user_id=row[0]
+		to_user_id=row[1]
+		# Get a UserBalance object
+		ub=UserBalance.new()
+		# Set attributes
+		ub.from_user_id=from_user_id
+		ub.to_user_id=to_user_id
+		ub.amount=row[2]
+		ub.update_balance_history_id=ubh.id
+		# Save UserBalance
+		if ub.save_non_duplicates
+		    # Update process_flags
+		    UserPayment.where(:process_flag => false, :approved=> true).update_all(process_flag: true, process_date: Time.now, update_balance_history_id: ubh.id)
+		    UserDept.where(:process_flag => false).update_all(process_flag: true, process_date: Time.now,  update_balance_history_id: ubh.id)
+		end
 	    end
 	end
 	# Return true
@@ -206,17 +209,20 @@ class UserBalance < ActiveRecord::Base
     def create_opposite_record
 	# Check if we need to create reverse balance
 	if self.reverse_balance_id == 0
-	    # Create reverse balance
-	    ub=UserBalance.new()
-	    ub.from_user_id=self.to_user_id
-	    ub.to_user_id=self.from_user_id
-	    ub.amount=(self.amount * -1)
-	    ub.reverse_balance_id=self.id
-	    ub.update_balance_history_id=self.update_balance_history_id
-	    # Save record
-	    ub.save!
-	    # Update self
-	    self.update_attributes(:reverse_balance_id => ub.id)
+	    # Transaction
+	    transaction do
+		# Create reverse balance
+		ub=UserBalance.new()
+		ub.from_user_id=self.to_user_id
+		ub.to_user_id=self.from_user_id
+		ub.amount=(self.amount * -1)
+		ub.reverse_balance_id=self.id
+		ub.update_balance_history_id=self.update_balance_history_id
+		# Save record
+		ub.save!
+		# Update self
+		self.update_attributes(:reverse_balance_id => ub.id)
+	    end
 	end
     end
 

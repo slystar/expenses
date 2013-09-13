@@ -53,17 +53,20 @@ class ImportDatum < ActiveRecord::Base
     def approve(expense_object)
 	# Check if it's valid
 	if expense_object.valid?
-	    # Try to save expense
-	    if expense_object.save
-		# Process this record
-		self.process_flag=true
-		self.process_date=Time.now
-		self.expense_id=expense_object.id
-		self.approved=true
-		# Save self
-		self.save
-		# Return true
-		return true
+	    # Add transaction
+	    transaction do
+		# Try to save expense
+		if expense_object.save
+		    # Process this record
+		    self.process_flag=true
+		    self.process_date=Time.now
+		    self.expense_id=expense_object.id
+		    self.approved=true
+		    # Save self
+		    self.save
+		    # Return true
+		    return true
+		end
 	    end
 	end
 	# Error

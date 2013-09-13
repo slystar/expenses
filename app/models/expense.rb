@@ -57,33 +57,36 @@ class Expense < ActiveRecord::Base
 	    # Not a valid user, return false
 	    return false
 	end
-	# Get group members
-	members=group.users
-	# Get count of members
-	member_count=members.size
-	# Get dept amount
-	dept_amount=self.amount / member_count.to_f
-	# Loop over members
-	members.each do |member|
-	    # Skip self
-	    next if member.id == self.user_id
-	    # Create new UserDept
-	    ud=UserDept.new()
-	    # Add attributes
-	    ud.from_user_id=member.id
-	    ud.to_user_id=self.user_id
-	    ud.amount=dept_amount
-	    ud.expense_id=self.id
-	    # Save record
-	    ud.save!
+	# Add transaction
+	transaction do
+	    # Get group members
+	    members=group.users
+	    # Get count of members
+	    member_count=members.size
+	    # Get dept amount
+	    dept_amount=self.amount / member_count.to_f
+	    # Loop over members
+	    members.each do |member|
+		# Skip self
+		next if member.id == self.user_id
+		# Create new UserDept
+		ud=UserDept.new()
+		# Add attributes
+		ud.from_user_id=member.id
+		ud.to_user_id=self.user_id
+		ud.amount=dept_amount
+		ud.expense_id=self.id
+		# Save record
+		ud.save!
+	    end
+	    # Update Balance
+	    UserBalance.update_balances(self.user_id)
+	    # Set process fields
+	    self.process_date=Time.now
+	    self.process_flag=true
+	    self.affected_users=members.collect{|u| u.id}.sort.join(',')
+	    self.save!
 	end
-	# Update Balance
-	UserBalance.update_balances(self.user_id)
-	# Set process fields
-	self.process_date=Time.now
-	self.process_flag=true
-	self.affected_users=members.collect{|u| u.id}.sort.join(',')
-	self.save!
     end
 
     # Method to find duplicates start from a record
@@ -113,10 +116,12 @@ class Expense < ActiveRecord::Base
 	duplicates=find_duplicates
 	# Check if note
 	if note
-	    # Save note
-	    note.save!
-	    # Update all records
-	    duplicates.update_all(:duplication_check_reviewed => true, :duplication_check_processed => true, :duplication_check_reviewed_date => Time.now, :expense_note_id => note.id)
+	    transaction do
+		# Save note
+		note.save!
+		# Update all records
+		duplicates.update_all(:duplication_check_reviewed => true, :duplication_check_processed => true, :duplication_check_reviewed_date => Time.now, :expense_note_id => note.id)
+	    end
 	else
 	    # Update all records
 	    duplicates.update_all(:duplication_check_reviewed => true, :duplication_check_processed => true, :duplication_check_reviewed_date => Time.now)
@@ -239,14 +244,16 @@ class Expense < ActiveRecord::Base
 	duplicates=self.find_duplicate_object
 	# Check if we need to update records
 	if duplicates.size > 1
-	    # Update flags
-	    records_changed=duplicates.update_all(:duplication_check_processed => false)
-	    # Check if we need to update self
-	    if records_changed == 0
-		# Set field
-		self.duplication_check_processed=true
-		# Save self
-		self.save
+	    transaction do
+		# Update flags
+		records_changed=duplicates.update_all(:duplication_check_processed => false)
+		# Check if we need to update self
+		if records_changed == 0
+		    # Set field
+		    self.duplication_check_processed=true
+		    # Save self
+		    self.save
+		end
 	    end
 	end
     end
