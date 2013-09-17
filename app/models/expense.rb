@@ -138,6 +138,15 @@ class Expense < ActiveRecord::Base
 	Expense.where(:user_id => self.user_id).where(:duplication_check_hash => d_hash)
     end
 
+    # Method to process expenses
+    def self.process_all(processing_user_id)
+	# Get all unprocessed records
+	Expense.where(:process_flag => false).each do |e|
+	    # Process this record
+	    e.process(processing_user_id)
+	end
+    end
+
     # Private methods
     private
 
