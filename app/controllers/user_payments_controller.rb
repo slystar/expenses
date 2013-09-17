@@ -25,6 +25,8 @@ class UserPaymentsController < ApplicationController
   # GET /user_payments/new.json
   def new
     @user_payment = UserPayment.new
+    @users=User.where("id <> ?",current_user.id)
+    @payment_note=PaymentNote.new
 
     respond_to do |format|
       format.html # new.html.erb
