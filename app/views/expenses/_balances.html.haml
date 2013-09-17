@@ -1,0 +1,12 @@
+- balances=current_user.balances
+- unless balances.empty?
+  %hr
+  %h3 Balances
+  %ul
+  - balances.each do |b|
+    %li
+      - amount=b.amount
+      - if amount > 0
+        = "#{b.from_user.user_name} owes #{b.to_user.user_name} : #{number_to_currency(amount)}"
+      - else
+        = "#{b.to_user.user_name} owes #{b.from_user.user_name} : #{number_to_currency(amount.abs)}"
