@@ -1,3 +1,7 @@
+Views:
+- Hide Legacy user
+- Disable remove on user_payments
+
 Models:
 - do we need a process_flag on user_payment?
 - how to handle returns (ex: you return something to the store after it's been processed)
