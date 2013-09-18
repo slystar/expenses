@@ -325,4 +325,50 @@ describe UserPayment do
 	# Test
 	ud.update_balance_history.should == ubh
     end
+
+    it "should allow creation of payment_notes" do
+	# get object
+	up=get_new_user_payment
+	# Save UserPayment
+	up.save!
+	# Get new note
+	note=up.payment_notes.new
+	# Set required fields
+	note.note='Test note'
+	note.user_id=up.from_user_id
+	# Save new note
+	note.save!
+	# Create second note
+	note2=up.payment_notes.create({:note => 'test 2',:user_id => up.to_user_id})
+	# Save second note
+	note2.save!
+	# Test
+	up.payment_notes.size.should == 2
+    end
+
+    it "should allow modification of payment_notes" do
+	# Variables
+	old_note='test 1'
+	new_note='test 2'
+	# get object
+	up=get_new_user_payment
+	# Save UserPayment
+	up.save!
+	# Get new note
+	note=up.payment_notes.new
+	# Set required fields
+	note.note=old_note
+	note.user_id=up.from_user_id
+	# Save new note
+	note.save!
+	# Modify note
+	note.note=new_note
+	# Save note
+	note.save!
+	# Reload UserPayment
+	up.reload
+	# Test
+	up.payment_notes.first.note.should == new_note
+	up.payment_notes.first.note.should_not == old_note
+    end
 end
