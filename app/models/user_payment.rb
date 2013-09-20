@@ -23,10 +23,11 @@ class UserPayment < ActiveRecord::Base
     validate :check_from_and_to
     validate :check_approve_fields
     validate :check_amount
-    validate :check_process_flag, :on => :create
+    validate :validate_process_flag, :on => :create
 
     # Callbacks
-    before_create :check_approved, :check_approved_date
+    before_create :validate_not_approved, :check_approved_date
+    before_destroy :check_for_approval, :check_process_flag
 
     # Method to approve this user payment
     def approve
@@ -77,7 +78,7 @@ class UserPayment < ActiveRecord::Base
     end
 
     # Method to make sure approved is not set
-    def check_approved
+    def validate_not_approved
 	if self.approved
 	    self.errors.add(:base,"Can't create #{self.class}, entry can't be approved on creation")
 	    return false
@@ -97,8 +98,28 @@ class UserPayment < ActiveRecord::Base
     end
 
     # Method to check process flag
-    def check_process_flag
+    def validate_process_flag
 	# Add error if process_flag is true
 	self.errors.add(:base,"Process_flag cannot be set to true on record creation") if self.process_flag == true
+    end
+
+    # Method to check approved
+    def check_for_approval
+	if self.approved == true
+	    self.errors.add(:base,"Can't destroy #{self.class}, it's already been approved")
+	    return false
+	else
+	    return true
+	end
+    end
+
+    # Method to check process_flag
+    def check_process_flag
+	if self.process_flag == true
+	    self.errors.add(:base,"Can't destroy #{self.class}, it's already been processed")
+	    return false
+	else
+	    return true
+	end
     end
 end

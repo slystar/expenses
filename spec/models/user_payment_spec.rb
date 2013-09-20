@@ -371,4 +371,50 @@ describe UserPayment do
 	up.payment_notes.first.note.should == new_note
 	up.payment_notes.first.note.should_not == old_note
     end
+
+    it "should not be destroyable if it's been approved." do
+	# get object
+	up=get_new_user_payment
+	# Save record
+	up.save!
+	# Set approved flag
+	up.approve
+	# Reload
+	up.reload
+	# Test
+	up.destroy
+	up.should_not be_destroyed
+	up.errors.messages.size.should > 0
+    end
+
+    it "should not be destroyable if it's been processed." do
+	# get object
+	up=get_new_user_payment
+	# Save
+	up.save!
+	# Set approved flag
+	up.process_flag=true
+	# Save
+	up.save!
+	# Reload
+	up.reload
+	# Test
+	up.destroy
+	up.should_not be_destroyed
+	up.errors.messages.size.should > 0
+    end
+
+    it "should be destroyable if it hasn't been processed." do
+	# get object
+	up=get_new_user_payment
+	# Set approved flag
+	up.process_flag=false
+	# Save
+	up.save!
+	# Reload
+	up.reload
+	# Test
+	up.destroy
+	up.should be_destroyed
+    end
 end
