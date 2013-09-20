@@ -14,7 +14,7 @@
     %br/
     = f.text_field :amount
   .field
-    = fields_for @payment_note do |pn|
+    = fields_for :payment_note do |pn|
       = pn.label :note
       %br/
       = pn.text_area :note, :rows => 2
