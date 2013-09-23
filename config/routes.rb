@@ -1,4 +1,6 @@
 Expenses::Application.routes.draw do
+  get "payment_notes/create"
+
     # Default
     root :to => 'expenses#menu'
 
@@ -23,6 +25,9 @@ Expenses::Application.routes.draw do
     resources :pay_methods
     resources :reasons
     resources :stores
+
+    # PaymentNotes
+    post "payment_notes/create" => "payment_notes#create", :as => 'payment_notes'
 
 
 
