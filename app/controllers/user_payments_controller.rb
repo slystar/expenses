@@ -2,7 +2,7 @@ class UserPaymentsController < ApplicationController
   # GET /user_payments
   # GET /user_payments.json
   def index
-    @user_payments = UserPayment.all
+    @user_payments = UserPayment.includes(:from_user).includes(:to_user).where("from_user_id = ? or to_user_id = ?",current_user.id,current_user.id).all
 
     respond_to do |format|
       format.html # index.html.erb
@@ -13,7 +13,8 @@ class UserPaymentsController < ApplicationController
   # GET /user_payments/1
   # GET /user_payments/1.json
   def show
-    @user_payment = UserPayment.find(params[:id])
+    @user_payment = UserPayment.includes(:from_user).includes(:to_user).find(params[:id])
+    @payment_note = PaymentNote.new
 
     respond_to do |format|
       format.html # show.html.erb
@@ -37,6 +38,7 @@ class UserPaymentsController < ApplicationController
   # GET /user_payments/1/edit
   def edit
     @user_payment = UserPayment.find(params[:id])
+    @users=User.where("id <> ?",current_user.id).all
   end
 
   # POST /user_payments

@@ -2,20 +2,48 @@
 
 %p
   %b From user:
-  = @user_payment.from_user_id
+  = @user_payment.from_user.user_name
 %p
   %b To user:
-  = @user_payment.to_user_id
+  = @user_payment.to_user.user_name
 %p
   %b Amount:
-  = @user_payment.amount
+  = number_to_currency(@user_payment.amount)
 %p
   %b Approved:
   = @user_payment.approved
 %p
   %b Approved date:
   = @user_payment.approved_date
+- # Get Notes
+- payment_notes=@user_payment.payment_notes
+- if payment_notes.size > 0
+  %p
+    %b Notes:
+    - payment_notes.each do |note|
+      %br
+      = note.created_at.strftime("%Y-%d-%m")
+      = ":"
+      = note.note
+%hr
+%h3 Add Note
+= @payment_note.to_yaml
+= form_for @payment_note do |f|
+  - if @payment_note.errors.any?
+    #error_explanation
+      %h2= "#{pluralize(@payment_note.errors.count, "error")} prohibited this payment_note from being saved:"
+      %ul
+        - @payment_note.errors.full_messages.each do |msg|
+          %li= msg
+  .field
+    = f.label :note
+    %br/
+    = f.text_area :note, :rows => 2
+  = hidden_field_tag 'user_payment_id',@user_payment.id
+  .actions
+    = f.submit 'Save'
+%hr
 
 = link_to 'Edit', edit_user_payment_path(@user_payment)
 \|
-= link_to 'Back', user_payments_path
+= link_to 'Destroy', @user_payment, method: :delete, data: { confirm: 'Are you sure?' }
