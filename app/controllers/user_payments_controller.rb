@@ -99,4 +99,23 @@ class UserPaymentsController < ApplicationController
       format.json { head :ok }
     end
   end
+
+  # Add note
+  def add_note
+    @payment_note = PaymentNote.new(params[:payment_note])
+    @user_payment = UserPayment.find(params[:user_payment_id])
+
+    # Set PaymentNote options
+    @payment_note.user_payment_id=@user_payment.id
+    @payment_note.user_id=current_user.id
+
+    respond_to do |format|
+      if @payment_note.save
+        format.html { redirect_to "/user_payments/#{@user_payment.id}", notice: 'Note successfully created.' }
+        #format.html { redirect_to "/user_payments/#{@user_payment.id}" }
+      else
+        format.html { render action: "show" }
+      end
+    end
+  end
 end

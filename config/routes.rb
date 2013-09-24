@@ -27,7 +27,7 @@ Expenses::Application.routes.draw do
     resources :stores
 
     # PaymentNotes
-    post "payment_notes/create" => "payment_notes#create", :as => 'payment_notes'
+    post "user_payments/add_note" => "user_payments#add_note"
 
 
 
