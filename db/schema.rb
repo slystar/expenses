@@ -11,7 +11,7 @@
 #
 # It's strongly recommended to check this file into your version control system.
 
-ActiveRecord::Schema.define(:version => 20130830164953) do
+ActiveRecord::Schema.define(:version => 20130927171142) do
 
   create_table "backups", :force => true do |t|
     t.datetime "backup_date"
@@ -142,9 +142,10 @@ ActiveRecord::Schema.define(:version => 20130830164953) do
     t.integer  "user_payment_id"
     t.integer  "user_id"
     t.text     "note"
-    t.datetime "created_at",      :null => false
-    t.datetime "updated_at",      :null => false
+    t.datetime "created_at",                         :null => false
+    t.datetime "updated_at",                         :null => false
     t.integer  "app_version"
+    t.boolean  "deleted",         :default => false
   end
 
   create_table "reasons", :force => true do |t|

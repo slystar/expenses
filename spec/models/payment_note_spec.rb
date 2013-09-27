@@ -127,4 +127,33 @@ describe PaymentNote do
 	# Test
 	up.id.should == p.user_payment_id
     end
+    it "should respond to method delete_note" do
+	# get object
+	p=get_new_payment_note
+	p.save!
+	# Test
+	p.should respond_to(:delete_note)
+    end
+
+    it "should have attribute 'deleted' be false on creation" do
+	# get object
+	p=get_new_payment_note
+	# Test
+	p.deleted.should == false
+    end
+
+    it "should not actually delete note, just hide it" do
+	# get object
+	p=get_new_payment_note
+	p.save!
+	# Test
+	p.deleted.should == false
+	# Delete note
+	p.delete_note
+	# Reload
+	p.reload
+	# Test
+	p.deleted.should == true
+	p.should_not be_destroyed
+    end
 end

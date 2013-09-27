@@ -17,4 +17,15 @@ class PaymentNote < ActiveRecord::Base
     # Validations: relationships
     validates :user_payment, :presence => true
     validates :user, :presence => true
+    # Method to delete note without destroying note
+    def delete_note
+	# set deleted flag
+	self.deleted=true
+	# Save
+	if self.save
+	    return true
+	else
+	    return false
+	end
+    end
 end
