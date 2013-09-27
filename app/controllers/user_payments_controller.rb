@@ -13,7 +13,7 @@ class UserPaymentsController < ApplicationController
   # GET /user_payments/1
   # GET /user_payments/1.json
   def show
-    @user_payment = UserPayment.includes(:from_user).includes(:to_user).find(params[:id])
+    @user_payment = UserPayment.includes(:from_user).includes(:to_user).includes(:payment_notes).find(params[:id])
     @payment_note = PaymentNote.new
 
     respond_to do |format|
@@ -112,10 +112,24 @@ class UserPaymentsController < ApplicationController
     respond_to do |format|
       if @payment_note.save
         format.html { redirect_to "/user_payments/#{@user_payment.id}", notice: 'Note successfully created.' }
-        #format.html { redirect_to "/user_payments/#{@user_payment.id}" }
       else
         format.html { render action: "show" }
       end
+    end
+  end
+
+  # Remove note
+  def remove_note
+    @payment_note = PaymentNote.find(params[:id])
+    @user_payment = @payment_note.user_payment
+
+    respond_to do |format|
+	if @payment_note.delete_note
+	  format.html { redirect_to "/user_payments/#{@user_payment.id}", notice: 'Note successfully deleted' }
+	  format.json { head :ok }
+	else
+	  format.html { redirect_to "/user_payments/#{@user_payment.id}", alert: "#{@payment_note.errors.messages.values.join(',')}" }
+	end
     end
   end
 end

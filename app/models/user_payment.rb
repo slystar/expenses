@@ -39,6 +39,11 @@ class UserPayment < ActiveRecord::Base
 	self.save!
     end
 
+    # Method to show visible payment_notes (not deleted)
+    def visible_payment_notes
+	self.payment_notes.select{|pn| pn.deleted == false}
+    end
+
     # Private methods
     private
 

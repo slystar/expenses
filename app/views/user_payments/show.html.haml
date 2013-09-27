@@ -16,18 +16,30 @@
   %b Approved date:
   = @user_payment.approved_date
 - # Get Notes
-- payment_notes=@user_payment.payment_notes
+- payment_notes=@user_payment.visible_payment_notes
 - if payment_notes.size > 0
   %p
     %b Notes:
-    - payment_notes.each do |note|
-      %br
-      = note.created_at.strftime("%Y-%d-%m")
-      = ":"
-      = note.note
+    %table{:border => 1}
+      %tr
+        %th Date
+        %th User
+        %th Note
+        %th -
+      - payment_notes.each do |note|
+        %tr
+          %td
+            = note.created_at.strftime("%Y-%d-%m")
+          %td
+            = note.user.user_name
+          %td
+            = note.note
+          %td
+            - if note.can_be_destroyed?(current_user)
+              = button_to 'Destroy', {:controller => :user_payments, :action => "remove_note", :id => note.id}, :method => :delete, confirm: 'Are you sure?'
+
 %hr
 %h3 Add Note
-= @payment_note.to_yaml
 = form_for @payment_note, :url => "add_note" do |f|
   - if @payment_note.errors.any?
     #error_explanation

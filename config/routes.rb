@@ -20,16 +20,18 @@ Expenses::Application.routes.draw do
     post "expenses/import" => "expenses#file_upload"
     post "expenses/add_imported_expenses" => "expenses#add_imported_expenses"
     post "expenses/create_from_imported" => "expenses#create_from_imported"
+
+    # PaymentNotes
+    post "user_payments/add_note" => "user_payments#add_note"
+    delete "user_payments/remove_note" => "user_payments#remove_note"
+
+
+    # Generated resources
     resources :expenses
     resources :user_payments
     resources :pay_methods
     resources :reasons
     resources :stores
-
-    # PaymentNotes
-    post "user_payments/add_note" => "user_payments#add_note"
-
-
 
     # The priority is based upon order of creation:
     # first created -> highest priority.

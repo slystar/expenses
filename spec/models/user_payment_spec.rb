@@ -417,4 +417,32 @@ describe UserPayment do
 	up.destroy
 	up.should be_destroyed
     end
+
+    it "should respond to method :visible_payment_notes" do
+	# get object
+	up=get_new_user_payment
+	# Test
+	up.should respond_to(:visible_payment_notes)
+    end
+
+    it "should return only visible notes if requested" do
+	# get object
+	up=get_new_user_payment
+	# Save upser_payment
+	up.save!
+	# Add notes
+	up.payment_notes.new({:user_id => 1, :note => "This is a note1"})
+	up.payment_notes.new({:user_payment_id => 1, :user_id => 1, :note => "This is a note2"})
+	# Save object
+	up.save.should == true
+	# Count notes
+	up.payment_notes.size.should == 2
+	# Get last note
+	pn=up.payment_notes.last
+	# Delete last note
+	pn.delete_note
+	# Test
+	up.payment_notes.size.should == 2
+	up.visible_payment_notes.size.should == 1
+    end
 end
