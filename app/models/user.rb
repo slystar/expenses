@@ -67,6 +67,22 @@ class User < ActiveRecord::Base
 	end
     end
 
+    # Method to check if user_payments are waiting for approval
+    def needs_to_approve_user_payments?
+	# Get user_payments
+	if get_user_payments_waiting_for_approval.size > 0
+	    return true
+	else
+	    return false
+	end
+    end
+
+    # Method to get user_payments that are waiting for approval
+    def get_user_payments_waiting_for_approval
+	# Get user_payemtns
+	UserPayment.where(:to_user_id => self.id,:approved => false)
+    end
+
     # Below methods are private
     private
 

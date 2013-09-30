@@ -1,5 +1,12 @@
 class ExpensesController < ApplicationController
-    before_filter :login_required
+    before_filter :login_required, :check_for_user_payments
+
+    # Method to check for user_payments
+    def check_for_user_payments
+	# Check if any user_payments require approval
+	if current_user.needs_to_approve_user_payments?
+	end
+    end
 
     # GET /expenses
     # GET /expenses.json

@@ -416,4 +416,54 @@ describe User do
 	# Test
 	u1.self_group.should == self_group
     end
+
+    it "should respond to method :needs_to_approve_user_payments?" do
+	# Get user
+	u1=User.create!(@attr)
+	# Test
+	u1.should respond_to(:needs_to_approve_user_payments?)
+    end
+
+    it "should know if user_payments require approval" do
+	# Get users
+	u1=User.create!(@attr)
+	u2=get_next_user
+	# Create UserPayment
+	up=add_user_payment(u2,u1,10,false)
+	# Test
+	up.approved.should == false
+	u1.needs_to_approve_user_payments?.should == true
+	# Approve payment
+	up.approve
+	up.reload
+	# Test
+	up.approved.should == true
+	u1.needs_to_approve_user_payments?.should == false
+    end
+
+    it "should respond to method :get_user_payments_waiting_for_approval" do
+	# Get user
+	u1=User.create!(@attr)
+	# Test
+	u1.should respond_to(:get_user_payments_waiting_for_approval)
+    end
+
+    it "should be able to fetch user_payemtns waiting for approval" do
+	# Get users
+	u1=User.create!(@attr)
+	u2=get_next_user
+	# Create UserPayment
+	up1=add_user_payment(u2,u1,10,false)
+	up2=add_user_payment(u2,u1,10,false)
+	# Test
+	u1.get_user_payments_waiting_for_approval.size.should == 2
+	# Approve
+	up1.approve
+	# Test
+	u1.get_user_payments_waiting_for_approval.size.should == 1
+	# Approve
+	up2.approve
+	# Test
+	u1.get_user_payments_waiting_for_approval.size.should == 0
+    end
 end
