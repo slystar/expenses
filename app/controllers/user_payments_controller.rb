@@ -132,4 +132,23 @@ class UserPaymentsController < ApplicationController
 	end
     end
   end
+
+  # Approve user payments
+  def approve
+      # Get records that need approval
+      @user_payments=current_user.get_user_payments_waiting_for_approval
+  end
+
+  # Method to approve payment
+  def approve_payment
+      # Get submit value
+      submit=params[:commit]
+      # Check submit button
+      if submit =~ /approve/i
+	  @debug_info='approve'
+      else
+	  @debug_info='reject'
+      end
+      render 'expenses/test' and return
+  end
 end

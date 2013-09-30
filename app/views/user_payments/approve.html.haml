@@ -1,0 +1,32 @@
+%h1 UserPayments waiting for approval.
+- @user_payments.each do |up|
+  %b Date:
+  = up.created_at
+  %br
+  %b From user:
+  = up.from_user.user_name
+  %br
+  %b amount:
+  = number_to_currency(up.amount)
+  - notes=up.payment_notes
+  - if notes.size > 0
+    %br
+    %b Notes:
+    %table{:border => 1, :cellpadding => 5, :cellspacing => 0}
+      - notes.each do |note|
+        %tr
+          %td
+            = note.user.user_name
+          %td
+            = note.created_at.strftime("%Y-%m-%d")
+          %td
+            = note.note
+  = form_for :payment_approval, :url => "approve_payment" do |f|
+    .field
+      = f.label :note
+      %br/
+      = f.text_area :note, :rows => 2
+    = hidden_field_tag 'user_payment_id',up.id
+    .actions
+      = f.submit 'Approve'
+      = f.submit 'Reject with Note'

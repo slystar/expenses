@@ -21,6 +21,10 @@ Expenses::Application.routes.draw do
     post "expenses/add_imported_expenses" => "expenses#add_imported_expenses"
     post "expenses/create_from_imported" => "expenses#create_from_imported"
 
+    # UserPayemtns
+    get "user_payments/approve" => "user_payments#approve"
+    post "user_payments/approve_payment" => "user_payments#approve_payment"
+
     # PaymentNotes
     post "user_payments/add_note" => "user_payments#add_note"
     delete "user_payments/remove_note" => "user_payments#remove_note"
