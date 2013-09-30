@@ -5,6 +5,7 @@ class ExpensesController < ApplicationController
     def check_for_user_payments
 	# Check if any user_payments require approval
 	if current_user.needs_to_approve_user_payments?
+	    redirect_to "#{user_payments_path}/approve"
 	end
     end
 
