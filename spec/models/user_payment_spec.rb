@@ -209,10 +209,18 @@ describe UserPayment do
     it "should have a method 'approve'" do
 	# get object
 	up=get_new_user_payment
+	# TEst
+	up.should respond_to(:approve)
+    end
+
+    it "should 'approve' only from :to_user_id" do
+	# get object
+	up=get_new_user_payment
 	# Save record
 	up.save.should == true
-	# Approve payment
-	up.approve
+	# Test: Approve payment
+	up.approve(up.from_user_id).should == false
+	up.approve(up.to_user_id).should == true
 	# Refresh record
 	up.reload
 	# Test
@@ -230,7 +238,7 @@ describe UserPayment do
 	# Save record
 	up.save.should == true
 	# Approve payment
-	up.approve
+	up.approve(up.to_user_id)
 	# Refresh record
 	up.reload
 	# Get approved_date datetime
@@ -312,7 +320,7 @@ describe UserPayment do
 	# Create record
 	ud.save!
 	# Approve payment
-	ud.approve
+	ud.approve(ud.to_user_id)
 	# Test: UserBalance created
 	lambda {
 	    # Update balances
@@ -378,7 +386,7 @@ describe UserPayment do
 	# Save record
 	up.save!
 	# Set approved flag
-	up.approve
+	up.approve(up.to_user_id)
 	# Reload
 	up.reload
 	# Test

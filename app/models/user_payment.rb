@@ -31,7 +31,13 @@ class UserPayment < ActiveRecord::Base
     before_destroy :check_for_approval, :check_process_flag
 
     # Method to approve this user payment
-    def approve
+    def approve(user_id)
+	if user_id != self.to_user_id
+	    # Error
+	    errors.add(:base,"Error: Only to_user can approve user_payments.")
+	    # Return
+	    return false
+	end
 	# Set approved to true
 	self.approved=true
 	# Set approved_date
