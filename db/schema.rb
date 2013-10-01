@@ -11,7 +11,7 @@
 #
 # It's strongly recommended to check this file into your version control system.
 
-ActiveRecord::Schema.define(:version => 20130927171142) do
+ActiveRecord::Schema.define(:version => 20131001162537) do
 
   create_table "backups", :force => true do |t|
     t.datetime "backup_date"
@@ -232,6 +232,7 @@ ActiveRecord::Schema.define(:version => 20130927171142) do
     t.datetime "process_date"
     t.integer  "update_balance_history_id"
     t.integer  "app_version"
+    t.integer  "waiting_on_user_id"
   end
 
   add_index "user_payments", ["from_user_id"], :name => "index_user_payments_on_from_user_id"

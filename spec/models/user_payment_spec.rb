@@ -445,4 +445,37 @@ describe UserPayment do
 	up.payment_notes.size.should == 2
 	up.visible_payment_notes.size.should == 1
     end
+
+    it "should link to a valid user through waiting_on_user_id" do
+	# get object
+	up=get_new_user_payment
+	# Set attribute
+	up.waiting_on_user_id=up.to_user_id
+	# Test
+	up.waiting_on_user.should respond_to(:user_name)
+	up.waiting_on_user.user_name.should == up.to_user.user_name
+    end
+
+    it "should not have a waiting_on_user_id on creation" do
+	# get object
+	up=get_new_user_payment
+	# Test
+	up.waiting_on_user_id.should == nil
+    end
+
+    it "should be able to set waiting_on_user_id to nil" do
+	# get object
+	up=get_new_user_payment
+	# Set attribute
+	up.waiting_on_user_id=up.to_user_id
+	# Test
+	up.should be_valid
+	up.save!
+	# Set attribute
+	up.waiting_on_user_id=nil
+	# Test
+	up.should be_valid
+	up.save!
+	up.waiting_on_user_id.should == nil
+    end
 end
