@@ -27,7 +27,7 @@ class UserPayment < ActiveRecord::Base
     validate :validate_process_flag, :on => :create
 
     # Callbacks
-    before_create :validate_not_approved, :check_approved_date
+    before_create :validate_not_approved, :check_approved_date, :set_waiting_on_user_id
     before_destroy :check_for_approval, :check_process_flag
 
     # Method to approve this user payment
@@ -127,5 +127,10 @@ class UserPayment < ActiveRecord::Base
 	else
 	    return true
 	end
+    end
+
+    # Method to set initial waiting_on_user_id
+    def set_waiting_on_user_id
+	self.waiting_on_user_id = self.to_user_id
     end
 end

@@ -456,11 +456,13 @@ describe UserPayment do
 	up.waiting_on_user.user_name.should == up.to_user.user_name
     end
 
-    it "should not have a waiting_on_user_id on creation" do
+    it "should default :waiting_on_user_id be :to_user_id on creation" do
 	# get object
 	up=get_new_user_payment
+	# Save
+	up.save!
 	# Test
-	up.waiting_on_user_id.should == nil
+	up.waiting_on_user_id.should == up.to_user_id
     end
 
     it "should be able to set waiting_on_user_id to nil" do

@@ -80,7 +80,7 @@ class User < ActiveRecord::Base
     # Method to get user_payments that are waiting for approval
     def get_user_payments_waiting_for_approval
 	# Get user_payemtns
-	UserPayment.where(:to_user_id => self.id,:approved => false)
+	UserPayment.where(:waiting_on_user_id => self.id,:approved => false)
     end
 
     # Below methods are private
