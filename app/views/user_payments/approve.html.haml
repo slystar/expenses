@@ -6,6 +6,9 @@
   %b From user:
   = up.from_user.user_name
   %br
+  %b To user:
+  = up.to_user.user_name
+  %br
   %b amount:
   = number_to_currency(up.amount)
   - notes=up.payment_notes
@@ -28,5 +31,8 @@
       = f.text_area :note, :rows => 2
     = hidden_field_tag 'user_payment_id',up.id
     .actions
-      = f.submit 'Approve'
-      = f.submit 'Reject with Note'
+      - if up.to_user_id == current_user.id
+        = f.submit 'Approve'
+        = f.submit 'Reject with Note'
+      - else
+        = f.submit 'Re-submit with note'

@@ -165,7 +165,7 @@ class UserPaymentsController < ApplicationController
 	  else
 	      redirect_to "/user_payments/approve", alert: "Error: could not approve UserPayment id:#{user_payment.id}, #{user_payment.errors.full_messages}" and return
 	  end
-      else
+      elsif submit =~ /reject/i
 	  # Check for note
 	  if not payment_note.valid?
 	      # Note required
@@ -178,14 +178,39 @@ class UserPaymentsController < ApplicationController
 	      # Save note
 	      payment_note.save!
 	  end
-      end
-      # Check if more user_payments
-      if user_payments.size > 0
-	  # Redirect to approve
-	  redirect_to "/user_payments/approve", notice: "Payment successfully rejected." and return
+	  # Notice
+	  notice="Payment successfully rejected."
+	  # Check if more user_payments
+	  if user_payments.size > 0
+	      # Redirect to approve
+	      redirect_to "/user_payments/approve", notice: notice and return
+	  else
+	      # Redirect to menu
+	      redirect_to menu_path, notice: notice and return
+	  end
       else
-	  # Redirect to menu
-	  redirect_to menu_path, notice: "Payment successfully rejected." and return
+	  # Check for note
+	  if not payment_note.valid?
+	      # Note required
+	      redirect_to "/user_payments/approve", alert: "Error: could not re-submit UserPayment because a Note is required. Message: #{payment_note.errors.full_messages}" and return
+	  end
+	  # Bounce message back
+	  user_payment.waiting_on_user_id=user_payment.to_user_id
+	  # Save record
+	  if user_payment.save
+	      # Save note
+	      payment_note.save!
+	  end
+	  # Notice
+	  notice="Payment successfully re-submitted."
+	  # Check if more user_payments
+	  if user_payments.size > 0
+	      # Redirect to approve
+	      redirect_to "/user_payments/approve", notice: notice and return
+	  else
+	      # Redirect to menu
+	      redirect_to menu_path, notice: notice and return
+	  end
       end
   end
 end
