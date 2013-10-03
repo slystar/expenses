@@ -137,18 +137,55 @@ class UserPaymentsController < ApplicationController
   def approve
       # Get records that need approval
       @user_payments=current_user.get_user_payments_waiting_for_approval
+      # Go back to menu if none exist
+      if @user_payments.size < 1
+	  redirect_to menu_path and return
+      end
   end
 
   # Method to approve payment
   def approve_payment
+      # Get records that need approval
+      user_payments=current_user.get_user_payments_waiting_for_approval
+      # Get user_payment
+      user_payment=UserPayment.find(params[:user_payment_id])
+      # Get note
+      note=params[:payment_approval][:note]
       # Get submit value
       submit=params[:commit]
+      # Try to create note
+      payment_note=PaymentNote.new(:note => note)
+      payment_note.user_id=current_user.id
+      payment_note.user_payment_id=user_payment.id
       # Check submit button
       if submit =~ /approve/i
-	  @debug_info='approve'
+	  # Aprove
+	  if user_payment.approve(current_user.id)
+	      redirect_to menu_path, notice: "Payment approved"
+	  else
+	      redirect_to "/user_payments/approve", alert: "Error: could not approve UserPayment id:#{user_payment.id}, #{user_payment.errors.full_messages}" and return
+	  end
       else
-	  @debug_info='reject'
+	  # Check for note
+	  if not payment_note.valid?
+	      # Note required
+	      redirect_to "/user_payments/approve", alert: "Error: could not reject UserPayment because a Note is required. Message: #{payment_note.errors.full_messages}" and return
+	  end
+	  # Bounce message back
+	  user_payment.waiting_on_user_id=user_payment.from_user_id
+	  # Save record
+	  if user_payment.save
+	      # Save note
+	      payment_note.save!
+	  end
       end
-      render 'expenses/test' and return
+      # Check if more user_payments
+      if user_payments.size > 0
+	  # Redirect to approve
+	  redirect_to "/user_payments/approve", notice: "Payment successfully rejected." and return
+      else
+	  # Redirect to menu
+	  redirect_to menu_path, notice: "Payment successfully rejected." and return
+      end
   end
 end

@@ -23,8 +23,12 @@ class PaymentNote < ActiveRecord::Base
 
     # Method to know if can be destroyed
     def can_be_destroyed?(user)
-	# Check user
+	# Check note user
 	if user.id != self.user_id
+	    return false
+	end
+	# Check user_payment user
+	if self.user_payment.from_user_id != user.id
 	    return false
 	end
 	# Check for other notes
