@@ -9,6 +9,12 @@
     = @debug_info
     #container.container
       %header
+        - rails_env=Rails.env
+        - if rails_env != "production"
+          .rails_env
+            Rails:
+            = rails_env
+            %hr
         = render 'layouts/navigation'
         = render 'layouts/messages'
     #main{:role => 'main'}
