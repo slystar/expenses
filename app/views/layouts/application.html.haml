@@ -14,6 +14,8 @@
           .rails_env
             Rails:
             = rails_env
+            ,
+            = Rails.configuration.git_tag
             %hr
         = render 'layouts/navigation'
         = render 'layouts/messages'
