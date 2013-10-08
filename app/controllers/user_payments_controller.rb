@@ -27,7 +27,7 @@ class UserPaymentsController < ApplicationController
   def new
       # Get objects
     @user_payment = UserPayment.new
-    @users=User.where("id <> ?",current_user.id).all
+    @users=User.where("id <> ?",current_user.id).where(:hidden => false).all
 
     respond_to do |format|
       format.html # new.html.erb
@@ -38,7 +38,7 @@ class UserPaymentsController < ApplicationController
   # GET /user_payments/1/edit
   def edit
     @user_payment = UserPayment.find(params[:id])
-    @users=User.where("id <> ?",current_user.id).all
+    @users=User.where("id <> ?",current_user.id).where(:hidden => false).all
   end
 
   # POST /user_payments
@@ -46,7 +46,7 @@ class UserPaymentsController < ApplicationController
   def create
     @user_payment = UserPayment.new(params[:user_payment])
     @payment_note = PaymentNote.new(params[:payment_note])
-    @users=User.where("id <> ?",current_user.id).all
+    @users=User.where("id <> ?",current_user.id).where(:hidden => false).all
 
     # Set defaults
     @user_payment.from_user_id=current_user.id

@@ -11,7 +11,7 @@
 #
 # It's strongly recommended to check this file into your version control system.
 
-ActiveRecord::Schema.define(:version => 20131001162537) do
+ActiveRecord::Schema.define(:version => 20131008164237) do
 
   create_table "backups", :force => true do |t|
     t.datetime "backup_date"
@@ -252,12 +252,13 @@ ActiveRecord::Schema.define(:version => 20131001162537) do
   add_index "user_roles", ["user_id"], :name => "index_user_roles_on_user_id"
 
   create_table "users", :force => true do |t|
-    t.string   "user_name",       :null => false
-    t.string   "password_digest", :null => false
+    t.string   "user_name",                          :null => false
+    t.string   "password_digest",                    :null => false
     t.string   "name"
-    t.datetime "created_at",      :null => false
-    t.datetime "updated_at",      :null => false
+    t.datetime "created_at",                         :null => false
+    t.datetime "updated_at",                         :null => false
     t.integer  "app_version"
+    t.boolean  "hidden",          :default => false
   end
 
   add_index "users", ["user_name"], :name => "index_users_on_user_name"
