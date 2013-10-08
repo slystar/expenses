@@ -84,6 +84,7 @@ namespace :legacy do
     task :single_import => :environment do
 	# Turn off timestamp to import existing timestamps
 	ActiveRecord::Base.record_timestamps = false
+	#ActiveRecord::Base.record_timestamps = true
 	# Empty table
 	UserBalance.delete_all
 	# Import balances

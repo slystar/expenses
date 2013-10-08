@@ -218,6 +218,11 @@ class UserBalance < ActiveRecord::Base
 		ub.amount=(self.amount * -1)
 		ub.reverse_balance_id=self.id
 		ub.update_balance_history_id=self.update_balance_history_id
+		ub.app_version=self.app_version
+		if ActiveRecord::Base.record_timestamps == false
+		    ub.created_at=self.created_at + 1
+		    ub.updated_at=self.updated_at + 1
+		end
 		# Save record
 		ub.save!
 		# Update self
