@@ -8,7 +8,7 @@ class LegacyUser < LegacyBase
 	# Crete new User
 	new_user=User.new(
 	    :user_name => name,
-	    :password => 'abcd1234',
+	    :password => 'asdf1234',
 	    :name => name,
 	)
 	# Set timestamps fields
