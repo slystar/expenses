@@ -466,4 +466,11 @@ describe User do
 	# Test
 	u1.get_user_payments_waiting_for_approval.size.should == 0
     end
+
+    it "should have a default hidden flag" do
+	object=User.create!(@attr)
+	# Test
+	object.hidden.should == false
+    end
+
 end

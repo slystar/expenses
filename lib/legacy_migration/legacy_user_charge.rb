@@ -92,7 +92,7 @@ class LegacyUserCharge < LegacyBase
 	    pay_method=PayMethod.create!(:name => legacy_label)
 	    reason=Reason.create!(:name => legacy_label)
 	    store=Store.create!(:name => legacy_label)
-	    user=User.create!(:user_name => legacy_label, :password => 'legacyimportdata')
+	    user=User.create!(:user_name => legacy_label, :password => 'legacyimportdata',:hidden => true)
 	    group=Group.find(:first, :conditions => {:name => legacy_label})
 	    # Create new Object
 	    new_object=Expense.new(

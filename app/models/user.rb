@@ -5,7 +5,7 @@ class User < ActiveRecord::Base
     has_secure_password
 
     # Accessible attributes
-    attr_accessible :user_name, :password, :password_confirmation, :name
+    attr_accessible :user_name, :password, :password_confirmation, :name, :hidden
 
     # Relationshipts
     has_many :group_members, :dependent => :delete_all
