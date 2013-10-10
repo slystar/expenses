@@ -44,7 +44,7 @@ module SpecHelpFunctions
     end
 
     # Add and approve a UserPayment entry
-    def add_user_payment(u1,u2,amount,approve=true)
+    def add_user_payment(u1,u2,amount,approve_flag=true)
 	# Create new UserPayment
 	up=UserPayment.new()
 	# Add attributes
@@ -54,9 +54,9 @@ module SpecHelpFunctions
 	# Save UserDept
 	up.save!
 	# Check for approve flag
-	if approve
+	if approve_flag
 	    # Approve payment
-	    up.approve
+	    up.approve(up.to_user_id)
 	    # Return object
 	    up.reload
 	end

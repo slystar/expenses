@@ -135,7 +135,7 @@ describe PaymentNote do
 	# Get user_payment
 	up=p.user_payment
 	# Approve user_payment
-	up.approve
+	up.approve(up.to_user_id)
 	up.reload
 	# Destroy payment_note
 	p.destroy
