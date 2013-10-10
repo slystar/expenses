@@ -434,7 +434,7 @@ describe User do
 	up.approved.should == false
 	u1.needs_to_approve_user_payments?.should == true
 	# Approve payment
-	up.approve
+	up.approve(up.to_user_id)
 	up.reload
 	# Test
 	up.approved.should == true
@@ -458,11 +458,11 @@ describe User do
 	# Test
 	u1.get_user_payments_waiting_for_approval.size.should == 2
 	# Approve
-	up1.approve
+	up1.approve(up1.to_user_id)
 	# Test
 	u1.get_user_payments_waiting_for_approval.size.should == 1
 	# Approve
-	up2.approve
+	up2.approve(up2.to_user_id)
 	# Test
 	u1.get_user_payments_waiting_for_approval.size.should == 0
     end
