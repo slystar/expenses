@@ -20,7 +20,7 @@ class ImportConfig < ActiveRecord::Base
     before_validation :set_app_version
 
     # Validations
-    validates :title, :presence => true
+    validates :title, :presence => true, :uniqueness => true
     validates :description, :presence => true
     validates :field_mapping, :presence => true
     validates :file_type, :presence => true
