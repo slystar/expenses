@@ -109,6 +109,10 @@ class ExpensesController < ApplicationController
 	@reasons = Reason.order("name").all
 	@stores = Store.order("name").all
 	@groups = Group.order('name').where(:hidden => false).all
+	# Check if expense if processed
+	if @expense.process_flag
+	    @field_restrictions=true
+	end
     end
 
     # POST /expenses

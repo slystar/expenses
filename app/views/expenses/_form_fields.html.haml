@@ -29,8 +29,14 @@
 .field
   = f.label :group_id
   %br/
-  = f.collection_select :group_id, @groups, "id","name", prompt: '--'
+  - if @field_restrictions
+    = @expense.group.name
+  - else
+    = f.collection_select :group_id, @groups, "id","name", prompt: '--'
 .field
   = f.label :amount
   %br/
-  = f.text_field :amount
+  - if @field_restrictions
+    = number_to_currency(@expense.amount)
+  - else
+    = f.text_field :amount
