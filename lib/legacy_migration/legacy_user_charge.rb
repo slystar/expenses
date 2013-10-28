@@ -93,6 +93,10 @@ class LegacyUserCharge < LegacyBase
 	    reason=Reason.create!(:name => legacy_label)
 	    store=Store.create!(:name => legacy_label)
 	    user=User.create!(:user_name => legacy_label, :password => 'legacyimportdata',:hidden => true)
+	    # Set hidden on group
+	    self_group=user.self_group
+	    self_group.hidden=true
+	    self_group.save!
 	    group=Group.find(:first, :conditions => {:name => legacy_label})
 	    # Create new Object
 	    new_object=Expense.new(
