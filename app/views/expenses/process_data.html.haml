@@ -1,0 +1,26 @@
+- headers=[:user,:date_purchased,:description,:store,:pay_method,:reason,:group,:amount]
+%h1
+  Process expenses
+- if @expenses.size > 0
+  %table{:border => 1}
+    %tr
+      - headers.each do |h|
+        %th
+          = h.to_s.camelize
+    - @expenses.each do |e|
+      %tr
+        - headers.each do |h|
+          %td
+            - current_attr=e[h]
+            - if h == :user
+              = e.user.user_name
+            - elsif e.__send__(h).respond_to?(:name)
+              = e.__send__(h).__send__(:name)
+            - else
+              = e[h]
+  %p
+    Records:
+    = @expenses.size
+  = button_to 'Process', {:controller => :expenses, :action => "process_all_now"}, :method => :post, confirm: 'Are you sure?'
+- else
+  0 records to process
