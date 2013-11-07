@@ -449,4 +449,29 @@ class ExpensesController < ApplicationController
     def add_imported_expenses
 	@debug_info=params
     end
+
+    # Add method to display information on entered expenses that can be processed(divide the expenses among group members)
+    def process_data
+	# Get expenses to process
+	@expenses=Expense.where(:process_flag => false).includes(:user).includes(:store).includes(:pay_method).includes(:reason).includes(:group).order(:user_id).order(:date_purchased)
+    end
+
+    # Method to process all expenses now
+    def process_all_now
+	# Variables
+	count_good=0
+	count_bad=0
+	# Loop over each record (this could be a list of id numbers from previous page but let's keep it simple)
+	@expenses=Expense.where(:process_flag => false).order(:user_id).order(:date_purchased).each do |e|
+	    # Process this record
+	    if e.process(current_user.id)
+		# Add to count
+		count_good += 1
+	    else
+		# Add to count
+		count_bad += 1
+	    end
+	end
+	redirect_to menu_path, notice: "All expenses processed, #{count_good} OK, #{count_bad} errors"
+    end
 end

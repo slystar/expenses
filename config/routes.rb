@@ -16,10 +16,12 @@ Expenses::Application.routes.draw do
     get "menu" => "expenses#menu", :as => 'menu'
     get "expenses/import" => "expenses#import", :as => 'import'
     get "expenses/process_imports" => "expenses#process_imports", :as => 'process_imports'
+    get "expenses/process_data" => "expenses#process_data", :as => 'process_data'
     match 'expenses/process_import/:id' => 'expenses#process_import'
     post "expenses/import" => "expenses#file_upload"
     post "expenses/add_imported_expenses" => "expenses#add_imported_expenses"
     post "expenses/create_from_imported" => "expenses#create_from_imported"
+    post "expenses/process_all_now" => "expenses#process_all_now"
 
     # UserPayemtns
     get "user_payments/approve" => "user_payments#approve"
