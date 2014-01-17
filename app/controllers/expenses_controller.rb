@@ -1,5 +1,6 @@
 class ExpensesController < ApplicationController
-    before_filter :login_required, :check_for_user_payments
+    before_filter :login_required
+    before_filter :check_for_user_payments, :only => :menu
 
     # Method to check for user_payments
     def check_for_user_payments
