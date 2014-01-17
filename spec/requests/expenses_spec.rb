@@ -164,6 +164,9 @@ describe "Expenses ->" do
 		pending "should show a warning on possible duplicate entry" do
 		end
 
+		pending "should show a warning if date is in the future" do
+		end
+
 		it "should only show visible groups" do
 		    # Variables
 		    group_name='zzz'
