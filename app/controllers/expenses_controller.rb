@@ -1,5 +1,6 @@
 class ExpensesController < ApplicationController
-    before_filter :login_required, :check_for_user_payments
+    before_filter :login_required
+    before_filter :check_for_user_payments, :only => :menu
 
     # Method to check for user_payments
     def check_for_user_payments
@@ -79,8 +80,9 @@ class ExpensesController < ApplicationController
     # GET /expenses/new
     # GET /expenses/new.json
     def new
-	# Get previous expense
+	# Get previous expense info
 	prev_expense=session[:current_expense]
+	prev_last_date_purchased=session[:last_date_purchased]
 	# Check for previous expense
 	if prev_expense.nil?
 	    @expense = Expense.new
@@ -90,6 +92,10 @@ class ExpensesController < ApplicationController
 	end
 	# Set amount to nil, we want user to fill something
 	@expense.amount=nil
+	# Set last date purchased
+	if not prev_last_date_purchased.nil?
+	    @expense.date_purchased=prev_last_date_purchased
+	end
 
 	@pay_methods = PayMethod.order("name").all
 	@reasons = Reason.order("name").all
@@ -143,6 +149,8 @@ class ExpensesController < ApplicationController
 	else
 	    respond_to do |format|
 		if @expense.save
+		    # Save last date purchased
+		    session[:last_date_purchased]=@expense.date_purchased
 		    format.html { redirect_to "#{expenses_path}/new", notice: 'Expense was successfully created.' }
 		    format.json { render json: @expense, status: :created, location: @expense }
 		else

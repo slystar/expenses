@@ -22,3 +22,6 @@
     #main{:role => 'main'}
       = yield
     %footer
+      %hr
+      Version:
+      = Rails.configuration.git_tag
