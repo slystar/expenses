@@ -9,34 +9,34 @@
 .field
   = f.label :date_purchased
   %br/
-  = f.date_select :date_purchased
+  = f.date_select :date_purchased,{}, {:tabindex => 7}
 .field
   = f.label :description
   %br/
-  = f.text_area :description, :rows => 2
+  = f.text_area :description, :rows => 2, :tabindex => 1
 .field
   = f.label :store_id
   %br/
-  = f.collection_select :store_id, @stores, "id","name", prompt: '--'
+  = f.collection_select :store_id, @stores, "id","name", {prompt: '--'}, {:tabindex => 2}
 .field
   = f.label :pay_method_id
   %br/
-  = f.collection_select :pay_method_id, @pay_methods, :id,:name, :prompt => '--'
+  = f.collection_select :pay_method_id, @pay_methods, :id,:name, {:prompt => '--'}, {:tabindex => 3}
 .field
   = f.label :reason_id
   %br/
-  = f.collection_select :reason_id, @reasons, "id","name",:prompt => '--'
+  = f.collection_select :reason_id, @reasons, "id","name",{:prompt => '--'}, {:tabindex => 4}
 .field
   = f.label :group_id
   %br/
   - if @field_restrictions
     = @expense.group.name
   - else
-    = f.collection_select :group_id, @groups, "id","name", prompt: '--'
+    = f.collection_select :group_id, @groups, "id","name", {prompt: '--'}, {:tabindex => 5}
 .field
   = f.label :amount
   %br/
   - if @field_restrictions
     = number_to_currency(@expense.amount)
   - else
-    = f.text_field :amount
+    = f.text_field :amount, :tabindex => 6
