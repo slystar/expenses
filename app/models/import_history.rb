@@ -211,7 +211,7 @@ class ImportHistory < ActiveRecord::Base
 		end
 	    end
 	    # Set attributes
-	    attr={:unique_id => unique_id, :unique_hash => unique_hash, :mapped_fields => mapped_fields}
+	    attr={:unique_id => unique_hash, :unique_hash => unique_hash, :mapped_fields => mapped_fields}
 	    # Create new ImportData
 	    id=ImportDatum.new(attr)
 	    # Set user
@@ -232,20 +232,20 @@ class ImportHistory < ActiveRecord::Base
 		end
 	    else
 		# Look for duplicate entry.
-		dup=ImportDatum.where(:unique_id => id.unique_id).where(:user_id => user_id).find(:first)
+		dup=ImportDatum.where(:unique_hash => id.unique_hash).where(:user_id => user_id).find(:first)
 		# Check duplicate
 		if not dup.nil?
 		    # Keep track
-		    add_import_info(line_count,row,"Record already imported on #{dup.created_at}")
+		    add_import_info(line_count,row,"Record already imported on #{dup.created_at} -- #{dup.to_yaml} -- #{id.to_yaml}")
 		else
 		    # Add row info
-		    err_msg="ID: #{unique_id},"
+		    err_msg="ID: #{unique_hash},"
 		    # Prepare message
 		    err_msg << id.errors.messages.to_s
 		    # Not valid, add to errors
 		    self.errors.add(:base,err_msg)
 		    # Keep track
-		    add_import_info(line_count,row,"Error: invalid ImportData: #{id.errors.messages}")
+		    add_import_info(line_count,row,"Error: invalid ImportData: #{id.errors.messages} -- #{id.to_yaml}")
 		end
 	    end
 	end
