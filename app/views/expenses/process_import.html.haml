@@ -1,4 +1,7 @@
-%h1 Add imported record
+%h1 
+  Add imported record
+  = "(#{@records_total}"
+  left)
 = form_for(@expense, :url => "/expenses/create_from_imported") do |f|
   = hidden_field_tag 'import_id',@record_id
   = hidden_field_tag 'original_store_id',@original_store_id

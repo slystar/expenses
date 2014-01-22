@@ -341,6 +341,8 @@ class ExpensesController < ApplicationController
 	    # Set flash variables
 	    flash[:found]=found_info unless found_info.empty?
 	    flash[:warning]=warnings unless warnings.empty?
+	    # Get count
+	    @records_total=ImportDatum.imports_to_process(user_id).includes(:import_history).includes(:import_config).size
 	end
 	# Add Pay method
 	@expense.pay_method_id=record.import_config.pay_method_id
