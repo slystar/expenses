@@ -384,4 +384,8 @@ describe ImportHistory do
 	# Test: file is removed
 	File.exist?(file_path).should == false
     end
+
+    pending "should have an undo option in case wrong import_config is selected for import" do
+	# It could be an undi ID field added to each row inserted
+    end
 end
