@@ -2,6 +2,9 @@ Welcome:
 = session[:user_name]
 %ul
   %li
+    %a{:href => "/expenses"} 
+      View expenses
+  %li
     %a{:href => "/expenses/new"} 
       Add expense
   %li
@@ -9,16 +12,13 @@ Welcome:
       Process expenses
   %li
     %a{:href => "/expenses/import"} 
-      Import expenses
+      Import expenses into staging
   %li
     %a{:href => "/expenses/process_imports"} 
-      Process imported records
+      Add imported records
   %li
     %a{:href => "/users/#{session[:user_id]}/edit"} 
       Edit user
-  %li
-    %a{:href => "/expenses"} 
-      View expenses
   %li
     %a{:href => "/user_payments/new"} 
       Pay somebody
