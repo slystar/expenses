@@ -1,8 +1,8 @@
 = form_for(@expense) do |f|
   =render :partial => "form_fields", :locals => {:f => f}
   .actions
-    = f.submit
-    = f.submit value: "Add Pay Method"
-    = f.submit value: "Add Reason"
-    = f.submit value: "Add Store"
+    = f.submit "Create Expense", tabindex: 7
+    = f.submit value: "Add Pay Method", tabindex: 8
+    = f.submit value: "Add Reason", tabindex: 9
+    = f.submit value: "Add Store", tabindex: 10
 =render :partial => "balances"
