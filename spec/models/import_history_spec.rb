@@ -1,4 +1,5 @@
 require 'spec_helper'
+require 'fileutils'
 
 describe ImportHistory do
 
@@ -165,6 +166,11 @@ describe ImportHistory do
     it "should generate an error when importing an unknown filetype" do
 	# Get temp file name
 	temp_file=File.join(Dir.tmpdir,'tmp.docx')
+	# Check if file exists
+	if not File.exist?(temp_file)
+	    # Create temp file
+	    FileUtils.touch(temp_file)
+	end
 	# Get import history
 	ih=get_valid_import_history()
 	# Get import config
