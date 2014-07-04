@@ -85,6 +85,7 @@ describe "Expenses ->" do
 		    page.should have_select(:filter_store, :with_options => [e.store.name])
 		    page.should have_select(:filter_pay_method, :with_options => [e.pay_method.name])
 		    page.should have_select(:filter_reason, :with_options => [e.reason.name])
+		    page.should have_select(:filter_user, :with_options => [e.user.user_name])
 		    # Test: should have a reset filters link
 		    page.should have_link("Reset filters")
 		end

@@ -16,7 +16,7 @@ class ExpensesController < ApplicationController
 	# Variables
 	@start_time=Time.now
 	# Filters
-	filter_names=[:filter_pay_method, :filter_reason, :filter_store]
+	filter_names=[:filter_pay_method, :filter_reason, :filter_store, :filter_user]
 	# Params
 	date_purchased_months_ago=params[:date_purchased_months_ago]
 
@@ -43,6 +43,8 @@ class ExpensesController < ApplicationController
 		@filters[filter_name]=filter_value
 		# Get column name
 		col_name=filter_name.to_s.gsub('filter_','').gsub(/$/,'_id')
+		# Exception for user
+		col_name='user_name' if filter_name == 'user'
 		# Filter data
 		@expenses=@expenses.where("#{col_name}" => filter_value)
 	    end
@@ -55,6 +57,7 @@ class ExpensesController < ApplicationController
 	@pay_method_names=@expenses.map{|e| [e.pay_method.name,e.pay_method.id]}.sort{|a,b| a[0]<=>b[0]}.uniq
 	@reason_names=@expenses.map{|e| [e.reason.name,e.reason.id]}.sort{|a,b| a[0]<=>b[0]}.uniq
 	@store_names=@expenses.map{|e| [e.store.name,e.store.id]}.sort{|a,b| a[0]<=>b[0]}.uniq
+	@user_names=@expenses.map{|e| [e.user.user_name,e.user.id]}.sort{|a,b| a[0]<=>b[0]}.uniq
 
 	respond_to do |format|
 	    format.html # index.html.erb
