@@ -74,7 +74,7 @@ describe "Expenses ->" do
 		    # Tests
 		    page.should have_content("Listing expenses")
 		    page.should have_button("Search")
-		    page.should have_content(e.date_purchased.to_date)
+		    page.should have_content(e.date_purchased.utc.to_date)
 		    page.should have_content(e.description)
 		    page.should have_content(e.pay_method.name)
 		    page.should have_content(e.reason.name)
