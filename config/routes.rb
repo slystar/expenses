@@ -31,6 +31,10 @@ Expenses::Application.routes.draw do
     post "user_payments/add_note" => "user_payments#add_note"
     delete "user_payments/remove_note" => "user_payments#remove_note"
 
+    # Stores
+    get "stores/parents"
+    post "stores/save_parents"
+
 
     # Generated resources
     resources :expenses

@@ -90,4 +90,48 @@ class StoresController < ApplicationController
 	    format.json { head :ok }
 	end
     end
+
+    # Parents selectino
+    def parents
+	@stores = Store.order(:name).all
+    end
+
+    # Parents save
+    def save_parents
+	# Variables
+	processed_ids=[]
+	# Get stores with parents
+	stores_with_parents_ids=Store.select("id").where("parent_id > ?",0).collect{|s| s.id.to_i}
+	# Get parents
+	parents_all=params[:parents]
+	# Keep parents with IDs
+	@parents=parents_all.reject{|k,v| v.empty?}
+	# Set new parents
+	@parents.each do |name,id|
+	    # Extract source store
+	    source_store_id=name.gsub(/.*_/,'')
+	    parent_id=id
+	    # Find the source store
+	    store=Store.find(source_store_id)
+	    # Update it
+	    store.parent_id=id
+	    # Save
+	    store.save
+	    # Track ids
+	    processed_ids.push(source_store_id.to_i)
+	end
+	# Remove parents
+	(stores_with_parents_ids - processed_ids).each do |id|
+	    # Find store
+	    store=Store.find(id)
+	    # clear the parent from this store
+	    store.parent_id=0
+	    # Save
+	    store.save
+	end
+	# Redirect
+	respond_to do |format|
+	    format.html { redirect_to "#{stores_url}/parents", notice: "Parents updated" }
+	end
+    end
 end
