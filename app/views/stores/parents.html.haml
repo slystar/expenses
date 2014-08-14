@@ -1,0 +1,11 @@
+%h1 Parent stores
+=form_tag "save_parents", :method => :post do
+  %table{:border => 1}
+    %tr
+      %th Store
+      %th Parent
+    - @stores.each do |store|
+      %tr
+        %td= store.name
+        %td= collection_select(:parents, "parent_id_for_#{store.id}", @stores.reject{|s| s.name == store.name}, :id,:name, {:prompt => '--', :selected => store.parent_id})
+  = submit_tag "Submit"
