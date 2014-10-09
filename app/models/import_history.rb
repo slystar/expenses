@@ -98,6 +98,8 @@ class ImportHistory < ActiveRecord::Base
 	if File.exist?(file)
 	    # Read file
 	    file_content=File.read(file)
+	    # Clean UTF8
+	    file_content.encode!("UTF-8", "binary", :invalid => :replace, :undef => :replace, :replace => "?")
 	    # Import based on filetype
 	    case file_type
 	    when 'csv'
