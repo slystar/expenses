@@ -1,5 +1,14 @@
 class ExpensesController < ApplicationController
     before_filter :login_required
+    before_filter :check_for_user_payments, :only => :menu
+
+    # Method to check for user_payments
+    def check_for_user_payments
+	# Check if any user_payments require approval
+	if current_user.needs_to_approve_user_payments?
+	    redirect_to "#{user_payments_path}/approve"
+	end
+    end
 
     # GET /expenses
     # GET /expenses.json
@@ -7,7 +16,7 @@ class ExpensesController < ApplicationController
 	# Variables
 	@start_time=Time.now
 	# Filters
-	filter_names=[:filter_pay_method, :filter_reason, :filter_store]
+	filter_names=[:filter_pay_method, :filter_reason, :filter_store, :filter_user]
 	# Params
 	date_purchased_months_ago=params[:date_purchased_months_ago]
 
@@ -34,6 +43,8 @@ class ExpensesController < ApplicationController
 		@filters[filter_name]=filter_value
 		# Get column name
 		col_name=filter_name.to_s.gsub('filter_','').gsub(/$/,'_id')
+		# Exception for user
+		col_name='user_name' if filter_name == 'user'
 		# Filter data
 		@expenses=@expenses.where("#{col_name}" => filter_value)
 	    end
@@ -46,6 +57,7 @@ class ExpensesController < ApplicationController
 	@pay_method_names=@expenses.map{|e| [e.pay_method.name,e.pay_method.id]}.sort{|a,b| a[0]<=>b[0]}.uniq
 	@reason_names=@expenses.map{|e| [e.reason.name,e.reason.id]}.sort{|a,b| a[0]<=>b[0]}.uniq
 	@store_names=@expenses.map{|e| [e.store.name,e.store.id]}.sort{|a,b| a[0]<=>b[0]}.uniq
+	@user_names=@expenses.map{|e| [e.user.user_name,e.user.id]}.sort{|a,b| a[0]<=>b[0]}.uniq
 
 	respond_to do |format|
 	    format.html # index.html.erb
@@ -71,8 +83,9 @@ class ExpensesController < ApplicationController
     # GET /expenses/new
     # GET /expenses/new.json
     def new
-	# Get previous expense
+	# Get previous expense info
 	prev_expense=session[:current_expense]
+	prev_last_date_purchased=session[:last_date_purchased]
 	# Check for previous expense
 	if prev_expense.nil?
 	    @expense = Expense.new
@@ -82,6 +95,10 @@ class ExpensesController < ApplicationController
 	end
 	# Set amount to nil, we want user to fill something
 	@expense.amount=nil
+	# Set last date purchased
+	if not prev_last_date_purchased.nil?
+	    @expense.date_purchased=prev_last_date_purchased
+	end
 
 	@pay_methods = PayMethod.order("name").all
 	@reasons = Reason.order("name").all
@@ -101,6 +118,10 @@ class ExpensesController < ApplicationController
 	@reasons = Reason.order("name").all
 	@stores = Store.order("name").all
 	@groups = Group.order('name').where(:hidden => false).all
+	# Check if expense if processed
+	if @expense.process_flag
+	    @field_restrictions=true
+	end
     end
 
     # POST /expenses
@@ -131,6 +152,8 @@ class ExpensesController < ApplicationController
 	else
 	    respond_to do |format|
 		if @expense.save
+		    # Save last date purchased
+		    session[:last_date_purchased]=@expense.date_purchased
 		    format.html { redirect_to "#{expenses_path}/new", notice: 'Expense was successfully created.' }
 		    format.json { render json: @expense, status: :created, location: @expense }
 		else
@@ -321,6 +344,8 @@ class ExpensesController < ApplicationController
 	    # Set flash variables
 	    flash[:found]=found_info unless found_info.empty?
 	    flash[:warning]=warnings unless warnings.empty?
+	    # Get count
+	    @records_total=ImportDatum.imports_to_process(user_id).includes(:import_history).includes(:import_config).size
 	end
 	# Add Pay method
 	@expense.pay_method_id=record.import_config.pay_method_id
@@ -436,5 +461,30 @@ class ExpensesController < ApplicationController
     # Add multiple imported records as expenses
     def add_imported_expenses
 	@debug_info=params
+    end
+
+    # Add method to display information on entered expenses that can be processed(divide the expenses among group members)
+    def process_data
+	# Get expenses to process
+	@expenses=Expense.where(:process_flag => false).includes(:user).includes(:store).includes(:pay_method).includes(:reason).includes(:group).order(:user_id).order(:date_purchased)
+    end
+
+    # Method to process all expenses now
+    def process_all_now
+	# Variables
+	count_good=0
+	count_bad=0
+	# Loop over each record (this could be a list of id numbers from previous page but let's keep it simple)
+	@expenses=Expense.where(:process_flag => false).order(:user_id).order(:date_purchased).each do |e|
+	    # Process this record
+	    if e.process(current_user.id)
+		# Add to count
+		count_good += 1
+	    else
+		# Add to count
+		count_bad += 1
+	    end
+	end
+	redirect_to menu_path, notice: "All expenses processed, #{count_good} OK, #{count_bad} errors"
     end
 end

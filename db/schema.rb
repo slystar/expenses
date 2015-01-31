@@ -11,7 +11,7 @@
 #
 # It's strongly recommended to check this file into your version control system.
 
-ActiveRecord::Schema.define(:version => 20130830164953) do
+ActiveRecord::Schema.define(:version => 20131008164237) do
 
   create_table "backups", :force => true do |t|
     t.datetime "backup_date"
@@ -142,9 +142,10 @@ ActiveRecord::Schema.define(:version => 20130830164953) do
     t.integer  "user_payment_id"
     t.integer  "user_id"
     t.text     "note"
-    t.datetime "created_at",      :null => false
-    t.datetime "updated_at",      :null => false
+    t.datetime "created_at",                         :null => false
+    t.datetime "updated_at",                         :null => false
     t.integer  "app_version"
+    t.boolean  "deleted",         :default => false
   end
 
   create_table "reasons", :force => true do |t|
@@ -231,6 +232,7 @@ ActiveRecord::Schema.define(:version => 20130830164953) do
     t.datetime "process_date"
     t.integer  "update_balance_history_id"
     t.integer  "app_version"
+    t.integer  "waiting_on_user_id"
   end
 
   add_index "user_payments", ["from_user_id"], :name => "index_user_payments_on_from_user_id"
@@ -250,12 +252,13 @@ ActiveRecord::Schema.define(:version => 20130830164953) do
   add_index "user_roles", ["user_id"], :name => "index_user_roles_on_user_id"
 
   create_table "users", :force => true do |t|
-    t.string   "user_name",       :null => false
-    t.string   "password_digest", :null => false
+    t.string   "user_name",                          :null => false
+    t.string   "password_digest",                    :null => false
     t.string   "name"
-    t.datetime "created_at",      :null => false
-    t.datetime "updated_at",      :null => false
+    t.datetime "created_at",                         :null => false
+    t.datetime "updated_at",                         :null => false
     t.integer  "app_version"
+    t.boolean  "hidden",          :default => false
   end
 
   add_index "users", ["user_name"], :name => "index_users_on_user_name"

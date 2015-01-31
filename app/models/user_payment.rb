@@ -8,6 +8,7 @@ class UserPayment < ActiveRecord::Base
     has_many :payment_notes
     belongs_to :from_user, :class_name => 'User'
     belongs_to :to_user, :class_name => 'User' 
+    belongs_to :waiting_on_user, :class_name => 'User' 
     belongs_to :update_balance_history
     accepts_nested_attributes_for :payment_notes
 
@@ -26,17 +27,28 @@ class UserPayment < ActiveRecord::Base
     validate :validate_process_flag, :on => :create
 
     # Callbacks
-    before_create :validate_not_approved, :check_approved_date
+    before_create :validate_not_approved, :check_approved_date, :set_waiting_on_user_id
     before_destroy :check_for_approval, :check_process_flag
 
     # Method to approve this user payment
-    def approve
+    def approve(user_id)
+	if user_id != self.to_user_id
+	    # Error
+	    errors.add(:base,"Error: Only to_user can approve user_payments.")
+	    # Return
+	    return false
+	end
 	# Set approved to true
 	self.approved=true
 	# Set approved_date
 	self.approved_date=Time.now
 	# Save record
 	self.save!
+    end
+
+    # Method to show visible payment_notes (not deleted)
+    def visible_payment_notes
+	self.payment_notes.select{|pn| pn.deleted == false}
     end
 
     # Private methods
@@ -121,5 +133,10 @@ class UserPayment < ActiveRecord::Base
 	else
 	    return true
 	end
+    end
+
+    # Method to set initial waiting_on_user_id
+    def set_waiting_on_user_id
+	self.waiting_on_user_id = self.to_user_id
     end
 end

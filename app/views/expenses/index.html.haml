@@ -31,7 +31,7 @@ records found
       %td= select_tag(:filter_pay_method, options_for_select(@pay_method_names, :selected => @filters[:filter_pay_method]),:prompt => '--')
       %td= select_tag(:filter_reason, options_for_select(@reason_names, :selected => @filters[:filter_reason]),:prompt => '--')
       %td= select_tag(:filter_store, options_for_select(@store_names, :selected => @filters[:filter_store]),:prompt => '--')
-      %td
+      %td= select_tag(:filter_user, options_for_select(@user_names, :selected => @filters[:filter_user]),:prompt => '--')
       %td
       %td
       %td

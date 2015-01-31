@@ -5,7 +5,7 @@ class User < ActiveRecord::Base
     has_secure_password
 
     # Accessible attributes
-    attr_accessible :user_name, :password, :password_confirmation, :name
+    attr_accessible :user_name, :password, :password_confirmation, :name, :hidden
 
     # Relationshipts
     has_many :group_members, :dependent => :delete_all
@@ -65,6 +65,22 @@ class User < ActiveRecord::Base
 	else
 	    return false
 	end
+    end
+
+    # Method to check if user_payments are waiting for approval
+    def needs_to_approve_user_payments?
+	# Get user_payments
+	if get_user_payments_waiting_for_approval.size > 0
+	    return true
+	else
+	    return false
+	end
+    end
+
+    # Method to get user_payments that are waiting for approval
+    def get_user_payments_waiting_for_approval
+	# Get user_payemtns
+	UserPayment.where(:waiting_on_user_id => self.id,:approved => false)
     end
 
     # Below methods are private

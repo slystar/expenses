@@ -90,4 +90,65 @@ class StoresController < ApplicationController
 	    format.json { head :ok }
 	end
     end
+
+    # Parents selectino
+    def parents
+	@stores = Store.order(:name).all
+    end
+
+    # Parents save
+    def save_parents
+	# Variables
+	processed_ids=[]
+	# Get stores with parents
+	stores_with_parents=Store.select("id, parent_id").where("parent_id > ?",0)
+	# Collect store ids for stores with parents
+	stores_with_parents_ids=stores_with_parents.collect{|s| s.id.to_i}
+	# Create hash for stores with parents
+	existing_stores_with_parents={}
+	stores_with_parents.each{|s| existing_stores_with_parents[s.id]=s.parent_id}
+	# Get parents
+	parents_all=params[:parents]
+	# Keep parents with IDs
+	@parents=parents_all.reject{|k,v| v.empty?}
+	# Set new parents
+	@parents.each do |name,id|
+	    # Extract source store
+	    source_store_id=name.gsub(/.*_/,'').to_i
+	    parent_id=id.to_i
+	    make_change=true
+	    # check if this store had a previous parent
+	    if existing_stores_with_parents[source_store_id]
+		# check if there was a change
+		if existing_stores_with_parents[source_store_id].to_i == parent_id
+		    # Make change
+		    make_change=false
+		end
+	    end
+	    # Check if we need to make update
+	    if make_change
+		# Find the source store
+		store=Store.find(source_store_id)
+		# Update it
+		store.parent_id=id
+		# Save
+		store.save
+	    end
+	    # Track ids
+	    processed_ids.push(source_store_id)
+	end
+	# Remove parents
+	(stores_with_parents_ids - processed_ids).each do |id|
+	    # Find store
+	    store=Store.find(id)
+	    # clear the parent from this store
+	    store.parent_id=0
+	    # Save
+	    store.save
+	end
+	# Redirect
+	respond_to do |format|
+	    format.html { redirect_to "#{stores_url}/parents", notice: "Parents updated" }
+	end
+    end
 end

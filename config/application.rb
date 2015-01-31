@@ -62,5 +62,17 @@ module Expenses
 
     # Custom application variables
     Rails.configuration.upload_path = "uploads"
+
+    # Current tag file
+    tag_file=File.join('public','tag.txt')
+    # Check if file exists
+    if File.exist?(tag_file)
+	# Get git tag
+	git_tag=File.read(tag_file).chomp
+	# Set variable
+	Rails.configuration.git_tag=git_tag
+    else
+	Rails.configuration.git_tag="No tag file: #{tag_file}"
+    end
   end
 end

@@ -48,6 +48,22 @@ describe ImportConfig do
 	ic.should_not be_valid
     end
 
+    it "should require a unique title" do
+	ic=get_valid_import_config
+	# Try to save
+	ic.save!
+	# Create new instance
+	ic2=get_valid_import_config
+	# Test
+	ic2.should_not be_valid
+	# Create new instance
+	ic3=get_valid_import_config
+	# Change title
+	ic3.title=ic3.title + 'abc'
+	# Test
+	ic3.should be_valid
+    end
+
     it "should require a description" do
 	# Get ImportConfig
 	ic=get_valid_import_config()

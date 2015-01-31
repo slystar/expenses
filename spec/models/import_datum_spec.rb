@@ -17,6 +17,8 @@ describe ImportDatum do
 	u1=get_next_user
 	# Get an import_config
 	ic=get_valid_import_config(@attr_ic)
+	# Set unique title
+	ic.title=Faker::Name.name
 	# Save ImportConfig
 	ic.save!
 	# Create ImportHistory

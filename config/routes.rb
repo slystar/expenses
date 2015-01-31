@@ -16,20 +16,32 @@ Expenses::Application.routes.draw do
     get "menu" => "expenses#menu", :as => 'menu'
     get "expenses/import" => "expenses#import", :as => 'import'
     get "expenses/process_imports" => "expenses#process_imports", :as => 'process_imports'
+    get "expenses/process_data" => "expenses#process_data", :as => 'process_data'
     match 'expenses/process_import/:id' => 'expenses#process_import'
     post "expenses/import" => "expenses#file_upload"
     post "expenses/add_imported_expenses" => "expenses#add_imported_expenses"
     post "expenses/create_from_imported" => "expenses#create_from_imported"
+    post "expenses/process_all_now" => "expenses#process_all_now"
+
+    # UserPayemtns
+    get "user_payments/approve" => "user_payments#approve"
+    post "user_payments/approve_payment" => "user_payments#approve_payment"
+
+    # PaymentNotes
+    post "user_payments/add_note" => "user_payments#add_note"
+    delete "user_payments/remove_note" => "user_payments#remove_note"
+
+    # Stores
+    get "stores/parents"
+    post "stores/save_parents"
+
+
+    # Generated resources
     resources :expenses
     resources :user_payments
     resources :pay_methods
     resources :reasons
     resources :stores
-
-    # PaymentNotes
-    post "user_payments/add_note" => "user_payments#add_note"
-
-
 
     # The priority is based upon order of creation:
     # first created -> highest priority.

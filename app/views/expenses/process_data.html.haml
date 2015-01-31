@@ -1,0 +1,45 @@
+- headers=[:user,:date_purchased,:description,:store,:pay_method,:reason,:group,:amount]
+- user_id=0
+- stats={}
+%h1
+  Process expenses
+- if @expenses.size > 0
+  %table{:border => 1}
+    %tr
+      - headers.each do |h|
+        %th
+          = h.to_s.camelize
+    - @expenses.each do |e|
+      - if not user_id.nil? and e.user_id != user_id
+        %tr
+          %td{:colspan => headers.size}
+            - stats.each do |k,v|
+              = "#{k} : #{number_to_currency(v)}"
+              %br
+      - if e.user_id != user_id
+        - user_id=e.user_id
+        - stats={}
+      - group_name=e.group.name
+      - stats[group_name]=0 if stats[group_name].nil?
+      - stats[group_name] += e.amount
+      %tr
+        - headers.each do |h|
+          %td
+            - current_attr=e[h]
+            - if h == :user
+              = e.user.user_name
+            - elsif e.__send__(h).respond_to?(:name)
+              = e.__send__(h).__send__(:name)
+            - else
+              = e[h]
+    %tr
+      %td{:colspan => headers.size}
+        - stats.each do |k,v|
+          = "#{k} : #{number_to_currency(v)}"
+          %br
+  %p
+    Records:
+    = @expenses.size
+  = button_to 'Process', {:controller => :expenses, :action => "process_all_now"}, :method => :post, confirm: 'Are you sure?'
+- else
+  0 records to process

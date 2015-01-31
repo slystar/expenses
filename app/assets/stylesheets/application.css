@@ -34,3 +34,8 @@ ul.nav li {
     background-color: #B0E0E6;
     border: solid 1px #008080;
 }
+.rails_env {
+    font-size: 200%;
+    color: darkblue;
+    padding: 10px;
+}

@@ -1,4 +1,5 @@
 require 'spec_helper'
+require 'fileutils'
 
 describe ImportHistory do
 
@@ -14,6 +15,8 @@ describe ImportHistory do
 	u1=get_next_user
 	# Get an import_config
 	ic=get_valid_import_config(@attr_ic)
+	# Set unique title
+	ic.title=Faker::Name.name
 	# Save ImportConfig
 	ic.save!
 	# Create ImportHistory
@@ -163,6 +166,11 @@ describe ImportHistory do
     it "should generate an error when importing an unknown filetype" do
 	# Get temp file name
 	temp_file=File.join(Dir.tmpdir,'tmp.docx')
+	# Check if file exists
+	if not File.exist?(temp_file)
+	    # Create temp file
+	    FileUtils.touch(temp_file)
+	end
 	# Get import history
 	ih=get_valid_import_history()
 	# Get import config
@@ -381,5 +389,9 @@ describe ImportHistory do
 	ih.remove_saved_file.should == true
 	# Test: file is removed
 	File.exist?(file_path).should == false
+    end
+
+    pending "should have an undo option in case wrong import_config is selected for import" do
+	# It could be an undi ID field added to each row inserted
     end
 end

@@ -24,13 +24,17 @@ describe UserPaymentsController do
 	# Create user
 	u1=User.create!(:user_name => 'user_cont1', :password => 'testpassworduserdept')
 	u2=User.create!(:user_name => 'user_cont2', :password => 'testpassworduserdept')
+	# Login a user
+	@new_user_id=0
+	@user=get_next_user
+	ApplicationController.any_instance.stub(:current_user).and_return(@user)
     end
 
   # This should return the minimal set of attributes required to create a valid
   # UserPayment. As you add validations to UserPayment, be sure to
   # update the return value of this method accordingly.
   def valid_attributes
-    {:from_user_id => 1, :to_user_id => 2, :amount => 12.34}
+    {:from_user_id => @user.id, :to_user_id => 2, :amount => 12.34}
   end
 
   # This should return the minimal set of values that should be in the session
@@ -75,19 +79,19 @@ describe UserPaymentsController do
     describe "with valid params" do
       it "creates a new UserPayment" do
         expect {
-          post :create, {:user_payment => valid_attributes}, valid_session
+          post :create, {:user_payment => valid_attributes,:payment_note => {:note => 'test note'}}, valid_session
         }.to change(UserPayment, :count).by(1)
       end
 
       it "assigns a newly created user_payment as @user_payment" do
-        post :create, {:user_payment => valid_attributes}, valid_session
+        post :create, {:user_payment => valid_attributes,:payment_note => {:note => 'test note'}}, valid_session
         assigns(:user_payment).should be_a(UserPayment)
         assigns(:user_payment).should be_persisted
       end
 
       it "redirects to the created user_payment" do
-        post :create, {:user_payment => valid_attributes}, valid_session
-        response.should redirect_to(UserPayment.last)
+        post :create, {:user_payment => valid_attributes,:payment_note => {:note => 'test note'}}, valid_session
+        response.should redirect_to(menu_path)
       end
     end
 

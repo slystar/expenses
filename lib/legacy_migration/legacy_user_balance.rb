@@ -25,6 +25,8 @@ class LegacyUserBalance
     def self.migrate_me!
 	# Get users
 	users=User.all
+	# Track Done
+	done={}
 	# Loop over users
 	users.each do |u|
 	    # This balance calculation code was taken from the old system and tweaked slightly for new naming conventions
@@ -58,6 +60,14 @@ class LegacyUserBalance
 	    end
 	    # Loop over balances
 	    @diff.each do |to_user_id, balance|
+		# Skip done, code already creates reverse entry
+		if not done[to_user_id].nil?
+		    if done[to_user_id][u.id]==-balance
+			# Skip
+			puts("Skip reverse record to:#{to_user_id}, from:#{u.id}, balance: #{balance}")
+			next
+		    end
+		end
 		# Create a balance if required
 		if balance != 0
 		    # No methods are mass assignable
@@ -68,12 +78,16 @@ class LegacyUserBalance
 		    ub.amount=balance
 		    ub.created_at=Time.now
 		    ub.updated_at=Time.now
-		    ub.previous_user_balance_id=0
 		    ub.current=true
 		    ub.app_version=get_app_version
 		    # Save record
 		    ub.save!
 		end
+		# Keep track of done
+		done[u.id]={} if done[u.id].nil?
+		done[u.id][to_user_id]=balance
+		# Add
+		puts("Add record to:#{to_user_id}, from:#{u.id}, balance: #{balance}")
 	    end
 	end
     end

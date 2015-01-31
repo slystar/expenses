@@ -9,8 +9,19 @@
     = @debug_info
     #container.container
       %header
+        - rails_env=Rails.env
+        - if rails_env != "production"
+          .rails_env
+            Rails:
+            = rails_env
+            ,
+            = Rails.configuration.git_tag
+            %hr
         = render 'layouts/navigation'
         = render 'layouts/messages'
     #main{:role => 'main'}
       = yield
     %footer
+      %hr
+      Version:
+      = Rails.configuration.git_tag

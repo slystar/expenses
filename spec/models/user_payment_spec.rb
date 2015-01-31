@@ -209,10 +209,18 @@ describe UserPayment do
     it "should have a method 'approve'" do
 	# get object
 	up=get_new_user_payment
+	# TEst
+	up.should respond_to(:approve)
+    end
+
+    it "should 'approve' only from :to_user_id" do
+	# get object
+	up=get_new_user_payment
 	# Save record
 	up.save.should == true
-	# Approve payment
-	up.approve
+	# Test: Approve payment
+	up.approve(up.from_user_id).should == false
+	up.approve(up.to_user_id).should == true
 	# Refresh record
 	up.reload
 	# Test
@@ -230,7 +238,7 @@ describe UserPayment do
 	# Save record
 	up.save.should == true
 	# Approve payment
-	up.approve
+	up.approve(up.to_user_id)
 	# Refresh record
 	up.reload
 	# Get approved_date datetime
@@ -312,7 +320,7 @@ describe UserPayment do
 	# Create record
 	ud.save!
 	# Approve payment
-	ud.approve
+	ud.approve(ud.to_user_id)
 	# Test: UserBalance created
 	lambda {
 	    # Update balances
@@ -378,7 +386,7 @@ describe UserPayment do
 	# Save record
 	up.save!
 	# Set approved flag
-	up.approve
+	up.approve(up.to_user_id)
 	# Reload
 	up.reload
 	# Test
@@ -416,5 +424,68 @@ describe UserPayment do
 	# Test
 	up.destroy
 	up.should be_destroyed
+    end
+
+    it "should respond to method :visible_payment_notes" do
+	# get object
+	up=get_new_user_payment
+	# Test
+	up.should respond_to(:visible_payment_notes)
+    end
+
+    it "should return only visible notes if requested" do
+	# get object
+	up=get_new_user_payment
+	# Save upser_payment
+	up.save!
+	# Add notes
+	up.payment_notes.new({:user_id => 1, :note => "This is a note1"})
+	up.payment_notes.new({:user_payment_id => 1, :user_id => 1, :note => "This is a note2"})
+	# Save object
+	up.save.should == true
+	# Count notes
+	up.payment_notes.size.should == 2
+	# Get last note
+	pn=up.payment_notes.last
+	# Delete last note
+	pn.delete_note
+	# Test
+	up.payment_notes.size.should == 2
+	up.visible_payment_notes.size.should == 1
+    end
+
+    it "should link to a valid user through waiting_on_user_id" do
+	# get object
+	up=get_new_user_payment
+	# Set attribute
+	up.waiting_on_user_id=up.to_user_id
+	# Test
+	up.waiting_on_user.should respond_to(:user_name)
+	up.waiting_on_user.user_name.should == up.to_user.user_name
+    end
+
+    it "should default :waiting_on_user_id be :to_user_id on creation" do
+	# get object
+	up=get_new_user_payment
+	# Save
+	up.save!
+	# Test
+	up.waiting_on_user_id.should == up.to_user_id
+    end
+
+    it "should be able to set waiting_on_user_id to nil" do
+	# get object
+	up=get_new_user_payment
+	# Set attribute
+	up.waiting_on_user_id=up.to_user_id
+	# Test
+	up.should be_valid
+	up.save!
+	# Set attribute
+	up.waiting_on_user_id=nil
+	# Test
+	up.should be_valid
+	up.save!
+	up.waiting_on_user_id.should == nil
     end
 end

@@ -74,7 +74,7 @@ describe "Expenses ->" do
 		    # Tests
 		    page.should have_content("Listing expenses")
 		    page.should have_button("Search")
-		    page.should have_content(e.date_purchased.to_date)
+		    page.should have_content(e.date_purchased.utc.to_date)
 		    page.should have_content(e.description)
 		    page.should have_content(e.pay_method.name)
 		    page.should have_content(e.reason.name)
@@ -85,6 +85,7 @@ describe "Expenses ->" do
 		    page.should have_select(:filter_store, :with_options => [e.store.name])
 		    page.should have_select(:filter_pay_method, :with_options => [e.pay_method.name])
 		    page.should have_select(:filter_reason, :with_options => [e.reason.name])
+		    page.should have_select(:filter_user, :with_options => [e.user.user_name])
 		    # Test: should have a reset filters link
 		    page.should have_link("Reset filters")
 		end
@@ -162,6 +163,9 @@ describe "Expenses ->" do
 		end
 
 		pending "should show a warning on possible duplicate entry" do
+		end
+
+		pending "should show a warning if date is in the future" do
 		end
 
 		it "should only show visible groups" do
