@@ -47,8 +47,8 @@ group :development, :test do
   gem 'mysql2'
   gem 'activerecord-mysql-adapter'
   # To better troubleshoot
-  gem 'pry'
-  gem 'pry-debugger'
+  #gem 'pry'
+  #gem 'pry-debugger'
 end
 
 group :development do
