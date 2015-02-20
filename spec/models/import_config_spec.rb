@@ -217,4 +217,13 @@ describe ImportConfig do
 	# Test
 	ic.should_not be_valid
     end
+
+    it "should allow a nil pre-parser" do
+	# Get ImportConfig
+	ic=get_valid_import_config()
+	# Set field
+	ic.pre_parser=nil
+	# Test
+	ic.should be_valid
+    end
 end
