@@ -134,13 +134,13 @@ describe ImportConfig do
 	ic.should be_valid
     end
 
-    it "should require a unique_id_field" do
+    it "should allow unique_id_field to be nil" do
 	# Get ImportConfig
 	ic=get_valid_import_config()
 	# Set field
 	ic.unique_id_field=nil
 	# Test
-	ic.should_not be_valid
+	ic.should be_valid
     end
 
     it "should require unique_id_hash_fields" do

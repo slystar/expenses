@@ -24,7 +24,6 @@ class ImportConfig < ActiveRecord::Base
     validates :description, :presence => true
     validates :field_mapping, :presence => true
     validates :file_type, :presence => true
-    validates :unique_id_field, :presence => true
     validates :unique_id_hash_fields, :presence => true
     validates :date_type, :presence => true
     validates :app_version, :presence => true
