@@ -270,6 +270,39 @@ describe ImportHistory do
 	ih.remove_saved_file.should == true
     end
 
+    it "should be able to import csv from capital one" do
+	# Import config attributes
+	@attr_ic={:title => 'CapitalOne MC', :description => 'CSV export of CapitalOne MC', :field_mapping => {:date_purchased => 0, :amount => 3, :store => 2}, :file_type => 'csv', :unique_id_field => nil, :unique_id_hash_fields => [0,3,2], :date_type => 0}
+	# Import file
+	filename='spec/imports/capital_one_mc.csv'
+	# Get import history
+	ih=get_valid_import_history()
+	# Save import_history
+	ih.save!
+	# Get import config
+	ic=ih.import_config
+	# Get user
+	u=ih.user_id
+	# Import data
+	ih.import_data(filename,ic,u)
+	# Get all ImportData
+	id=ImportDatum.all
+	# ImportData should contain 4 new rows
+	id.size.should == 4
+	# Get first record
+	id1=id.first
+	# Get Date bought
+	date_purchased=id1.mapped_fields[:date_purchased]
+	# Check Date
+	date_purchased.strftime("%Y-%m-%d").should == Date.parse('2013-01-26').strftime("%Y-%m-%d")
+	# Check amount
+	id1.mapped_fields[:amount].should == "85.00"
+	# Check Store
+	id1.mapped_fields[:store].should == "aaaaaa bbbbbbbbb"
+	# Remove any saved files
+	ih.remove_saved_file.should == true
+    end
+
     it "should be able to ignore duplicate entries during import" do
 	# Import file
 	filename='spec/imports/amex.csv'
