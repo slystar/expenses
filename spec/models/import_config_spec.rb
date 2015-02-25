@@ -218,7 +218,7 @@ describe ImportConfig do
 	ic.should_not be_valid
     end
 
-    it "should allow a nil pre-parser" do
+    it "should allow a nil pre_parser" do
 	# Get ImportConfig
 	ic=get_valid_import_config()
 	# Set field
@@ -227,39 +227,39 @@ describe ImportConfig do
 	ic.should be_valid
     end
 
-    it "should have access to a pre-parser class" do
+    it "should have access to a pre_parser class" do
 	# Initial pre-parser class
 	lambda { PreParser.new }.should_not raise_error
     end
 
     it "should reference existing pre-parsers if not nil" do
 	# Preparser
-	preparser='abc'
+	pre_parser='abc'
 	# Get ImportConfig
 	ic=get_valid_import_config()
 	# Set field
-	ic.pre_parser=preparser
+	ic.pre_parser=pre_parser
 	# Create pre-parser
 	pp=PreParser.new
 	# Test to make sure this parser does not exist
-	pp.should_not respond_to(preparser.to_sym)
+	pp.should_not respond_to(pre_parser.to_sym)
 	# Test to make sure ImportConfig is not valid
 	ic.should_not be_valid
     end
 
     it "should be valid if it references a valid pre_parser" do
 	# Preparser
-	preparser='zzz'
+	pre_parser='zzz'
 	# Get ImportConfig
 	ic=get_valid_import_config()
 	# Set field
-	ic.pre_parser=preparser
+	ic.pre_parser=pre_parser
 	# Add pre_parser for this test
-	PreParser.any_instance.stub(preparser)
+	PreParser.any_instance.stub(pre_parser)
 	# Create pre-parser
 	pp=PreParser.new
 	# Test to make sure this parser does not exist
-	pp.should respond_to(preparser.to_sym)
+	pp.should respond_to(pre_parser.to_sym)
 	# Test to make sure ImportConfig is not valid
 	ic.should be_valid
     end
