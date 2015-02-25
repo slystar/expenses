@@ -35,6 +35,7 @@ class ImportConfig < ActiveRecord::Base
     validate :check_file_type
     validate :check_unique_id_hash_fields
     validate :check_date_type
+    validate :check_pre_parser
 
     private
 
@@ -56,5 +57,12 @@ class ImportConfig < ActiveRecord::Base
     # Method to check the date_type, make sure it's supported
     def check_date_type
 	self.errors.add(:date_type,"not among supported date types: #{DATE_TYPES.join(',')}") if not self.date_type.nil? and DATE_TYPES[self.date_type].nil?
+    end
+
+    # Method to check a valid pre_parser exists
+    def check_pre_parser
+	if not self.pre_parser.nil?
+	    self.errors.add(:pre_parser,"not a valid PreParser") unless PreParser.new.respond_to?(self.pre_parser.to_sym)
+	end
     end
 end
