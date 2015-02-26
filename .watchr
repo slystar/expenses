@@ -94,6 +94,16 @@ watch("app/(.*/.*).rb") do |match|
     end
 end
 
+# Watch ruby files in lib directory and call matching spec
+watch("lib/(.*/.*).rb") do |match|
+    # Check if we modified spec file itself
+    if match[1] =~ /_spec/
+	run_spec %{spec/lib/#{match[1]}.rb}
+    else
+	run_spec %{spec/lib/#{match[1]}_spec.rb}
+    end
+end
+
 # Watch haml files in views and call matching requests spec
 watch("app/views/(.*)/.*.haml") do |match|
     run_spec %{spec/requests/#{match[1]}_spec.rb}
