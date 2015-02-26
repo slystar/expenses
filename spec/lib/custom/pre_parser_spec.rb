@@ -16,13 +16,24 @@ describe PreParser do
 	pp.should respond_to('test')
     end
 
-    it "should return nil when a pre_parser does not exist" do
+    it "should raise an error when a pre_parser does not exist" do
 	# Get new object
 	pp=PreParser.new
 	# Test
-	pp.parse('dummy file content','aaa').should be_nil
+	lambda{pp.parse('dummy file content','aaa')}.should raise_error
     end
 
-    pending "should parse the test file correctly" do
+    it "should parse the test file correctly" do
+	# Test file
+	filename='spec/imports/pre_parser_test.csv'
+	# Get new object
+	pp=PreParser.new
+	# Get file content
+	content=File.read(filename)
+	# Parse file
+	puts('aaa')
+	p result=pp.parse(content,'test')
+	# Test
+	1.should == 2
     end
 end
