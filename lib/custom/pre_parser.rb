@@ -1,6 +1,7 @@
 # Class to pre parse bad bank CSV export files 
 # Output:
 # Unique ID, Date purchased, Store, Amount
+# SHA1,mm/dd/yyyy,Store,80$
 
 # Required libraries
 require 'csv'
@@ -23,6 +24,8 @@ class PreParser
     def test
 	# Generate CSV
 	csv_string = CSV.generate do |csv|
+	    # Add header
+	    csv << ["unique_id" ,"date_purchased" ,"store" ,"amount" ,"city" ,"province"]
 	    # Loop over content
 	    @file_content.each_line do |line|
 		# Check line size
@@ -30,18 +33,34 @@ class PreParser
 		    # Skip blank lines
 		    next
 		end
-		p("--#{line}--")
+		# Skip header
+		next if line =~ /Transaction Date.*Transaction Description.*Amount/
 		# Parse line
-		p csv_array  = line.parse_csv
+		csv_array  = line.parse_csv
 		# Extract data
 		date_purchased=csv_array[0]
-		multi_data=csv_array[2]
+		multi_data=csv_array[2].gsub(/\s\s*$/,'')
 		amount=csv_array[3]
 		# Get missing fields
-		unique_id=Digest::SHA1.hexdigest(date_purchased + multi_data + amount)
-		# Get Store
+		unique_id=Digest::SHA1.hexdigest(line.chomp)
+		# Split transaction description
+		desc=multi_data.split(/\s\s+/)
+		# Get store
+		store=desc[0]
+		city=desc[1]
+		prov=desc[2]
+		# Fix date
+		correct_date_format=date_purchased.gsub('_','/')
+		# Get amount number
+		number=amount.gsub(/[^0-9.]/,'')
+		# Fix amount
+		if amount =~ /^-/
+		    amount="#{number}$"
+		else
+		    amount="-#{number}$"
+		end
 		# Add to output
-		#csv << ["row", "of", "CSV", "data"]
+		csv << [unique_id,correct_date_format,store,amount,city,prov]
 	    end
 	end
     end
