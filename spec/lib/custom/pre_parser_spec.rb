@@ -54,4 +54,31 @@ describe PreParser do
 	# Size number of lines
 	csv.size.should == 4
     end
+
+    it "should parse CapitalOne CSV correctly" do
+	# Test file
+	filename='spec/imports/capital_one_mc.csv'
+	# Get new object
+	pp=PreParser.new
+	# Get file content
+	content=File.read(filename)
+	# Parse file
+	result=pp.parse(content,'p_mc_capital_one')
+	# Parse CSV
+	csv=CSV.parse(result)
+	# Test row 1
+	test_row(csv[0],["unique_id","date_purchased","store","amount","city","province"])
+	# Test row 2
+	test_row(csv[1],["9433a1c7c018e1bf88e5877ff31541d7ff3c9d0d","01/19/2015","aaaaaa bbbbbbbbb","85.00$","CITY2","ON"])
+	# Test row 3
+	test_row(csv[2],["2cd52cb6d135123803030585c5303acd6714580e","01/20/2015","PAIEMENT - MERCI","-103.00$",nil,nil])
+	# Test row 4
+	test_row(csv[3],["46219c401499ba778247924c486357d6c75e2c9f","01/22/2015","aaaaaa bbbbbb cccccc","123.00$","CITY1","ON"])
+	# Test row 5
+	test_row(csv[4],["8f2e5890decce7fafc97db34c944301eb579020c","01/22/2015","aaaaaaaaaaaaaaaaaaaa","21.11$","CITY1","ON"])
+	# Test row 6
+	test_row(csv[5],["a2e5c55a757a03898788399ca423c96f668acfbc","01/23/2015","aaaaaaaa bbbbbbbbb 111","38.18$","CITY3","ON"])
+	# Size number of lines
+	csv.size.should == 6
+    end
 end
