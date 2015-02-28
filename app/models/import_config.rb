@@ -2,7 +2,7 @@ class ImportConfig < ActiveRecord::Base
     include SharedMethods
 
     # Accessible attributes
-    attr_accessible :title, :description, :field_mapping, :file_type, :unique_id_field, :unique_id_hash_fields, :date_type
+    attr_accessible :title, :description, :field_mapping, :file_type, :unique_id_field, :unique_id_hash_fields, :date_type, :pre_parser
 
     # Serialize
     serialize :field_mapping
