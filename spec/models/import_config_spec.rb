@@ -227,6 +227,18 @@ describe ImportConfig do
 	ic.should be_valid
     end
 
+    it "should allow a pre_parser" do
+	# Variables
+	pre_parser="test"
+	# Add pre_parser
+	@attr=@attr.merge(:pre_parser => pre_parser)
+	# Get ImportConfig
+	ic=get_valid_import_config()
+	# Test
+	ic.should be_valid
+	ic.pre_parser.should == pre_parser
+    end
+
     it "should have access to a pre_parser class" do
 	# Initial pre-parser class
 	lambda { PreParser.new }.should_not raise_error
@@ -262,5 +274,17 @@ describe ImportConfig do
 	pp.should respond_to(pre_parser.to_sym)
 	# Test to make sure ImportConfig is not valid
 	ic.should be_valid
+    end
+
+    it "should have an error if invalid pre_parser" do
+	# Variables
+	pre_parser="testa"
+	# Add pre_parser
+	@attr=@attr.merge(:pre_parser => pre_parser)
+	# Get ImportConfig
+	ic=get_valid_import_config()
+	# Test
+	ic.should_not be_valid
+	ic.errors.messages.to_s.should =~ /#{pre_parser}/i
     end
 end
