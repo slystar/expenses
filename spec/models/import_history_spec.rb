@@ -7,6 +7,7 @@ describe ImportHistory do
 	@attr={:import_config_id => 1, :original_file_name => "uploaded_file.csv"}
 	@attr_ic={:user_id => 1, :title => 'Big bank import', :description => 'CSV export of Big Bank', :field_mapping => {:amount => 2, :store => 3}, :file_type => 'csv', :unique_id_field => 4, :unique_id_hash_fields => [2,3,4], :date_type => 0}
 	@attr_ic_amex={:title => 'Amex', :description => 'CSV export of amex', :field_mapping => {:date_purchased => 0, :amount => 2, :store => 3}, :file_type => 'csv', :unique_id_field => 1, :unique_id_hash_fields => [0,2,3], :date_type => 0}
+	@attr_ic_capital_one_mc={:title => 'CapitalOne MC', :description => 'CSV export of CapitalOne MC', :field_mapping => {:date_purchased => 1, :amount => 3, :store => 2}, :file_type => 'csv', :unique_id_field => 0, :unique_id_hash_fields => [1,2,3], :date_type => 0, :pre_parser => 'p_mc_capital_one'}
 	@new_user_id=1
     end
 
@@ -209,6 +210,49 @@ describe ImportHistory do
 	# Remove any saved files
 	ih.remove_saved_file.should == true
     end
+
+    it "should use a pre_parser if it is specified" do
+	# Import config attributes
+	@attr_ic={:title => 'PreParserTest', :description => 'test pre_parser functionality', :field_mapping => {:date_purchased => 1, :amount => 3, :store => 2}, :file_type => 'csv', :unique_id_field => 0, :unique_id_hash_fields => [1,2,3], :date_type => 0,:pre_parser => 'test'}
+	# Import file
+	filename='spec/imports/pre_parser_test.csv'
+	# Get import history
+	ih=get_valid_import_history()
+	# Save import_history
+	ih.save!
+	# Get import config
+	ic=ih.import_config
+	# Get user
+	u=ih.user_id
+	# Import data
+	ih.import_data(filename,ic,u)
+	# Get all ImportData
+	id=ImportDatum.all
+	# ImportData should contain 2 new rows
+	id.size.should == 2
+	# Get first record
+	id1=id.first
+	# Get Date bought
+	date_purchased=id1.mapped_fields[:date_purchased]
+	# Check Date
+	date_purchased.strftime("%Y-%m-%d").should == Date.parse('2015-01-19').strftime("%Y-%m-%d")
+	# Check amount
+	id1.mapped_fields[:amount].should == "85.00"
+	# Check Store
+	id1.mapped_fields[:store].should == "Store Title1"
+	# Remove any saved files
+	ih.remove_saved_file.should == true
+    end
+
+    it "should raise an error if pre_parser does not exist" do
+	# Import config attributes
+	@attr_ic={:title => 'PreParserTest', :description => 'test pre_parser functionality', :field_mapping => {:date_purchased => 1, :amount => 3, :store => 2}, :file_type => 'csv', :unique_id_field => 0, :unique_id_hash_fields => [1,2,3], :date_type => 0,:pre_parser => 'not_exist'}
+	# Import file
+	filename='spec/imports/pre_parser_test.csv'
+	# Get import history
+	lambda {get_valid_import_history()}.should raise_error
+    end
+
     it "should be able to import csv from amex" do
 	# Import data
 	ih=import_amex
@@ -272,7 +316,7 @@ describe ImportHistory do
 
     it "should be able to import csv from capital one" do
 	# Import config attributes
-	@attr_ic={:title => 'CapitalOne MC', :description => 'CSV export of CapitalOne MC', :field_mapping => {:date_purchased => 0, :amount => 3, :store => 2}, :file_type => 'csv', :unique_id_field => nil, :unique_id_hash_fields => [0,3,2], :date_type => 0}
+	@attr_ic=@attr_ic_capital_one_mc
 	# Import file
 	filename='spec/imports/capital_one_mc.csv'
 	# Get import history
@@ -294,7 +338,7 @@ describe ImportHistory do
 	# Get Date bought
 	date_purchased=id1.mapped_fields[:date_purchased]
 	# Check Date
-	date_purchased.strftime("%Y-%m-%d").should == Date.parse('2013-01-26').strftime("%Y-%m-%d")
+	date_purchased.strftime("%Y-%m-%d").should == Date.parse('2015-01-19').strftime("%Y-%m-%d")
 	# Check amount
 	id1.mapped_fields[:amount].should == "85.00"
 	# Check Store
@@ -328,6 +372,47 @@ describe ImportHistory do
 	id=ImportDatum.all
 	# ImportData should still contain 3 new rows
 	id.size.should == 3
+	# Test: errors should still be zero, because it's not an error
+	ih2.errors.size.should == 0
+	# Remove any saved files
+	ih.remove_saved_file.should == true
+    end
+
+    it "should be able to ignore duplicate entries during import with pre_parser" do
+	# Import config attributes
+	@attr_ic=@attr_ic_capital_one_mc
+	# Import file
+	filename='spec/imports/capital_one_mc.csv'
+	# Get import history
+	ih=get_valid_import_history()
+	# Save import_history
+	ih.save!
+	# Get import config
+	ic=ih.import_config
+	# Get user
+	u=ih.user_id
+	# Import data
+	ih.import_data(filename,ic,u)
+	# Get all ImportData
+	id=ImportDatum.all
+	# ImportData should contain 3 new rows
+	id.size.should == 4
+	# Get new import history
+	ih2=get_valid_import_history()
+	# Save import_history
+	ih2.save!
+	# Get import config
+	ic=ih2.import_config
+	# Get user
+	u=ih.user_id
+	# Test same user
+	u.should == ih.user_id
+	# Import data
+	ih2.import_data(filename,ic,u)
+	# Get all ImportData
+	id=ImportDatum.all
+	# ImportData should still contain 3 new rows
+	id.size.should == 4
 	# Test: errors should still be zero, because it's not an error
 	ih2.errors.size.should == 0
 	# Remove any saved files

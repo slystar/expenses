@@ -1,7 +1,7 @@
 namespace :import_configs do
 
     # Set the Rails environment
-    Rails.env='development'
+    #Rails.env='development'
     # Info
     puts("Rails env=#{Rails.env}")
 
@@ -16,6 +16,11 @@ namespace :import_configs do
 	attr_ic_pc={:title => 'PC', :description => 'CSV export of PC MC', :field_mapping => {:date_purchased => 0, :amount => 2, :store => 3}, :file_type => 'csv', :unique_id_field => 7, :unique_id_hash_fields => [0,2,3], :date_type => 0}
 	# Create PC ImportConfig
 	find_or_create(attr_ic_pc,'Master Card')
+
+	# Capital One Master Card
+	attr_ic_capital_one_mc={:title => 'CapitalOne MC', :description => 'CSV export of CapitalOne MC', :field_mapping => {:date_purchased => 1, :amount => 3, :store => 2}, :file_type => 'csv', :unique_id_field => 0, :unique_id_hash_fields => [1,2,3], :date_type => 0, :pre_parser => 'p_mc_capital_one'}
+	# Create PC ImportConfig
+	find_or_create(attr_ic_capital_one_mc,'Master Card')
     end
 
     # Function to create ImportConfig

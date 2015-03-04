@@ -2,7 +2,7 @@ class ImportConfig < ActiveRecord::Base
     include SharedMethods
 
     # Accessible attributes
-    attr_accessible :title, :description, :field_mapping, :file_type, :unique_id_field, :unique_id_hash_fields, :date_type
+    attr_accessible :title, :description, :field_mapping, :file_type, :unique_id_field, :unique_id_hash_fields, :date_type, :pre_parser
 
     # Serialize
     serialize :field_mapping
@@ -24,7 +24,6 @@ class ImportConfig < ActiveRecord::Base
     validates :description, :presence => true
     validates :field_mapping, :presence => true
     validates :file_type, :presence => true
-    validates :unique_id_field, :presence => true
     validates :unique_id_hash_fields, :presence => true
     validates :date_type, :presence => true
     validates :app_version, :presence => true
@@ -36,6 +35,7 @@ class ImportConfig < ActiveRecord::Base
     validate :check_file_type
     validate :check_unique_id_hash_fields
     validate :check_date_type
+    validate :check_pre_parser
 
     private
 
@@ -57,5 +57,12 @@ class ImportConfig < ActiveRecord::Base
     # Method to check the date_type, make sure it's supported
     def check_date_type
 	self.errors.add(:date_type,"not among supported date types: #{DATE_TYPES.join(',')}") if not self.date_type.nil? and DATE_TYPES[self.date_type].nil?
+    end
+
+    # Method to check a valid pre_parser exists
+    def check_pre_parser
+	if not self.pre_parser.nil?
+	    self.errors.add(:pre_parser,"'#{self.pre_parser}' not a valid PreParser") unless PreParser.new.respond_to?(self.pre_parser.to_sym)
+	end
     end
 end

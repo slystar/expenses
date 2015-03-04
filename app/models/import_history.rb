@@ -157,11 +157,20 @@ class ImportHistory < ActiveRecord::Base
 	self.import_accepted=[]
 	self.import_rejected=[]
 	line_count=0
+	pre_parser=import_config.pre_parser
 	# Get unique hash fields
 	unique_hash_ids=import_config[:unique_id_hash_fields]
-	# Clean file
-	file_content.gsub!(/ ,/,',')
-	file_content.gsub!(/, /,',')
+	# Check if we have a pre_parser
+	if pre_parser.nil?
+	    # Clean file
+	    file_content.gsub!(/ ,/,',')
+	    file_content.gsub!(/, /,',')
+	else
+	    # Get PreParser object
+	    pp=PreParser.new
+	    # Run through pre_parser
+	    file_content=pp.parse(file_content,pre_parser)
+	end
 	# Loop over csv
 	CSV.parse(file_content) do |row|
 	    # Variables
