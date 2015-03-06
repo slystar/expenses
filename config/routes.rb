@@ -1,4 +1,6 @@
 Expenses::Application.routes.draw do
+  get "import_histories/:id" => "import_histories#show"
+
   get "payment_notes/create"
 
     # Default
