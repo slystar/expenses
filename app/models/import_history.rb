@@ -122,6 +122,18 @@ class ImportHistory < ActiveRecord::Base
 	end
     end
 
+    # Method to delete imported records
+    def delete_imported_records
+	# Get import_data for this record
+	id=ImportDatum.where(:import_history_id => self.id).where(:process_flag => false)
+	# Destroy records
+	if id.destroy_all
+	    return true
+	else
+	    return false
+	end
+    end
+
     # Private methods
     private
 
