@@ -6,6 +6,7 @@ describe ImportHistory do
     before(:each) do
 	@attr={:import_config_id => 1, :original_file_name => "uploaded_file.csv"}
 	@attr_ic={:user_id => 1, :title => 'Big bank import', :description => 'CSV export of Big Bank', :field_mapping => {:amount => 2, :store => 3}, :file_type => 'csv', :unique_id_field => 4, :unique_id_hash_fields => [2,3,4], :date_type => 0}
+	@attr_ic_pc={:title => 'PC', :description => 'CSV export of PC MC', :field_mapping => {:date_purchased => 0, :amount => 2, :store => 3}, :file_type => 'csv', :unique_id_field => 7, :unique_id_hash_fields => [0,2,3], :date_type => 0}
 	@attr_ic_amex={:title => 'Amex', :description => 'CSV export of amex', :field_mapping => {:date_purchased => 0, :amount => 2, :store => 3}, :file_type => 'csv', :unique_id_field => 1, :unique_id_hash_fields => [0,2,3], :date_type => 0}
 	@attr_ic_capital_one_mc={:title => 'CapitalOne MC', :description => 'CSV export of CapitalOne MC', :field_mapping => {:date_purchased => 1, :amount => 3, :store => 2}, :file_type => 'csv', :unique_id_field => 0, :unique_id_hash_fields => [1,2,3], :date_type => 0, :pre_parser => 'p_mc_capital_one'}
 	@new_user_id=1
@@ -30,7 +31,7 @@ describe ImportHistory do
 	return ih
     end
 
-    def import_amex()
+    def import_amex(user_id=nil)
 	# Import config attributes
 	@attr_ic=@attr_ic_amex
 	# Import file
@@ -41,12 +42,43 @@ describe ImportHistory do
 	ih.save!
 	# Get import config
 	ic=ih.import_config
-	# Get user
-	u=ih.user_id
+	# Check user
+	if user_id
+	    # Set user
+	    u=user_id
+	else
+	    # Get user
+	    u=ih.user_id
+	end
 	# Import data
 	ih.import_data(@filename,ic,u)
 	# Remove any saved files
 	ih.remove_saved_file.should == true
+	# Return ImportHistory
+	return ih
+    end
+
+    def import_pc(user_id=nil)
+	# Import config attributes
+	@attr_ic=@attr_ic_pc
+	# Import file
+	@filename='spec/imports/pc_financial.csv'
+	# Get import history
+	ih=get_valid_import_history()
+	# Save import_history
+	ih.save!
+	# Get import config
+	ic=ih.import_config
+	# Check user
+	if user_id
+	    # Set user
+	    u=user_id
+	else
+	    # Get user
+	    u=ih.user_id
+	end
+	# Import data
+	ih.import_data(@filename,ic,u)
 	# Return ImportHistory
 	return ih
     end
@@ -282,20 +314,8 @@ describe ImportHistory do
     end
 
     it "should be able to import csv from pcfinancial" do
-	# Import config attributes
-	@attr_ic={:title => 'PC', :description => 'CSV export of PC MC', :field_mapping => {:date_purchased => 0, :amount => 2, :store => 3}, :file_type => 'csv', :unique_id_field => 7, :unique_id_hash_fields => [0,2,3], :date_type => 0}
-	# Import file
-	filename='spec/imports/pc_financial.csv'
-	# Get import history
-	ih=get_valid_import_history()
-	# Save import_history
-	ih.save!
-	# Get import config
-	ic=ih.import_config
-	# Get user
-	u=ih.user_id
 	# Import data
-	ih.import_data(filename,ic,u)
+	ih=import_pc
 	# Get all ImportData
 	id=ImportDatum.all
 	# ImportData should contain 2 new rows
@@ -419,7 +439,7 @@ describe ImportHistory do
 	ih.remove_saved_file.should == true
     end
 
-    it "should be able to imort the same record by each user" do
+    it "should be able to import the same record by each user" do
 	# Variables
 	@new_user_id = 1
 	@attr_ic = @attr_ic_amex
@@ -509,7 +529,75 @@ describe ImportHistory do
 	File.exist?(file_path).should == false
     end
 
-    pending "should have an undo option in case wrong import_config is selected for import" do
-	# It could be an undi ID field added to each row inserted
+    it "should have a delete_imported_records method" do
+	ih=get_valid_import_history
+	# Test
+	ih.should respond_to(:delete_imported_records)
+    end
+
+    it "should delete imported_records that have not been processed" do
+	# First Import data
+	ih1=import_amex
+	# Get all ImportData
+	id1=ImportDatum.all
+	# ImportData should contain 3 new rows
+	id1.size.should == 3
+	# Second Import data
+	ih2=import_pc
+	# Get all ImportData
+	id2=ImportDatum.all
+	# ImportData should contain 3 new rows
+	id2.size.should == 5
+	# Test
+	ih1.id.should_not == ih2.id
+	id1.first.import_history_id.should_not == id2.last.import_history_id
+	# Delete first import
+	ih1.delete_imported_records
+	# Get all ImportData
+	id=ImportDatum.all
+	# Test
+	id.size.should == 2
+	# Re-import
+	ih3=import_amex
+	# Get all ImportData
+	id3=ImportDatum.all
+	# ImportData should contain 3 new rows
+	id3.size.should == 5
+    end
+
+    it "should not delete imported_records that have been processed" do
+	# First Import data
+	ih1=import_amex
+	# Get all ImportData
+	id1=ImportDatum.all
+	# ImportData should contain 3 new rows
+	id1.size.should == 3
+	# Second Import data
+	ih2=import_pc
+	# Get all ImportData
+	id2=ImportDatum.all
+	# ImportData should contain 3 new rows
+	id2.size.should == 5
+	# Test
+	ih1.id.should_not == ih2.id
+	id1.first.import_history_id.should_not == id2.last.import_history_id
+	# Get first record
+	first=id1.first
+	# Process first_record
+	first.process_flag=true
+	# Save first record
+	first.save.should == true
+	# Delete first import
+	ih1.delete_imported_records
+	# Get all ImportData
+	id3=ImportDatum.all
+	# Test
+	id3.size.should == 3
+	# Re-import with same user
+	ih3=import_amex(ih1.user_id)
+	# Get all ImportData
+	id3=ImportDatum.all
+	# ImportData should contain 2 new rows (1 stayed there)
+	id3.size.should == 5
     end
 end

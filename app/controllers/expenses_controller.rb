@@ -487,4 +487,16 @@ class ExpensesController < ApplicationController
 	end
 	redirect_to menu_path, notice: "All expenses processed, #{count_good} OK, #{count_bad} errors"
     end
+
+    # DELETE imported records
+    def delete_imported_records
+	# Get records
+	ih = ImportHistory.find(params[:id])
+	# Delete records
+	if ih.delete_imported_records
+	    redirect_to "#{expenses_path}/import", notice: "Errased all imported records for ImportHistory id:#{ih.id}"
+	else
+	    redirect_to "#{expenses_path}/import", notice: "Error erasing imported records for ImportHistory id:#{ih.id}"
+	end
+    end
 end
