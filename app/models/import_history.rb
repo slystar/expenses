@@ -57,8 +57,13 @@ class ImportHistory < ActiveRecord::Base
 	self.file_empty=false
 	# Set target dir
 	self.target_dir=target_dir
-	# Return true
-	return true
+	# Save self
+	if self.save
+	    # Return true
+	    return true
+	else
+	    return false
+	end
     end
 
     # Method to remove saved file

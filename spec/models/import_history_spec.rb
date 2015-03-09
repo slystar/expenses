@@ -157,17 +157,17 @@ describe ImportHistory do
 	pattern=/\d\d\d\d_\d\d_\d\d_.{40}/
 	# Get object
 	ih=get_valid_import_history()
+	# Save record
+	ih.save!
 	# Set file content
 	file_content='This is a test file content'
 	# Save file
 	ih.save_file(file_content,storage_dir)
-	# Save record
-	ih.save!
 	# Get filename
 	filename=ih.new_file_name
 	# Test
 	filename.should_not be_blank
-	# Test
+	ImportHistory.last.new_file_name.should == filename
 	filename.should =~ pattern
 	# Set new file paht
 	new_file_path=File.join(storage_dir,filename)
