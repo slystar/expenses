@@ -57,8 +57,13 @@ class ImportHistory < ActiveRecord::Base
 	self.file_empty=false
 	# Set target dir
 	self.target_dir=target_dir
-	# Return true
-	return true
+	# Save self
+	if self.save
+	    # Return true
+	    return true
+	else
+	    return false
+	end
     end
 
     # Method to remove saved file
@@ -123,13 +128,21 @@ class ImportHistory < ActiveRecord::Base
     end
 
     # Method to delete imported records
-    def delete_imported_records
-	# Get import_data for this record
-	id=ImportDatum.where(:import_history_id => self.id).where(:process_flag => false)
-	# Destroy records
-	if id.destroy_all
-	    return true
+    def delete_imported_records(user_id)
+	# Check user
+	if self.user_id == user_id
+	    # Get import_data for this record
+	    id=ImportDatum.where(:import_history_id => self.id).where(:process_flag => false)
+	    # Destroy records
+	    if id.destroy_all
+		return true
+	    else
+		return false
+	    end
 	else
+	    # Wrong user
+	    self.errors.add(:base,"Cannot delete other user's imported records.")
+	    # Return nil
 	    return false
 	end
     end

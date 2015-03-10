@@ -118,4 +118,25 @@ module SpecHelpFunctions
 		ud.process_flag.should == true
 	    end
     end
+
+    # Get a valid ImportHistory object
+    def get_valid_import_history(attr_ih=@attr)
+	# Get a user
+	u1=get_next_user
+	# Get an import_config
+	ic=get_valid_import_config(@attr_ic)
+	# Set unique title
+	ic.title=Faker::Name.name
+	# Save ImportConfig
+	ic.save!
+	# Create ImportHistory
+	ih=ImportHistory.new(attr_ih)
+	# Add user id because it should not be mass assignable
+	ih.user_id=u1.id
+	# Set the ImportConfig attribute
+	ih.import_config_id=ic.id
+	# Return object
+	return ih
+    end
+
 end

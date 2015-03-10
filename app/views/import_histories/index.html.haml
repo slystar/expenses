@@ -1,0 +1,25 @@
+%h1 Listing import histories
+%table{border:1}
+  %tr
+    %th ID
+    %th user_id
+    %th import_config_id
+    %th original_file_name
+    %th new_file_name
+    %th created_at
+    %th updated_at
+    %th app_version
+    %th
+  - @ihs.each do |ih|
+    %tr
+      %td= ih.id
+      %td= ih.user.user_name
+      %td= ih.import_config.title
+      %td= ih.original_file_name
+      %td= ih.new_file_name
+      %td= ih.created_at
+      %td= ih.updated_at
+      %td= ih.app_version
+      %td
+        =link_to 'Delete Imported records', {controller: "expenses", action: "delete_imported_records", id: ih.id}, method: :delete, data: { confirm: 'Are you sure?' }
+%br/

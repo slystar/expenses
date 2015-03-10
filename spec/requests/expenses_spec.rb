@@ -11,6 +11,16 @@ describe "Expenses ->" do
 	    current_path.should == login_path
 	end
 
+	it "import histories" do
+	    # Visit page
+	    visit import_histories_path
+	    # Test
+	    current_path.should == login_path
+	end
+
+	pending "test all pages" do
+	end
+
     end
 
     describe 'after login ->' do
@@ -101,6 +111,10 @@ describe "Expenses ->" do
 
 		before(:each) do
 		    @import_path="#{expenses_path}/import"
+		    attr={:title => 'Amex', :description => 'CSV export of amex', :field_mapping => {:date_purchased => 0, :amount => 2, :store => 3}, :file_type => 'csv', :unique_id_field => 1, :unique_id_hash_fields => [0,2,3], :date_type => 0}
+		    @ic=get_valid_import_config(attr)
+		    # Save ImportConfig
+		    @ic.save
 		end
 
 		it "should have a link" do
@@ -110,7 +124,40 @@ describe "Expenses ->" do
 		    current_path.should == @import_path
 		end
 
-		pending "should import expenses" do
+		it "should import expenses" do
+		    visit(@import_path)
+		    # Test
+		    page.should have_content("Import expenses")
+		    # Fill in information
+		    page.select "Amex", from: 'file_upload_import_config'
+		    page.attach_file 'file_upload_my_file', File.join(Rails.root, '/spec/imports/amex.csv')
+		    # Test
+		    ImportDatum.all.size.should == 0
+		    # Click button to submit
+		    page.click_button "Upload"
+		    # Test
+		    current_path.should == @import_path
+		    ImportDatum.all.size.should == 3
+		end
+
+		it "should be able to undo imoprt" do
+		    visit(@import_path)
+		    # Test
+		    page.should have_content("Import expenses")
+		    # Fill in information
+		    page.select "Amex", from: 'file_upload_import_config'
+		    page.attach_file 'file_upload_my_file', File.join(Rails.root, '/spec/imports/amex.csv')
+		    # Click button to submit
+		    page.click_button "Upload"
+		    # Test
+		    current_path.should == @import_path
+		    ImportDatum.all.size.should == 3
+		    page.should have_link("Undo Import")
+		    # Click link
+		    page.click_link "Undo Import"
+		    # Test
+		    current_path.should == @import_path
+		    ImportDatum.all.size.should == 0
 		end
 	    end
 
@@ -388,6 +435,18 @@ describe "Expenses ->" do
 			find_field('expense_store_id').find('option[selected]').text.should == item2
 			find_field('expense_pay_method_id').find('option[selected]').text.should == @e.pay_method.name
 		    end
+		end
+	    end
+
+	    describe "Import Histories ->" do
+		before(:each) do
+		    @import_histories_path="#{import_histories_path}"
+		end
+		it "should have a link" do
+		    visit(menu_path)
+		    page.should have_link("Import histories")
+		    visit(@import_histories_path)
+		    current_path.should == @import_histories_path
 		end
 	    end
 	end

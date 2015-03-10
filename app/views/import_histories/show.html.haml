@@ -1,0 +1,26 @@
+%h1 Import History
+%table{border: 1}
+  %tr
+    %th id
+    %td= @ih.id
+  %tr
+    %th user_id
+    %td= @ih.user.user_name
+  %tr
+    %th import_config_id
+    %td= @ih.import_config.title
+  %tr
+    %th original_file_name
+    %td= @ih.original_file_name
+  %tr
+    %th new_file_name
+    %td= @ih.new_file_name
+  %tr
+    %th created_at
+    %td= @ih.created_at
+  %tr
+    %th updated_at
+    %td= @ih.updated_at
+  %tr
+    %th app_version
+    %td= @ih.app_version

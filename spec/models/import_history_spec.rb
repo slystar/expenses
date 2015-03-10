@@ -12,25 +12,6 @@ describe ImportHistory do
 	@new_user_id=1
     end
 
-    def get_valid_import_history(attr=@attr)
-	# Get a user
-	u1=get_next_user
-	# Get an import_config
-	ic=get_valid_import_config(@attr_ic)
-	# Set unique title
-	ic.title=Faker::Name.name
-	# Save ImportConfig
-	ic.save!
-	# Create ImportHistory
-	ih=ImportHistory.new(attr)
-	# Add user id because it should not be mass assignable
-	ih.user_id=u1.id
-	# Set the ImportConfig attribute
-	ih.import_config_id=ic.id
-	# Return object
-	return ih
-    end
-
     def import_amex(user_id=nil)
 	# Import config attributes
 	@attr_ic=@attr_ic_amex
@@ -157,17 +138,17 @@ describe ImportHistory do
 	pattern=/\d\d\d\d_\d\d_\d\d_.{40}/
 	# Get object
 	ih=get_valid_import_history()
+	# Save record
+	ih.save!
 	# Set file content
 	file_content='This is a test file content'
 	# Save file
 	ih.save_file(file_content,storage_dir)
-	# Save record
-	ih.save!
 	# Get filename
 	filename=ih.new_file_name
 	# Test
 	filename.should_not be_blank
-	# Test
+	ImportHistory.last.new_file_name.should == filename
 	filename.should =~ pattern
 	# Set new file paht
 	new_file_path=File.join(storage_dir,filename)
@@ -552,7 +533,7 @@ describe ImportHistory do
 	ih1.id.should_not == ih2.id
 	id1.first.import_history_id.should_not == id2.last.import_history_id
 	# Delete first import
-	ih1.delete_imported_records
+	ih1.delete_imported_records(ih1.user_id)
 	# Get all ImportData
 	id=ImportDatum.all
 	# Test
@@ -588,7 +569,7 @@ describe ImportHistory do
 	# Save first record
 	first.save.should == true
 	# Delete first import
-	ih1.delete_imported_records
+	ih1.delete_imported_records(ih1.user_id)
 	# Get all ImportData
 	id3=ImportDatum.all
 	# Test
@@ -599,5 +580,26 @@ describe ImportHistory do
 	id3=ImportDatum.all
 	# ImportData should contain 2 new rows (1 stayed there)
 	id3.size.should == 5
+    end
+
+    it "should only delete imported_records if the user matches" do
+	# First Import data
+	ih1=import_amex
+	# Get all ImportData
+	id1=ImportDatum.all
+	# ImportData should contain 3 new rows
+	id1.size.should == 3
+	# Get 2nd user
+	u2=get_next_user
+	# Test
+	ih1.user_id.should_not == u2.id
+	# Delete first import
+	ih1.delete_imported_records(u2.id)
+	# Test
+	ImportDatum.all.size.should == 3
+	# Delete using correct user
+	ih1.delete_imported_records(ih1.id)
+	# Test
+	ImportDatum.all.size.should == 0
     end
 end
