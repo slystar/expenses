@@ -12,25 +12,6 @@ describe ImportHistory do
 	@new_user_id=1
     end
 
-    def get_valid_import_history(attr=@attr)
-	# Get a user
-	u1=get_next_user
-	# Get an import_config
-	ic=get_valid_import_config(@attr_ic)
-	# Set unique title
-	ic.title=Faker::Name.name
-	# Save ImportConfig
-	ic.save!
-	# Create ImportHistory
-	ih=ImportHistory.new(attr)
-	# Add user id because it should not be mass assignable
-	ih.user_id=u1.id
-	# Set the ImportConfig attribute
-	ih.import_config_id=ic.id
-	# Return object
-	return ih
-    end
-
     def import_amex(user_id=nil)
 	# Import config attributes
 	@attr_ic=@attr_ic_amex
