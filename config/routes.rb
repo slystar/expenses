@@ -1,7 +1,9 @@
 Expenses::Application.routes.draw do
-  get "import_histories/:id" => "import_histories#show"
+    # ImportHistory
+    get "import_histories/:id" => "import_histories#show"
+    get "import_histories" => "import_histories#index"
 
-  get "payment_notes/create"
+    get "payment_notes/create"
 
     # Default
     root :to => 'expenses#menu'
