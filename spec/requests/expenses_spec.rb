@@ -11,6 +11,16 @@ describe "Expenses ->" do
 	    current_path.should == login_path
 	end
 
+	it "import histories" do
+	    # Visit page
+	    visit import_histories_path
+	    # Test
+	    current_path.should == login_path
+	end
+
+	pending "test all pages" do
+	end
+
     end
 
     describe 'after login ->' do
@@ -425,6 +435,18 @@ describe "Expenses ->" do
 			find_field('expense_store_id').find('option[selected]').text.should == item2
 			find_field('expense_pay_method_id').find('option[selected]').text.should == @e.pay_method.name
 		    end
+		end
+	    end
+
+	    describe "Import Histories ->" do
+		before(:each) do
+		    @import_histories_path="#{import_histories_path}"
+		end
+		it "should have a link" do
+		    visit(menu_path)
+		    page.should have_link("Import histories")
+		    visit(@import_histories_path)
+		    current_path.should == @import_histories_path
 		end
 	    end
 	end
