@@ -552,7 +552,7 @@ describe ImportHistory do
 	ih1.id.should_not == ih2.id
 	id1.first.import_history_id.should_not == id2.last.import_history_id
 	# Delete first import
-	ih1.delete_imported_records
+	ih1.delete_imported_records(ih1.user_id)
 	# Get all ImportData
 	id=ImportDatum.all
 	# Test
@@ -588,7 +588,7 @@ describe ImportHistory do
 	# Save first record
 	first.save.should == true
 	# Delete first import
-	ih1.delete_imported_records
+	ih1.delete_imported_records(ih1.user_id)
 	# Get all ImportData
 	id3=ImportDatum.all
 	# Test
@@ -599,5 +599,26 @@ describe ImportHistory do
 	id3=ImportDatum.all
 	# ImportData should contain 2 new rows (1 stayed there)
 	id3.size.should == 5
+    end
+
+    it "should only delete imported_records if the user matches" do
+	# First Import data
+	ih1=import_amex
+	# Get all ImportData
+	id1=ImportDatum.all
+	# ImportData should contain 3 new rows
+	id1.size.should == 3
+	# Get 2nd user
+	u2=get_next_user
+	# Test
+	ih1.user_id.should_not == u2.id
+	# Delete first import
+	ih1.delete_imported_records(u2.id)
+	# Test
+	ImportDatum.all.size.should == 3
+	# Delete using correct user
+	ih1.delete_imported_records(ih1.id)
+	# Test
+	ImportDatum.all.size.should == 0
     end
 end

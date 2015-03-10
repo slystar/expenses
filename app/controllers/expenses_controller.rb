@@ -492,8 +492,10 @@ class ExpensesController < ApplicationController
     def delete_imported_records
 	# Get records
 	ih = ImportHistory.find(params[:id])
+	# Get current user_id
+	user_id=session[:user_id]
 	# Delete records
-	if ih.delete_imported_records
+	if ih.delete_imported_records(user_id)
 	    redirect_to "#{request.referer}", notice: "Errased all imported records for ImportHistory id:#{ih.id}"
 	else
 	    redirect_to "#{request.refere}", notice: "Error erasing imported records for ImportHistory id:#{ih.id}"
