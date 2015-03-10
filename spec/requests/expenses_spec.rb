@@ -101,6 +101,10 @@ describe "Expenses ->" do
 
 		before(:each) do
 		    @import_path="#{expenses_path}/import"
+		    attr={:title => 'Amex', :description => 'CSV export of amex', :field_mapping => {:date_purchased => 0, :amount => 2, :store => 3}, :file_type => 'csv', :unique_id_field => 1, :unique_id_hash_fields => [0,2,3], :date_type => 0}
+		    @ic=get_valid_import_config(attr)
+		    # Save ImportConfig
+		    @ic.save
 		end
 
 		it "should have a link" do
@@ -110,7 +114,40 @@ describe "Expenses ->" do
 		    current_path.should == @import_path
 		end
 
-		pending "should import expenses" do
+		it "should import expenses" do
+		    visit(@import_path)
+		    # Test
+		    page.should have_content("Import expenses")
+		    # Fill in information
+		    page.select "Amex", from: 'file_upload_import_config'
+		    page.attach_file 'file_upload_my_file', File.join(Rails.root, '/spec/imports/amex.csv')
+		    # Test
+		    ImportDatum.all.size.should == 0
+		    # Click button to submit
+		    page.click_button "Upload"
+		    # Test
+		    current_path.should == @import_path
+		    ImportDatum.all.size.should == 3
+		end
+
+		it "should be able to undo imoprt" do
+		    visit(@import_path)
+		    # Test
+		    page.should have_content("Import expenses")
+		    # Fill in information
+		    page.select "Amex", from: 'file_upload_import_config'
+		    page.attach_file 'file_upload_my_file', File.join(Rails.root, '/spec/imports/amex.csv')
+		    # Click button to submit
+		    page.click_button "Upload"
+		    # Test
+		    current_path.should == @import_path
+		    ImportDatum.all.size.should == 3
+		    page.should have_link("Undo Import")
+		    # Click link
+		    page.click_link "Undo Import"
+		    # Test
+		    current_path.should == @import_path
+		    ImportDatum.all.size.should == 0
 		end
 	    end
 
