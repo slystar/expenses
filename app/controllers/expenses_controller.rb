@@ -494,9 +494,9 @@ class ExpensesController < ApplicationController
 	ih = ImportHistory.find(params[:id])
 	# Delete records
 	if ih.delete_imported_records
-	    redirect_to "#{expenses_path}/import", notice: "Errased all imported records for ImportHistory id:#{ih.id}"
+	    redirect_to "#{request.referer}", notice: "Errased all imported records for ImportHistory id:#{ih.id}"
 	else
-	    redirect_to "#{expenses_path}/import", notice: "Error erasing imported records for ImportHistory id:#{ih.id}"
+	    redirect_to "#{request.refere}", notice: "Error erasing imported records for ImportHistory id:#{ih.id}"
 	end
     end
 end
