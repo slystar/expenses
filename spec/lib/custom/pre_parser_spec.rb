@@ -18,11 +18,24 @@ describe PreParser do
 	pp.should respond_to('parse')
     end
 
-    it "should have a test method" do
-	# Get new object
-	pp=PreParser.new
+    it "should check for valid pre_parsers" do
 	# Test
-	pp.should respond_to('test')
+	PreParser.should respond_to('valid_pre_parser?')
+    end
+
+    it "should return true on valid pre_parser" do
+	# Test
+	PreParser.valid_pre_parser?("test").should == true
+    end
+
+    it "should return false on missing pre_parser" do
+	# Test
+	PreParser.valid_pre_parser?("dummy").should == false
+    end
+
+    it "should have a test pre_parser" do
+	# Test
+	PreParser.valid_pre_parser?("test").should == true
     end
 
     it "should raise an error when a pre_parser does not exist" do

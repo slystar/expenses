@@ -20,6 +20,12 @@ class PreParser
 	self.__send__(pre_parser_name)
     end
 
+    # Method to check for valid pre_parser
+    def self.valid_pre_parser?(name)
+	# Convert to symbole if required
+	self.new.methods.include?(name.to_sym)
+    end
+
     # Test pre_parser
     def test
 	# Generate CSV

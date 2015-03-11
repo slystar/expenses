@@ -62,7 +62,7 @@ class ImportConfig < ActiveRecord::Base
     # Method to check a valid pre_parser exists
     def check_pre_parser
 	if not self.pre_parser.nil?
-	    self.errors.add(:pre_parser,"'#{self.pre_parser}' not a valid PreParser") unless PreParser.new.respond_to?(self.pre_parser.to_sym)
+	    self.errors.add(:pre_parser,"'#{self.pre_parser}' not a valid PreParser") unless PreParser.valid_pre_parser?(self.pre_parser.to_sym)
 	end
     end
 end
