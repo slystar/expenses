@@ -23,7 +23,7 @@ class PreParser
     # Method to check for valid pre_parser
     def self.valid_pre_parser?(name)
 	# Convert to symbole if required
-	self.new.methods.include?(name.to_sym)
+	self.instance_methods.include?(name.to_sym)
     end
 
     # Test pre_parser
