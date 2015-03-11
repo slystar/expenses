@@ -527,23 +527,19 @@ describe ImportHistory do
 	ih2=import_pc
 	# Get all ImportData
 	id2=ImportDatum.all
-	# ImportData should contain 3 new rows
+	# ImportData should contain 2 new rows
 	id2.size.should == 5
 	# Test
 	ih1.id.should_not == ih2.id
 	id1.first.import_history_id.should_not == id2.last.import_history_id
 	# Delete first import
 	ih1.delete_imported_records(ih1.user_id)
-	# Get all ImportData
-	id=ImportDatum.all
 	# Test
-	id.size.should == 2
+	ImportDatum.all.size.should == 2
 	# Re-import
 	ih3=import_amex
-	# Get all ImportData
-	id3=ImportDatum.all
-	# ImportData should contain 3 new rows
-	id3.size.should == 5
+	# ImportData should contain 5 rows
+	ImportDatum.all.size.should == 5
     end
 
     it "should not delete imported_records that have been processed" do
@@ -557,7 +553,7 @@ describe ImportHistory do
 	ih2=import_pc
 	# Get all ImportData
 	id2=ImportDatum.all
-	# ImportData should contain 3 new rows
+	# ImportData should contain 2 new rows
 	id2.size.should == 5
 	# Test
 	ih1.id.should_not == ih2.id
@@ -570,16 +566,12 @@ describe ImportHistory do
 	first.save.should == true
 	# Delete first import
 	ih1.delete_imported_records(ih1.user_id)
-	# Get all ImportData
-	id3=ImportDatum.all
-	# Test
-	id3.size.should == 3
+	# Test: should have deleted only 2 rows, 3 left
+	ImportDatum.all.size.should == 3
 	# Re-import with same user
 	ih3=import_amex(ih1.user_id)
-	# Get all ImportData
-	id3=ImportDatum.all
-	# ImportData should contain 2 new rows (1 stayed there)
-	id3.size.should == 5
+	# ImportData should add 2 new rows (1 stayed there)
+	ImportDatum.all.size.should == 5
     end
 
     it "should only delete imported_records if the user matches" do
