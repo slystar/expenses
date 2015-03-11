@@ -23,7 +23,17 @@ describe "ImportHistories:" do
 	    current_path.should == login_path
 	end
 
-	pending "index" do
+	it "index" do
+	    # Get ih
+	    ih=get_valid_import_history
+	    # Save
+	    ih.save.should == true
+	    # Variables
+	    path="#{import_histories_path}"
+	    # Visit page
+	    visit path
+	    # Test
+	    current_path.should == login_path
 	end
 
     end
@@ -67,7 +77,31 @@ describe "ImportHistories:" do
 	    end
 	end
 
-	pending "add more ImportHistory request tests" do
+	describe "index" do
+	    it "should display a list of import_histories" do
+		# Get ih
+		ih=get_valid_import_history
+		# Save
+		ih.save.should == true
+		# Get ih
+		ih2=get_valid_import_history
+		# Save
+		ih2.save.should == true
+		# Variables
+		path="#{import_histories_path}"
+		# Visit page
+		visit path
+		# Test
+		ih.id.should_not == ih2.id
+		page.current_path.should == import_histories_path
+		page.should have_content("Listing import histories")
+		page.should have_content("id")
+		page.should have_content(ih.id)
+		page.should have_content(ih2.id)
+	    end
+
+	    pending "should allow to undo an import" do
+	    end
 	end
     end
 end

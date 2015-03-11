@@ -11,16 +11,87 @@ describe "Expenses ->" do
 	    current_path.should == login_path
 	end
 
+	it "View expenses" do
+	    path="/expenses"
+	    # Visit page
+	    visit path
+	    # Test
+	    current_path.should == login_path
+	end
+
+	it "Add expense" do
+	    path="/expenses/new"
+	    # Visit page
+	    visit path
+	    # Test
+	    current_path.should == login_path
+	end
+
+	it "Process data" do
+	    path="/expenses/process_data"
+	    # Visit page
+	    visit path
+	    # Test
+	    current_path.should == login_path
+	end
+
+	it "Import data" do
+	    path="/expenses/import"
+	    # Visit page
+	    visit path
+	    # Test
+	    current_path.should == login_path
+	end
+
+	it "Add imported records" do
+	    path="/expenses/process_imports"
+	    # Visit page
+	    visit path
+	    # Test
+	    current_path.should == login_path
+	end
+
+	it "Edit user" do
+	    @new_user_id=0
+	    # Get user
+	    @user=get_next_user
+	    path="/users/#{@user.id}/edit"
+	    # Visit page
+	    visit path
+	    # Test
+	    current_path.should == login_path
+	end
+
+	it "Pay somebody" do
+	    path="/user_payments/new"
+	    # Visit page
+	    visit path
+	    # Test
+	    current_path.should == login_path
+	end
+
+	it "Show payments" do
+	    path="/user_payments"
+	    # Visit page
+	    visit path
+	    # Test
+	    current_path.should == login_path
+	end
+
+	it "Manage store parents" do
+	    path="/stores/parents"
+	    # Visit page
+	    visit path
+	    # Test
+	    current_path.should == login_path
+	end
+
 	it "import histories" do
 	    # Visit page
 	    visit import_histories_path
 	    # Test
 	    current_path.should == login_path
 	end
-
-	pending "test all pages" do
-	end
-
     end
 
     describe 'after login ->' do
@@ -54,23 +125,6 @@ describe "Expenses ->" do
 		end
 	    end
 
-	    describe "Edit user ->" do
-		it "should have a link" do
-		    visit(menu_path)
-		    page.should have_link("Edit user")
-		end
-	    end
-
-	    describe "Edit groups ->" do
-		pending "should have a link" do
-		    visit(menu_path)
-		    page.should have_link("Edit groups")
-		end
-
-		pending "should appear only for admins" do
-		end
-	    end
-
 	    describe "View ->" do
 		it "should have a link" do
 		    visit(menu_path)
@@ -100,67 +154,6 @@ describe "Expenses ->" do
 		    page.should have_link("Reset filters")
 		end
 	    end
-
-	    describe "Process duplicates ->" do
-		pending "should show duplicates" do
-		end
-	    end
-
-
-	    describe "Import expenses ->" do
-
-		before(:each) do
-		    @import_path="#{expenses_path}/import"
-		    attr={:title => 'Amex', :description => 'CSV export of amex', :field_mapping => {:date_purchased => 0, :amount => 2, :store => 3}, :file_type => 'csv', :unique_id_field => 1, :unique_id_hash_fields => [0,2,3], :date_type => 0}
-		    @ic=get_valid_import_config(attr)
-		    # Save ImportConfig
-		    @ic.save
-		end
-
-		it "should have a link" do
-		    visit(menu_path)
-		    page.should have_link("Import expenses")
-		    visit(@import_path)
-		    current_path.should == @import_path
-		end
-
-		it "should import expenses" do
-		    visit(@import_path)
-		    # Test
-		    page.should have_content("Import expenses")
-		    # Fill in information
-		    page.select "Amex", from: 'file_upload_import_config'
-		    page.attach_file 'file_upload_my_file', File.join(Rails.root, '/spec/imports/amex.csv')
-		    # Test
-		    ImportDatum.all.size.should == 0
-		    # Click button to submit
-		    page.click_button "Upload"
-		    # Test
-		    current_path.should == @import_path
-		    ImportDatum.all.size.should == 3
-		end
-
-		it "should be able to undo imoprt" do
-		    visit(@import_path)
-		    # Test
-		    page.should have_content("Import expenses")
-		    # Fill in information
-		    page.select "Amex", from: 'file_upload_import_config'
-		    page.attach_file 'file_upload_my_file', File.join(Rails.root, '/spec/imports/amex.csv')
-		    # Click button to submit
-		    page.click_button "Upload"
-		    # Test
-		    current_path.should == @import_path
-		    ImportDatum.all.size.should == 3
-		    page.should have_link("Undo Import")
-		    # Click link
-		    page.click_link "Undo Import"
-		    # Test
-		    current_path.should == @import_path
-		    ImportDatum.all.size.should == 0
-		end
-	    end
-
 
 	    describe "Add expense ->" do
 
@@ -438,6 +431,102 @@ describe "Expenses ->" do
 		end
 	    end
 
+	    describe "Process expense ->" do
+		it "should have a link" do
+		    visit(menu_path)
+		    page.should have_link("Process expense")
+		end
+	    end
+
+	    describe "Import expenses ->" do
+
+		before(:each) do
+		    @import_path="#{expenses_path}/import"
+		    attr={:title => 'Amex', :description => 'CSV export of amex', :field_mapping => {:date_purchased => 0, :amount => 2, :store => 3}, :file_type => 'csv', :unique_id_field => 1, :unique_id_hash_fields => [0,2,3], :date_type => 0}
+		    @ic=get_valid_import_config(attr)
+		    # Save ImportConfig
+		    @ic.save
+		end
+
+		it "should have a link" do
+		    visit(menu_path)
+		    page.should have_link("Import expenses")
+		    visit(@import_path)
+		    current_path.should == @import_path
+		end
+
+		it "should import expenses" do
+		    visit(@import_path)
+		    # Test
+		    page.should have_content("Import expenses")
+		    # Fill in information
+		    page.select "Amex", from: 'file_upload_import_config'
+		    page.attach_file 'file_upload_my_file', File.join(Rails.root, '/spec/imports/amex.csv')
+		    # Test
+		    ImportDatum.all.size.should == 0
+		    # Click button to submit
+		    page.click_button "Upload"
+		    # Test
+		    current_path.should == @import_path
+		    ImportDatum.all.size.should == 3
+		end
+
+		it "should be able to undo import" do
+		    visit(@import_path)
+		    # Test
+		    page.should have_content("Import expenses")
+		    # Fill in information
+		    page.select "Amex", from: 'file_upload_import_config'
+		    page.attach_file 'file_upload_my_file', File.join(Rails.root, '/spec/imports/amex.csv')
+		    # Click button to submit
+		    page.click_button "Upload"
+		    # Test
+		    current_path.should == @import_path
+		    ImportDatum.all.size.should == 3
+		    page.should have_link("Undo Import")
+		    # Click link
+		    page.click_link "Undo Import"
+		    # Test
+		    current_path.should == @import_path
+		    ImportDatum.all.size.should == 0
+		end
+	    end
+
+	    describe "Add imported records ->" do
+		it "should have a link" do
+		    visit(menu_path)
+		    page.should have_link("Add imported records")
+		end
+	    end
+
+	    describe "Edit user ->" do
+		it "should have a link" do
+		    visit(menu_path)
+		    page.should have_link("Edit user")
+		end
+	    end
+
+	    describe "Pay somebody ->" do
+		it "should have a link" do
+		    visit(menu_path)
+		    page.should have_link("Pay somebody")
+		end
+	    end
+
+	    describe "Show payments ->" do
+		it "should have a link" do
+		    visit(menu_path)
+		    page.should have_link("Show payments")
+		end
+	    end
+
+	    describe "Manage store parents ->" do
+		it "should have a link" do
+		    visit(menu_path)
+		    page.should have_link("Manage store parents")
+		end
+	    end
+
 	    describe "Import Histories ->" do
 		before(:each) do
 		    @import_histories_path="#{import_histories_path}"
@@ -447,6 +536,21 @@ describe "Expenses ->" do
 		    page.should have_link("Import histories")
 		    visit(@import_histories_path)
 		    current_path.should == @import_histories_path
+		end
+	    end
+
+	    describe "Edit groups ->" do
+		pending "should have a link" do
+		    visit(menu_path)
+		    page.should have_link("Edit groups")
+		end
+
+		pending "should appear only for admins" do
+		end
+	    end
+
+	    describe "Process duplicates ->" do
+		pending "should show duplicates" do
 		end
 	    end
 	end

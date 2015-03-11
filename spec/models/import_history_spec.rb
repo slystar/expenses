@@ -602,4 +602,7 @@ describe ImportHistory do
 	# Test
 	ImportDatum.all.size.should == 0
     end
+
+    pending "should have an error message if a user tries to delete another user's records" do
+    end
 end
