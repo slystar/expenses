@@ -78,6 +78,42 @@ describe "ImportHistories:" do
 	end
 
 	describe "index" do
+	    before(:each) do
+		@index_path="#{import_histories_path}"
+	    end
+
+	    # Method to add import records
+	    def add_import_records(user_id)
+		# Variables
+		attr_ih={:import_config_id => 1, :original_file_name => "uploaded_file.csv"}
+		@attr_ic={:title => 'Amex', :description => 'CSV export of amex', :field_mapping => {:date_purchased => 0, :amount => 2, :store => 3}, :file_type => 'csv', :unique_id_field => 1, :unique_id_hash_fields => [0,2,3], :date_type => 0}
+		# Get import history
+		ih=get_valid_import_history(attr_ih)
+		# Import file
+		@filename='spec/imports/amex.csv'
+		# Set suer
+		ih.user_id=user_id
+		# Save import_history
+		ih.save!
+		# Get import config
+		ic=ih.import_config
+		# Get user
+		u=user_id
+		# Import data
+		ih.import_data(@filename,ic,u)
+		# Save record
+		ih.save
+		# Test
+		ImportDatum.all.size.should == 3
+		# return record
+		return ih
+	    end
+
+	    def remove_imported_records(ih)
+		# Remove any saved files
+		ih.remove_saved_file.should == true
+	    end
+
 	    it "should display a list of import_histories" do
 		# Get ih
 		ih=get_valid_import_history
@@ -87,10 +123,8 @@ describe "ImportHistories:" do
 		ih2=get_valid_import_history
 		# Save
 		ih2.save.should == true
-		# Variables
-		path="#{import_histories_path}"
 		# Visit page
-		visit path
+		visit @index_path
 		# Test
 		ih.id.should_not == ih2.id
 		page.current_path.should == import_histories_path
@@ -100,7 +134,34 @@ describe "ImportHistories:" do
 		page.should have_content(ih2.id)
 	    end
 
-	    pending "should allow to undo an import" do
+	    it "should allow to undo an import" do
+		# Create import
+		ih=add_import_records(@user.id)
+		# Visit page
+		visit @index_path
+		# Click delete imported records
+		page.click_link 'Delete Imported records'
+		# Test
+		page.current_path.should == @index_path
+		ImportDatum.all.size.should == 0
+		page.should have_content("Errased all imported records for ImportHistory id:#{ih.id}")
+	    end
+
+	    it "should not allow one user to undo import of another user" do
+		# Get second user
+		u2=get_next_user
+		# Create import
+		ih=add_import_records(u2.id)
+		# Test
+		u2.id.should_not == @user.id
+		# Visit page
+		visit @index_path
+		# Click delete imported records
+		page.click_link 'Delete Imported records'
+		# Test
+		page.current_path.should == @index_path
+		ImportDatum.all.size.should_not == 0
+		page.should have_content("Cannot delete other user's imported records.")
 	    end
 	end
     end

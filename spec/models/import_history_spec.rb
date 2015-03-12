@@ -595,6 +595,24 @@ describe ImportHistory do
 	ImportDatum.all.size.should == 0
     end
 
-    pending "should have an error message if a user tries to delete another user's records" do
+    it "should have an error message if a user tries to delete another user's records" do
+	# First Import data
+	ih1=import_amex
+	# Get all ImportData
+	id1=ImportDatum.all
+	# ImportData should contain 3 new rows
+	id1.size.should == 3
+	# Get 2nd user
+	u2=get_next_user
+	# Test
+	ih1.user_id.should_not == u2.id
+	# Delete first import
+	result=ih1.delete_imported_records(u2.id)
+	# Test
+	result.should == false
+	# Errors should exist
+	ih1.errors.size.should > 0
+	# Error message
+	ih1.errors.messages.to_s.should =~ /Cannot delete other user's imported records./i
     end
 end
