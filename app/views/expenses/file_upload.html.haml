@@ -4,7 +4,7 @@
 
 %p
   In case you selected the wrong config: 
-  =link_to 'Undo Import', {controller: "expenses", action: "delete_imported_records", id: @ih.id}, method: :delete, data: { confirm: 'Are you sure?' }
+  =link_to 'Undo Import', {controller: "import_histories", action: "delete_imported_records", id: @ih.id}, method: :delete, data: { confirm: 'Are you sure?' }
 
 %p
   %a{:href => "process_imports"} Process Imports
