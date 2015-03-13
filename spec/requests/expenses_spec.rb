@@ -187,7 +187,7 @@ describe "Expenses ->" do
 		    current_path.should == @add_path
 		end
 
-		it "shold show an error with invalid attributes" do
+		it "should show an error with invalid attributes" do
 		    # Fill information
 		    page.fill_in "expense_description", with: 'test description'
 		    page.select @e.pay_method.name, from: 'expense_pay_method_id'

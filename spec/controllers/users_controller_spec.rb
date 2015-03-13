@@ -27,6 +27,10 @@ describe UsersController do
 	{:user_name => 'usercontroller', :password => 'usercontroller'}
     end
 
+    def valid_attributes_to_update
+	{:password => 'usercontroller'}
+    end
+
     def login(user)
 	request.session[:user_id] = user.id
     end
@@ -103,7 +107,7 @@ describe UsersController do
 		# receives the :update_attributes message with whatever params are
 		# submitted in the request.
 		User.any_instance.should_receive(:update_attributes).with({'these' => 'params'})
-		put :update, :id => user.id, :user => {'these' => 'params'}
+		put :update, :id => user.id, :user => {'these' => 'params'}, :custom => {"current_password" => valid_attributes[:password]}
 	    end
 
 	    describe "should not allow changes to" do
@@ -115,7 +119,7 @@ describe UsersController do
 		end
 
 		it "user_name" do
-		    put :update, :id => @user.id, :user => {'user_name' => 'ABC'}
+		    put :update, :id => @user.id, :user => {'user_name' => 'ABC'}, :custom => {"current_password" => valid_attributes[:password]}
 		    new_user=assigns(:user)
 		    # Test
 		    new_user.user_name.should == @user.user_name
@@ -125,15 +129,15 @@ describe UsersController do
 	    it "assigns the requested user as @user" do
 		user = User.create! valid_attributes
 		login(user)
-		put :update, :id => user.id, :user => valid_attributes
+		put :update, :id => user.id, :user => valid_attributes, :custom => {"current_password" => valid_attributes[:password]}
 		assigns(:user).should eq(user)
 	    end
 
 	    it "redirects to the user" do
 		user = User.create! valid_attributes
 		login(user)
-		put :update, :id => user.id, :user => valid_attributes
-		response.should redirect_to(user)
+		put :update, :id => user.id, :user => valid_attributes_to_update, :custom => {"current_password" => valid_attributes[:password]}
+		response.should redirect_to(menu_path)
 	    end
 	end
 
@@ -143,7 +147,7 @@ describe UsersController do
 		login(user)
 		# Trigger the behavior that occurs when invalid params are submitted
 		User.any_instance.stub(:save).and_return(false)
-		put :update, :id => user.id.to_s, :user => {}
+		put :update, :id => user.id.to_s, :user => {}, :custom => {"current_password" => valid_attributes[:password]}
 		assigns(:user).should eq(user)
 	    end
 
@@ -152,7 +156,7 @@ describe UsersController do
 		login(user)
 		# Trigger the behavior that occurs when invalid params are submitted
 		User.any_instance.stub(:save).and_return(false)
-		put :update, :id => user.id.to_s, :user => {}
+		put :update, :id => user.id.to_s, :user => {}, :custom => {"current_password" => valid_attributes[:password]}
 		response.should render_template("edit")
 	    end
 	end

@@ -219,9 +219,13 @@ describe "Users" do
 		current_path.should == @edit_path
 	    end
 
-	    pending "should have the following elements" do
-		page.should have_link("menu")
+	    it "should have the following elements" do
+		page.should have_link("Menu")
 		page.should have_content("Editing user")
+		page.should have_content("Change current password")
+		page.should have_content("Current password")
+		page.should have_content("New password")
+		page.should have_content("New password confirmation")
 	    end
 
 	    it "should be able to change password" do
@@ -229,6 +233,8 @@ describe "Users" do
 		go_to_edit_user
 		# Make sure passwords are different
 		new_password.should_not == @user.password
+		# Add current password
+		page.fill_in "custom_current_password", with: @user.password
 		# Fill in information
 		page.fill_in "user_password", with: new_password
 		page.fill_in "user_password_confirmation", with: new_password
@@ -246,6 +252,38 @@ describe "Users" do
 		visit logout_path
 		login_user(new_user)
 		current_path.should == menu_path
+	    end
+
+	    it "require existing password to change password" do
+		new_password=@user.password + 'abc'
+		# Got to path
+		go_to_edit_user
+		# Get current_path
+		current_path=page.current_path
+		# Make sure passwords are different
+		new_password.should_not == @user.password
+		# Fill in information
+		page.fill_in "user_password", with: new_password
+		page.fill_in "user_password_confirmation", with: new_password
+		# Submit
+		page.click_button "Update User"
+		# Get updated user
+		new_user=User.find(@user.id)
+		# Test data
+		new_user.password_digest.should == @user.password_digest
+		current_path.should == current_path
+		page.should have_content "Wrong current password"
+		# Add current password
+		page.fill_in "custom_current_password", with: @user.password
+		# Fill in information
+		page.fill_in "user_password", with: new_password
+		page.fill_in "user_password_confirmation", with: new_password
+		# Submit
+		page.click_button "Update User"
+		# Get updated user
+		new_user=User.find(@user.id)
+		# Test data
+		new_user.password_digest.should_not == @user.password_digest
 	    end
 
 	    it "should not be able to edit someone else" do

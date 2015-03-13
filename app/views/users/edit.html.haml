@@ -10,12 +10,18 @@
       %ul
         - @user.errors.full_messages.each do |msg|
           %li= msg
+  %h2
+    Change current password
   .field
-    = f.label :password
+    = label 'custom', :current_password
+    %br/
+    = password_field 'custom', :current_password
+  .field
+    = f.label :password, 'New password'
     %br/
     = f.password_field :password
   .field
-    = f.label :password_confirmation
+    = f.label :password_confirmation, 'New password confirmation'
     %br/
     = f.password_field :password_confirmation
   .actions
