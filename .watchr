@@ -84,10 +84,12 @@ watch("app/(.*/.*).rb") do |match|
     # Process controllers separately, we will run requests specs instead
     if match[1] =~ /controller/
 	# Request file
-	req_file="spec/requests/#{match[1].split('/').last.gsub(/_.*/,'')}_spec.rb"
+	req_file="spec/requests/#{match[1].split('/').last.gsub(/_controller.*/,'')}_spec.rb"
 	# Check if request file exists
 	if File.exist?(req_file)
 	    run_spec %{#{req_file}}
+	else
+	    puts("spec not found: #{reg_file}")
 	end
     else
 	run_spec %{spec/#{match[1]}_spec.rb}
