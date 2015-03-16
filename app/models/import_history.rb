@@ -41,7 +41,7 @@ class ImportHistory < ActiveRecord::Base
 	# Calculate hash of original name, can later be changed to file contents
 	hash=Digest::SHA2.hexdigest(data)
 	# Prepare filename
-	new_name="#{now.year}_#{now.strftime('%m')}_#{now.strftime('%d')}_#{hash}"
+	new_name="#{now.year}_#{now.strftime('%m')}_#{now.strftime('%d')}_#{hash}.csv"
 	# Set new file path
 	new_file_path=File.join(target_dir, new_name)
 	# Save data to file

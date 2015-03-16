@@ -135,7 +135,7 @@ describe ImportHistory do
 	# Set target dir
 	storage_dir=Dir.tmpdir
 	# Filename pattern
-	pattern=/\d\d\d\d_\d\d_\d\d_.{40}/
+	pattern=/\d\d\d\d_\d\d_\d\d_.{64}.csv/
 	# Get object
 	ih=get_valid_import_history()
 	# Save record
@@ -155,7 +155,7 @@ describe ImportHistory do
 	# New file digest
 	new_file_digest=Digest::SHA2.hexdigest(File.read(new_file_path))
 	# Get filename digest
-	file_name_digest=filename.split('_').last
+	file_name_digest=filename.split('_').last.gsub(/.csv/,'')
 	# Check file
 	new_file_digest.should == file_name_digest
 	# Delete tmp file

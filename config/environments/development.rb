@@ -29,5 +29,5 @@ Expenses::Application.configure do
   config.assets.debug = true
 
     # Custom application variables
-    Rails.configuration.upload_path = Dir.tmpdir
+    #Rails.configuration.upload_path = Dir.tmpdir
 end
