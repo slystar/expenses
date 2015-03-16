@@ -3,7 +3,10 @@ class ImportHistoriesController < ApplicationController
 
     # Index
     def index
-	@ihs=ImportHistory.includes(:user).includes(:import_config).all
+	# Get users
+	@users=ImportHistory.includes(:user).select(:user_id).group(:user_id)
+	# Get import history
+	@ihs=ImportHistory.includes(:user).includes(:import_config).order('user_id').order('id')
     end
     
     # Show
