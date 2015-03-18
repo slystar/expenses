@@ -11,7 +11,7 @@
 #
 # It's strongly recommended to check this file into your version control system.
 
-ActiveRecord::Schema.define(:version => 20150220174333) do
+ActiveRecord::Schema.define(:version => 20150318173626) do
 
   create_table "backups", :force => true do |t|
     t.datetime "backup_date"
@@ -157,6 +157,17 @@ ActiveRecord::Schema.define(:version => 20150220174333) do
   end
 
   add_index "reasons", ["name"], :name => "index_reasons_on_name"
+
+  create_table "returns", :force => true do |t|
+    t.integer  "expense_id"
+    t.decimal  "amount"
+    t.text     "description"
+    t.integer  "user_id"
+    t.date     "transaction_date"
+    t.datetime "created_at",       :null => false
+    t.datetime "updated_at",       :null => false
+    t.integer  "app_version"
+  end
 
   create_table "roles", :force => true do |t|
     t.string   "name"
