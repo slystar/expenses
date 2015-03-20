@@ -75,12 +75,101 @@ describe Return do
 	object.app_version.should == app_version
     end
 
-    pending "should require a valid expense" do
+    it "should require a valid expense" do
+	# Get object
+	object=Return.new(@attr)
+	# Set expense_id
+	object.expense_id=99999
+	# Test
+	object.should_not be_valid
     end
 
-    pending "should require a valid user" do
+    it "should require a valid user" do
+	# Get object
+	object=Return.new(@attr)
+	# Set expense_id
+	object.user_id=99999
+	# Test
+	object.should_not be_valid
     end
 
-    pending "should make sure amount is not greater than target expense" do
+    it "should use the proper rspec helper amount" do
+	object=Return.new(@attr)
+	# Test helper
+	object.amount.to_f.should == 9.50
+    end
+
+    it "should allow a single decimal in amount" do
+	object=Return.new(@attr)
+	object.amount="1.5"
+	object.should be_valid
+    end
+
+    it "should not allow more than 2 decimal places in amount" do
+	object=Return.new(@attr)
+	object.amount="1.567"
+	object.should_not be_valid
+    end
+
+    it "should not accept negative amounts" do
+	object=Return.new(@attr)
+	object.amount="-1.567"
+	object.should_not be_valid
+    end
+
+    it "should not allow letters in amount" do
+	object=Return.new(@attr)
+	object.amount="aa15"
+	object.should_not be_valid
+    end
+
+    it "should make sure amount is not greater than target expense" do
+	# Get object
+	object=Return.new(@attr)
+	# Set expense_id
+	object.amount=@exp.amount + 0.01
+	# Test
+	object.should_not be_valid
+    end
+
+    it "should allow a return amount equal to expense amount" do
+	# Get object
+	object=Return.new(@attr)
+	# Set expense_id
+	object.amount=@exp.amount
+	# Test
+	object.should be_valid
+    end
+
+    it "should not have a transaction date before the expense purchase date" do
+	# Get object
+	object=Return.new(@attr)
+	# Set transaction_date
+	object.transaction_date=@exp.date_purchased.yesterday
+	# Test
+	object.should_not be_valid
+    end
+
+    it "should allow a transaction date on or after the expense purchase date" do
+	# Get object
+	object=Return.new(@attr)
+	# Set transaction_date to equal
+	object.transaction_date=@exp.date_purchased
+	# Test
+	object.should be_valid
+	# Set transaction_date to after
+	object.transaction_date=@exp.date_purchased + 1
+	# Test
+	object.should be_valid
+    end
+
+    it "should be able to pull expense information" do
+	# Get object
+	object=Return.create!(@attr)
+	# Test
+	object.expense.store.should == @exp.store
+    end
+
+    pending "should return the correct amount to each person" do
     end
 end
