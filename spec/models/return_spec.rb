@@ -170,6 +170,50 @@ describe Return do
 	object.expense.store.should == @exp.store
     end
 
-    pending "should return the correct amount to each person" do
+    it "should not be created with a process date" do
+	object=Return.new(@attr)
+	object.process_date=Time.now
+	object.should_not be_valid
+    end
+
+    it "should allow a process date once it's been saved" do
+	object=Return.create!(@attr)
+	object.process_date=Time.now
+	object.should be_valid
+    end
+
+    it "should not be created with process flag set to true" do
+	object=Return.new(@attr)
+	object.process_flag=true
+	object.should_not be_valid
+    end
+
+    it "should allow to set process_flag once it's been saved" do
+	object=Return.create!(@attr)
+	object.process_flag=true
+	object.should be_valid
+    end
+
+    it "should not be destroyable if it's been processed" do
+	object=Return.create!(@attr)
+	object.process_flag=true
+	object.destroy
+	object.should_not be_destroyed
+    end
+
+    it "should be destroyable if it has not been processed" do
+	object=Return.create!(@attr)
+	object.destroy
+	object.should be_destroyed
+    end
+
+    it "should be modifyable if it has not been processed" do
+	# Create object
+	object=Return.create!(@attr)
+	# Modify
+	object.amount=object.amount - 1
+	# Should save
+	object.save.should == true
+    end
     end
 end

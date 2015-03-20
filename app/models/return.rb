@@ -23,6 +23,11 @@ class Return < ActiveRecord::Base
     validate :check_amount
     validate :check_amount_vs_expense
     validate :check_transaction_date
+    validate :check_process_date, :on => :create
+    validate :check_process_flag, :on => :create
+
+    # Check on destruction
+    before_destroy :check_for_processed_record_delete
 
     # Before actions
     # see observer check_for_expenses_observer.rb
@@ -75,5 +80,32 @@ class Return < ActiveRecord::Base
 	    # Add error
 	    self.errors.add(:base,"Return transaction date must be equal to or greater than expense purchased date")
 	end
+    end
+    
+    # Method to check process_date
+    def check_process_date
+	# Check for process_date
+	self.errors.add(:base,"Date processed must be nil on create") if not self.process_date.nil?
+    end
+
+    # Method to check process_flag
+    def check_process_flag
+	# Check for process_flag
+	self.errors.add(:base,"Process_flag must be false on create") if self.process_flag
+    end
+
+    # Method to check if this record can be deleted
+    def check_for_processed_record_delete
+	# Set default flag
+	if self.process_flag
+	    self.errors.add(:base,"Can't delete #{self.class}: because this return has been processed")
+	    return false
+	end
+	if not self.process_date.nil?
+	    self.errors.add(:base,"Can't delete #{self.class}: because this return has a process date")
+	    return false
+	end
+	# Ok
+	return true
     end
 end
