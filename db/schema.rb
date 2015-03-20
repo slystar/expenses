@@ -11,7 +11,7 @@
 #
 # It's strongly recommended to check this file into your version control system.
 
-ActiveRecord::Schema.define(:version => 20150318173626) do
+ActiveRecord::Schema.define(:version => 20150320183621) do
 
   create_table "backups", :force => true do |t|
     t.datetime "backup_date"
@@ -164,9 +164,11 @@ ActiveRecord::Schema.define(:version => 20150318173626) do
     t.text     "description"
     t.integer  "user_id"
     t.date     "transaction_date"
-    t.datetime "created_at",       :null => false
-    t.datetime "updated_at",       :null => false
+    t.datetime "created_at",                          :null => false
+    t.datetime "updated_at",                          :null => false
     t.integer  "app_version"
+    t.boolean  "process_flag",     :default => false
+    t.date     "process_date"
   end
 
   create_table "roles", :force => true do |t|
