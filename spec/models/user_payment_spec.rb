@@ -13,6 +13,12 @@ describe UserPayment do
 	return u1
     end
 
+    def create_return
+	@exp=get_valid_expense
+	attr_return={:description => Faker::Company.name, :expense_id => @exp.id, :transaction_date => Date.today, :user_id => @exp.user_id, :amount => @exp.amount - 1}
+	Return.create!(attr_return)
+    end
+
     def get_new_user_payment
 	# Create user
 	u1=get_new_user('user1')
@@ -499,10 +505,11 @@ describe UserPayment do
 	amount=10
 	u1=get_new_user('user1')
 	u2=get_new_user('user2')
-	return_id=1
 	today=Time.now.utc.strftime("%Y-%m-%d")
+	# Get a return
+	return_obj=create_return
 	# Create a return payment
-	UserPayment.return_payment(return_id,u1.id,u2.id,amount)
+	UserPayment.return_payment(return_obj.id,u1.id,u2.id,amount)
 	# Get record
 	up=UserPayment.last
 	# Test
@@ -533,19 +540,48 @@ describe UserPayment do
 	amount=10
 	u1=get_new_user('user1')
 	u2=get_new_user('user2')
-	return_id=1
+	# Get a return
+	return_obj=create_return
 	# Create a return payment
-	id=UserPayment.return_payment(return_id,u1.id,u2.id,amount)
+	id=UserPayment.return_payment(return_obj.id,u1.id,u2.id,amount)
 	# Test
 	id.should == UserPayment.last.id
     end
 
     it "should have a default return_id" do
+	# Get UserPayment
 	object=get_new_user_payment
+	# Save
 	object.save!
+	# Test
 	object.return_id.should == 0
     end
 
-    pending "should have a link to returns" do
+    it "should have a link to returns" do
+	# Variables
+	amount=10
+	u1=get_new_user('user1')
+	u2=get_new_user('user2')
+	# Get a return
+	return_obj=create_return
+	# Create a return payment
+	id=UserPayment.return_payment(return_obj.id,u1.id,u2.id,amount)
+	# Get that UserPayment
+	up=UserPayment.find(id)
+	# Test
+	up.return.should == return_obj
+    end
+
+    it "should only allow valid returns" do
+	# Variables
+	invalid_return_id=999
+	# Get UserPayment
+	object=get_new_user_payment
+	# Save
+	object.save!
+	# Set return_id 
+	object.return_id=invalid_return_id
+	# Test
+	object.should_not be_valid
     end
 end

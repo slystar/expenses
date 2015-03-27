@@ -10,10 +10,12 @@ class UserPayment < ActiveRecord::Base
     belongs_to :to_user, :class_name => 'User' 
     belongs_to :waiting_on_user, :class_name => 'User' 
     belongs_to :update_balance_history
+    belongs_to :return
     accepts_nested_attributes_for :payment_notes
 
     # Before validations
     before_validation :set_app_version
+    before_validation :check_return_id
 
     # Validations
     validates :from_user, :presence => true
@@ -159,5 +161,20 @@ class UserPayment < ActiveRecord::Base
     # Method to set initial waiting_on_user_id
     def set_waiting_on_user_id
 	self.waiting_on_user_id = self.to_user_id
+    end
+
+    # Method to check parent id
+    def check_return_id
+	# Get return id
+	return_id=self.return_id
+	# If 0, OK since it is the default
+	return true if return_id == 0
+	# Check child
+	if Return.where(:id => return_id).first
+	    return true
+	else
+	    self.errors.add(:base,"Can't create #{self.class}: because it references a non-existing Return")
+	    return false
+	end
     end
 end
