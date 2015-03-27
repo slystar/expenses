@@ -112,13 +112,13 @@ describe UserPayment do
 	up.should be_valid
     end
 
-    it "should not accept more than 2 decimal places in amount" do
+    it "should accept more than 2 decimal places in amount" do
 	# get object
 	up=get_new_user_payment
 	# Set amount
 	up.amount=11.12345
 	# Test
-	up.should_not be_valid
+	up.should be_valid
     end
 
     it "should not accept negative amounts" do

@@ -98,18 +98,6 @@ class UserPayment < ActiveRecord::Base
     def check_amount
 	# Check for negative amount
 	self.errors.add(:base,"Amount cannot be negative") if not self.amount.nil? and self.amount < 0
-	# Check for more than 2 decimals
-	if not self.amount.nil?
-	    # Get string sizes
-	    amount_float_len=self.amount.to_s.size
-	    amount_int_len=self.amount.to_i.to_s.size
-	    # Get size difference
-	    difference=amount_float_len - amount_int_len
-	    # Check for more than 3 characters difference
-	    if difference > 3
-		self.errors.add(:base,"Amount cannot have more than 2 decimals")
-	    end
-	end
     end
 
     # Method to make sure approved is not set

@@ -326,5 +326,33 @@ describe Return do
 	    UserPayment.first.amount.should == @return_amount / num_users
 	    object.user_payments.size.should == 1
 	end
+
+	it "process 3 users" do
+	    # Variables
+	    num_users=3
+	    # Get expense
+	    expense,group=create_expense_and_process(num_users)
+	    # Test: make sure we have more than one user
+	    expense.affected_users.split(',').size.should == num_users
+	    # Get last user
+	    last_user=group.users.last
+	    prev_dept=last_user.depts.last.amount
+	    # Create return
+	    object=Return.new(@attr.merge(:expense_id => expense.id, :user_id => expense.user_id, :amount => @return_amount))
+	    # Save return
+	    object.save.should == true
+	    # Process return
+	    object.process(object.user_id)
+	    # Reload
+	    object.reload
+	    # Test
+	    last_user.depts.last.amount.round(2).should == (prev_dept - (@return_amount / num_users)).round(2)
+	    UserPayment.all.size.should == 2
+	    UserPayment.first.amount.should == @return_amount / num_users
+	    object.user_payments.size.should == 2
+	end
+
+	pending ", master test" do
+	end
     end
 end
