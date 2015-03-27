@@ -18,6 +18,8 @@ module SpecHelpFunctions
 
     # Create a new user
     def get_next_user()
+	# Set new id if required
+	@new_user_id=0 if @new_user_id.nil?
 	# Get next user id
 	@new_user_id += 1
 	# Create user object
