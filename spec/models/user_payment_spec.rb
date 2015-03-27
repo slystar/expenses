@@ -488,4 +488,64 @@ describe UserPayment do
 	up.save!
 	up.waiting_on_user_id.should == nil
     end
+
+    it "should have a return_payment class method" do
+	# Save object
+	UserPayment.should respond_to(:return_payment)
+    end
+
+    it "should be able to add a return_payment" do
+	# Variables
+	amount=10
+	u1=get_new_user('user1')
+	u2=get_new_user('user2')
+	return_id=1
+	today=Time.now.utc.strftime("%Y-%m-%d")
+	# Create a return payment
+	UserPayment.return_payment(return_id,u1.id,u2.id,amount)
+	# Get record
+	up=UserPayment.last
+	# Test
+	up.from_user_id.should == u1.id
+	up.to_user_id.should == u2.id
+	up.amount.should == amount
+	up.process_date.should be_nil
+	up.process_flag.should == false
+	up.approved.should == true
+	up.approved_date.strftime("%Y-%m-%d").should == today
+	# Test: UserBalance created
+	lambda {
+	    # Update balances
+	    UserBalance.update_balances(u1.id)
+	}.should change(UserBalance,:count).by(2)
+	# Get last UpdateBalanceHistory
+	ubh=UpdateBalanceHistory.last
+	# Reload
+	up.reload
+	# Test
+	up.update_balance_history.should == ubh
+	up.process_date.strftime("%Y-%m-%d").should == today
+	up.process_flag.should == true
+    end
+
+    it "should return the user_payment_id when doing a return_payment" do
+	# Variables
+	amount=10
+	u1=get_new_user('user1')
+	u2=get_new_user('user2')
+	return_id=1
+	# Create a return payment
+	id=UserPayment.return_payment(return_id,u1.id,u2.id,amount)
+	# Test
+	id.should == UserPayment.last.id
+    end
+
+    it "should have a default return_id" do
+	object=get_new_user_payment
+	object.save!
+	object.return_id.should == 0
+    end
+
+    pending "should have a link to returns" do
+    end
 end

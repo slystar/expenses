@@ -51,6 +51,27 @@ class UserPayment < ActiveRecord::Base
 	self.payment_notes.select{|pn| pn.deleted == false}
     end
 
+    # Method to add a return payment (refund)
+    def self.return_payment(return_payment_id, from_id, to_id, amount)
+	# Create new UserPayment
+	up=self.new()
+	# Add attributes
+	up.from_user_id=from_id
+	up.to_user_id=to_id
+	up.amount=amount
+	up.return_id=return_payment_id
+	# Save record
+	up.save!
+	# Set to approved because it's system doing the payment
+	up.approved=true
+	# Set approved_date
+	up.approved_date=Time.now
+	# Save record
+	up.save!
+	# Return id
+	return up.id
+    end
+
     # Private methods
     private
 
