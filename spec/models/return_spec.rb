@@ -232,7 +232,23 @@ describe Return do
 	object.process(999999).should == false
     end
 
-    pending "should link to UserPayments" do
+    it "should link to UserPayments" do
+	# Variables
+	amount=10
+	# Get user
+	u1=get_next_user
+	u2=get_next_user
+	# Get user_payment
+	up=add_user_payment(u1,u2,amount,true)
+	# Get Object
+	obj=Return.create!(@attr)
+	# Link return (artifficially)
+	up.return_id=obj.id
+	# Save
+	up.save.should == true
+	# Tests
+	u1.id.should_not == u2.id
+	obj.user_payments.include?(up).should == true
     end
 
     describe "should return the correct amount to each person" do
@@ -308,6 +324,7 @@ describe Return do
 	    last_user.depts.last.amount.should == prev_dept - (@return_amount / num_users)
 	    UserPayment.all.size.should == 1
 	    UserPayment.first.amount.should == @return_amount / num_users
+	    object.user_payments.size.should == 1
 	end
     end
 end

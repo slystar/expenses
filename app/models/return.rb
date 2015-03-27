@@ -7,6 +7,7 @@ class Return < ActiveRecord::Base
     # Relationships
     belongs_to :expense
     belongs_to :user
+    has_many :user_payments
 
     # Before validations
     before_validation :set_app_version
