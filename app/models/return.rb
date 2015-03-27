@@ -32,6 +32,37 @@ class Return < ActiveRecord::Base
     # Before actions
     # see observer check_for_expenses_observer.rb
     
+    # Method to process expense
+    def process(processing_user_id)
+	# Verify user
+	if User.where(:id => processing_user_id).first.nil?
+	    # Not a valid user, return false
+	    return false
+	end
+	# Add transaction
+	transaction do
+	    # Get group members
+	    members=self.expense.group.users
+	    # Get count of members
+	    member_count=members.size
+	    # Get return amount
+	    return_amount=self.amount / member_count.to_f
+	    # Loop over members
+	    members.each do |member|
+		# Skip self
+		next if member.id == self.user_id
+		# Create new UserPayment
+		UserPayment.return_payment(self.id, member.id, self.user_id, return_amount)
+	    end
+	    # Update Balance
+	    UserBalance.update_balances(self.user_id)
+	    # Set process fields
+	    self.process_date=Time.now
+	    self.process_flag=true
+	    self.save!
+	end
+    end
+    
     # Private methods
     private
     

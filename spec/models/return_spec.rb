@@ -215,5 +215,99 @@ describe Return do
 	# Should save
 	object.save.should == true
     end
+
+    it "should respond to a 'process' method" do
+	# Create object
+	object=Return.create!(@attr)
+	# Test
+	object.should respond_to(:process)
+    end
+
+    it "should return false if invalid user given to process method" do
+	# Get object
+	object=Return.new(@attr)
+	# Save object
+	object.save.should == true
+	# Test
+	object.process(999999).should == false
+    end
+
+    pending "should link to UserPayments" do
+    end
+
+    describe "should return the correct amount to each person" do
+	before(:each) do
+	    @exp_amount=22.00
+	    @return_amount=5.00
+	end
+
+	# Method to create an expense and process with users
+	def create_expense_and_process(user_count)
+	    # Variables
+	    attr_exp=get_attr_expense
+	    counter=91
+	    users=[]
+	    # Get today
+	    today=Time.now.utc.strftime("%Y-%m-%d")
+	    # Create users
+	    user_count.times do |x|
+		users.push(User.create!({:user_name => "test#{counter}", :password => 'testpassword'}))
+		counter += 1
+	    end
+	    # Create group
+	    group=Group.create!({:name => "Group test", :description => 'group 1 desc'})
+	    # Loop over users
+	    users.each do |u|
+		# Add user to group
+		group.add_user(u)
+	    end
+	    # Create expense
+	    expense=Expense.new(attr_exp)
+	    # Set group
+	    expense.group_id=group.id
+	    # Set user
+	    expense.user_id=users.first.id
+	    # Set amount
+	    expense.amount=@exp_amount
+	    # Save expense
+	    expense.save!
+	    # Test: UserDept created
+	    lambda{
+		# Process record
+		expense.process(users.first.id)
+	    }.should change(UserDept,:count).by(user_count - 1)
+	    # Test depts
+	    users[1..-1].each do |u|
+		u.depts.first.amount.should == @exp_amount / user_count
+	    end
+	    # Test
+	    group.users.size.should == user_count
+	    # Return expense
+	    return [expense,group]
+	end
+
+	it "process 2 users" do
+	    # Variables
+	    num_users=2
+	    # Get expense
+	    expense,group=create_expense_and_process(num_users)
+	    # Test: make sure we have more than one user
+	    expense.affected_users.split(',').size.should == num_users
+	    # Get last user
+	    last_user=group.users.last
+	    prev_dept=last_user.depts.last.amount
+	    # Create return
+	    object=Return.new(@attr.merge(:expense_id => expense.id, :user_id => expense.user_id, :amount => @return_amount))
+	    # Save return
+	    object.save.should == true
+	    # Process return
+	    object.process(object.user_id)
+	    # Reload
+	    object.reload
+	    # Test
+	    last_user.depts.last.amount.should == prev_dept - (@return_amount / num_users)
+	    UserPayment.all.size.should == 1
+	    UserPayment.first.amount.should == @return_amount / num_users
+	end
     end
 end
