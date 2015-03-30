@@ -352,7 +352,83 @@ describe Return do
 	    object.user_payments.size.should == 2
 	end
 
-	pending ", master test" do
+	it ", master test" do
+	    # Variables
+	    dept1=3.33
+	    dept2=5
+	    dept3=11.43
+	    dept4=2.22
+	    payment1=4.44
+	    payment2=20
+	    payment3=2.33
+	    # Add users
+	    u1=User.find(@attr[:user_id])
+	    u2=get_next_user
+	    u3=get_next_user
+	    # Create group
+	    g_all=Group.create!(:name => Faker::Company.name, :description => 'Test group all')
+	    # Add group members
+	    g_all.users = [u1,u2,u3]
+	    # Test groups
+	    g_all.group_members.size.should == 3
+	    # Create expense records
+	    exp1=get_valid_expense({:amount => dept1, :user_id => u1.id, :group_id => g_all.id})
+	    exp2=get_valid_expense({:amount => dept2, :user_id => u1.id, :group_id => g_all.id})
+	    exp3=get_valid_expense({:amount => dept3, :user_id => u2.id, :group_id => g_all.id})
+	    exp4=get_valid_expense({:amount => dept4, :user_id => u1.id, :group_id => u2.self_group.id})
+	    # Get records to process
+	    need_process=Expense.where(:process_flag => false)
+	    # Test
+	    need_process.size.should == 5
+	    # Add dept
+	    need_process.each{|e| e.process(e.user_id)}
+	    # Test: depts
+	    expected_dept_1_2=(dept3 / 3.0)
+	    expected_dept_1_3=0
+	    expected_dept_2_1=(dept1 / 3.0) + (dept2 / 3.0) + dept4
+	    expected_dept_2_3=0
+	    expected_dept_3_1=(dept1 / 3.0) + (dept2 / 3.0)
+	    expected_dept_3_2=(dept3 / 3.0)
+	    UserDept.all.size.should == 7
+	    UserDept.where(:from_user_id => u1.id, :to_user_id => u2.id).inject(0){|sum,ud| sum + ud.amount}.should == expected_dept_1_2
+	    UserDept.where(:from_user_id => u1.id, :to_user_id => u3.id).inject(0){|sum,ud| sum + ud.amount}.should == expected_dept_1_3
+	    UserDept.where(:from_user_id => u2.id, :to_user_id => u1.id).inject(0){|sum,ud| sum + ud.amount}.should == expected_dept_2_1
+	    UserDept.where(:from_user_id => u2.id, :to_user_id => u3.id).inject(0){|sum,ud| sum + ud.amount}.should == expected_dept_2_3
+	    UserDept.where(:from_user_id => u3.id, :to_user_id => u1.id).inject(0){|sum,ud| sum + ud.amount}.should == expected_dept_3_1
+	    UserDept.where(:from_user_id => u3.id, :to_user_id => u2.id).inject(0){|sum,ud| sum + ud.amount}.should == expected_dept_3_2
+	    # Get last dept
+	    last_dept=UserDept.last
+	    # Test: balances
+	    expected_balance_1_2=expected_dept_1_2 - expected_dept_2_1
+	    expected_balance_1_3=expected_dept_1_3 - expected_dept_3_1
+	    expected_balance_2_3=expected_dept_1_3 - expected_dept_3_2
+	    test_balances(u1,u2,expected_balance_1_2)
+	    test_balances(u1,u3,expected_balance_1_3)
+	    test_balances(u2,u3,expected_balance_2_3)
+	    # New return
+	    return_object=Return.new(@attr.merge(:amount => dept2, :user_id => u1.id, :expense_id => exp2.id))
+	    # Save return
+	    return_object.save.should == true
+	    # Process return
+	    return_object.process(u1.id)
+	    # Add payment
+	    add_user_payment(u1,u2,payment1)
+	    add_user_payment(u2,u1,payment2)
+	    add_user_payment(u1,u2,payment3)
+	    # Update balances
+	    lambda {
+		# Update balances
+		UserBalance.update_balances(u1.id)
+	    }.should change(UserBalance,:count).by(2)
+	    # Get expected return amount
+	    return_amount = dept2 / g_all.users.size.to_f
+	    # Get expected balance
+	    expected_balance_1_2=expected_balance_1_2 - payment1 - payment3 + payment2 + return_amount
+	    expected_balance_1_3=expected_balance_1_3 + return_amount
+	    # Test
+	    test_balances(u1,u2,expected_balance_1_2)
+	    test_balances(u1,u3,expected_balance_1_3)
+	    test_balances(u2,u3,expected_balance_2_3)
 	end
     end
 end
