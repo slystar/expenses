@@ -35,9 +35,25 @@ class Return < ActiveRecord::Base
     
     # Method to process expense
     def process(processing_user_id)
+	# Verify if this is a new record
+	if self.new_record?
+	    # Add error
+	    self.errors.add(:base,"Cannot process #{self.class} unless #{self.class} is saved first")
+	    # Not a valid user, return false
+	    return false
+	end
 	# Verify user
 	if User.where(:id => processing_user_id).first.nil?
+	    # Add error
+	    self.errors.add(:base,"Cannot process #{self.class}, invalid user_id: #{processing_user_id}")
 	    # Not a valid user, return false
+	    return false
+	end
+	# Verify if expense has been processed
+	unless self.expense.processed?
+	    # Add error
+	    self.errors.add(:base,"Cannot process #{self.class} unless #{self.expense.class} is processed first")
+	    # Need to process expense first
 	    return false
 	end
 	# Add transaction
@@ -60,7 +76,7 @@ class Return < ActiveRecord::Base
 	    # Set process fields
 	    self.process_date=Time.now
 	    self.process_flag=true
-	    self.save!
+	    self.save
 	end
     end
     

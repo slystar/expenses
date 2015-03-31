@@ -430,5 +430,45 @@ describe Return do
 	    test_balances(u1,u3,expected_balance_1_3)
 	    test_balances(u2,u3,expected_balance_2_3)
 	end
+
+	it "if the return was saved previously" do
+	    # Save expense
+	    @exp.save.should == true
+	    # Process expense
+	    @exp.process(@exp.user_id)
+	    # Get object
+	    object=Return.new(@attr)
+	    # Try to process
+	    object.process(object.user_id).should == false
+	    object.errors.size.should > 0
+	    # Reset fields
+	    object.process_date=nil
+	    object.process_flag=false
+	    # Save record
+	    object.save.should == true
+	    # Process again
+	    object.process(object.user_id).should == true
+	end
+
+	it "if the expense has been processed" do
+	    # Save expense
+	    @exp.save.should == true
+	    # Test expense object
+	    @exp.process_flag.should == false
+	    # Get object
+	    object=Return.new(@attr)
+	    # Save object
+	    object.save.should == true
+	    # Test
+	    object.process(@exp.user_id).should == false
+	    object.errors.size.should > 0
+	    object.expense.should == @exp
+	    # Process expense
+	    @exp.process(@exp.user_id).should == true
+	    # Reload
+	    object.reload
+	    # Test
+	    object.process(@exp.user_id).should == true
+	end
     end
 end
