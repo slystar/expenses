@@ -147,6 +147,11 @@ class Expense < ActiveRecord::Base
 	end
     end
 
+    # Method to check if this record has been processed
+    def processed?
+	self.process_flag
+    end
+
     # Private methods
     private
 

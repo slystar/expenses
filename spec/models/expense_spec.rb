@@ -1092,4 +1092,33 @@ describe Expense do
 	u1.balances.find{|b| b.from_user_id==u2.id and b.to_user_id==u1.id}.should be_nil
 	u1.balances.find{|b| b.from_user_id==u1.id and b.to_user_id==u2.id}.amount.should == ((amount + amount2) * -1)
     end
+
+    it "should be saved before being processed" do
+	# Get new object
+	object=Expense.new(@attr)
+	# Test
+	lambda {
+	    object.process(object.user_id)
+	}.should raise_error
+	object.should_not be_valid
+	# Reset fields
+	object.process_date=nil
+	object.process_flag=false
+	# Test
+	object.should be_valid
+	object.save.should == true
+    end
+
+    it "should have a processed? method" do
+	# Get new object
+	object=Expense.new(@attr)
+	# Test
+	object.processed?.should == false
+	# Save expense
+	object.save.should == true
+	# Process
+	object.process(object.user_id)
+	# Test
+	object.processed?.should == true
+    end
 end
