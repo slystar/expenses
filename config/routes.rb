@@ -1,4 +1,7 @@
 Expenses::Application.routes.draw do
+  resources :returns
+
+
     # ImportHistory
     get "import_histories/:id" => "import_histories#show"
     get "import_histories" => "import_histories#index"

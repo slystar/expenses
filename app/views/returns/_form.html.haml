@@ -1,0 +1,10 @@
+= form_for @return do |f|
+  - if @return.errors.any?
+    #error_explanation
+      %h2= "#{pluralize(@return.errors.count, "error")} prohibited this return from being saved:"
+      %ul
+        - @return.errors.full_messages.each do |msg|
+          %li= msg
+
+  .actions
+    = f.submit 'Save'
