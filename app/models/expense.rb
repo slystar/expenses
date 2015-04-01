@@ -52,6 +52,13 @@ class Expense < ActiveRecord::Base
 
     # Method to process expense
     def process(processing_user_id)
+	# Verify if this is a new record
+	if self.new_record?
+	    # Add error
+	    self.errors.add(:base,"Cannot process #{self.class} unless #{self.class} is saved first")
+	    # Not a valid user, return false
+	    return false
+	end
 	# Verify user
 	if User.where(:id => processing_user_id).first.nil?
 	    # Not a valid user, return false

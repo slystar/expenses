@@ -1097,10 +1097,7 @@ describe Expense do
 	# Get new object
 	object=Expense.new(@attr)
 	# Test
-	lambda {
-	    object.process(object.user_id)
-	}.should raise_error
-	object.should_not be_valid
+	object.process(object.user_id).should == false
 	# Reset fields
 	object.process_date=nil
 	object.process_flag=false
