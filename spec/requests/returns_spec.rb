@@ -1,11 +1,41 @@
 require 'spec_helper'
 
 describe "Returns" do
-  describe "GET /returns" do
-    it "works! (now write some real specs)" do
-      # Run the generator again with the --webrat flag if you want to use webrat methods/matchers
-      get returns_path
-      response.status.should be(200)
+
+    before(:each) do
+	@exp=get_valid_expense
+	@attr={:description => Faker::Company.name, :expense_id => @exp.id, :transaction_date => Date.today, :user_id => @exp.user_id, :amount => @exp.amount - 1}
     end
-  end
+
+    describe 'requires login for' do
+	it "new" do
+	    # Variables
+	    path="#{returns_path}/new"
+	    # Visit page
+	    visit path
+	    # Test
+	    current_path.should == login_path
+	end
+	it "show" do
+	    # Create return
+	    return_obj=Return.create!(@attr)
+	    # Variables
+	    path="#{returns_path}/#{return_obj.id}"
+	    # Visit page
+	    visit path
+	    # Test
+	    current_path.should == login_path
+	end
+
+	it "index" do
+	    # Create return
+	    return_obj=Return.create!(@attr)
+	    # Variables
+	    path="#{returns_path}"
+	    # Visit page
+	    visit path
+	    # Test
+	    current_path.should == login_path
+	end
+    end
 end

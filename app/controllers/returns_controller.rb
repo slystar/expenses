@@ -1,4 +1,6 @@
 class ReturnsController < ApplicationController
+    before_filter :login_required
+
   # GET /returns
   # GET /returns.json
   def index

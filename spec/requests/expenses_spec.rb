@@ -27,6 +27,14 @@ describe "Expenses ->" do
 	    current_path.should == login_path
 	end
 
+	it "Add return" do
+	    path="/returns/new"
+	    # Visit page
+	    visit path
+	    # Test
+	    current_path.should == login_path
+	end
+
 	it "Process data" do
 	    path="/expenses/process_data"
 	    # Visit page
