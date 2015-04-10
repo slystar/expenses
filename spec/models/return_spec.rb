@@ -170,6 +170,19 @@ describe Return do
 	object.expense.store.should == @exp.store
     end
 
+    it "should be accessible through an expense object" do
+	# Get object
+	object=Return.create!(@attr)
+	# Test
+	object.expense.returns.size.should == 1
+	# Add another return
+	object2=Return.create!(@attr)
+	# Test
+	@exp.returns.size.should == 2
+	@exp.returns.include?(object)
+	@exp.returns.include?(object2)
+    end
+
     it "should not be created with a process date" do
 	object=Return.new(@attr)
 	object.process_date=Time.now

@@ -15,6 +15,7 @@ class Expense < ActiveRecord::Base
     belongs_to :group
     has_many :user_depts
     belongs_to :expense_note
+    has_many :returns
 
     # Before validations
     before_validation :set_app_version

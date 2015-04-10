@@ -1118,4 +1118,12 @@ describe Expense do
 	# Test
 	object.processed?.should == true
     end
+
+    it "should list associated returns" do
+	# Get new object
+	object=Expense.new(@attr)
+	# Test
+	object.should respond_to(:returns)
+	object.returns.class.should == Array
+    end
 end
