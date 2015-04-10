@@ -6,11 +6,11 @@
     %th
     %th
 
-  - @returns.each do |return|
+  - @returns.each do |return_obj|
     %tr
-      %td= link_to 'Show', return
-      %td= link_to 'Edit', edit_return_path(return)
-      %td= link_to 'Destroy', return, :method => :delete, :data => { :confirm => 'Are you sure?' }
+      %td= link_to 'Show', return_obj
+      %td= link_to 'Edit', edit_return_path(return_obj)
+      %td= link_to 'Destroy', return_obj, :method => :delete, :data => { :confirm => 'Are you sure?' }
 
 %br
 
