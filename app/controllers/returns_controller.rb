@@ -43,10 +43,12 @@ class ReturnsController < ApplicationController
     # POST /returns.json
     def create
 	@return = Return.new(params[:return])
+	# Set user
+	@return.user_id=session[:user_id]
 
 	respond_to do |format|
 	    if @return.save
-		format.html { redirect_to @return, notice: 'Return was successfully created.' }
+		format.html { redirect_to "#{returns_path}/new", notice: 'Return was successfully created.' }
 		format.json { render json: @return, status: :created, location: @return }
 	    else
 		format.html { render action: "new" }

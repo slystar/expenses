@@ -6,5 +6,18 @@
         - @return.errors.full_messages.each do |msg|
           %li= msg
 
+  .field
+    = f.label :expense_id
+    = f.text_field :expense_id
+  .field
+    = f.label :transaction_date
+    %br/
+    = f.date_select :transaction_date
+  .field
+    = f.label :amount
+    = f.text_field :amount
+  .field
+    = f.label :description
+    = f.text_field :description
   .actions
-    = f.submit 'Save'
+    = f.submit 'Create Return'

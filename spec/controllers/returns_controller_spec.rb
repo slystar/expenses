@@ -90,7 +90,7 @@ describe ReturnsController do
 
       it "redirects to the created return" do
         post :create, {:return => valid_attributes}
-        response.should redirect_to(Return.last)
+        response.should redirect_to("#{returns_path}/new")
       end
     end
 
