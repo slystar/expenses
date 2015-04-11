@@ -132,6 +132,28 @@ describe Return do
 	object.should_not be_valid
     end
 
+    it "should make sure that serveral returns for an expense do not have an amount greater then that expense" do
+	# Variable
+	amount=@exp.amount / 3.0
+	# Create 1st return
+	object1=Return.new(@attr)
+	object1.amount=amount
+	object1.should be_valid
+	object1.save.should == true
+	# Create 2nd return
+	object2=Return.new(@attr)
+	object2.amount=amount
+	object2.should be_valid
+	object2.save.should == true
+	object2.errors.size.should == 0
+	# Create 3rd return
+	object3=Return.new(@attr)
+	object3.amount=amount + 1
+	object3.should_not be_valid
+	object3.save.should == false
+	object3.errors.size.should > 0
+    end
+
     it "should allow a return amount equal to expense amount" do
 	# Get object
 	object=Return.new(@attr)
@@ -171,12 +193,14 @@ describe Return do
     end
 
     it "should be accessible through an expense object" do
+	# Variable
+	amount=@attr[:amount] / 2
 	# Get object
-	object=Return.create!(@attr)
+	object=Return.create!(@attr.merge(:amount => amount))
 	# Test
 	object.expense.returns.size.should == 1
 	# Add another return
-	object2=Return.create!(@attr)
+	object2=Return.create!(@attr.merge(:amount => amount))
 	# Test
 	@exp.returns.size.should == 2
 	@exp.returns.include?(object)

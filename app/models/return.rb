@@ -119,6 +119,22 @@ class Return < ActiveRecord::Base
 	if self.amount > self.expense.amount
 	    self.errors.add(:base,"Return amount cannot be greater than expense amount.")
 	end
+	# Varaibles
+	sum=0.0
+	# Get existing returns
+	existing=Return.where(:expense_id => self.expense_id)
+	# Check if self already exists in Return
+	unless self.id.nil?
+	    existing=existing.where('id != ?',self.id)
+	end
+	# Get sum of existing returns
+	existing.each{|r| sum += r.amount}
+	# Get combined amount
+	combined_amount=sum + self.amount.to_f
+	# Compare combined return amount with expense amount
+	if combined_amount > self.expense.amount
+	    self.errors.add(:base,"Returns's combined amount cannot be greater than expense amount.")
+	end
     end
 
     # Method to check transaction date
