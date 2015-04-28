@@ -26,7 +26,22 @@ class ReturnsController < ApplicationController
     # GET /returns/new
     # GET /returns/new.json
     def new
+	# Get new return
 	@return = Return.new
+	# Check params
+	expense_id=params[:expense_id]
+	# Check if return is valid
+	# Set expense id if available
+	if not expense_id.nil?
+	    # Get expense
+	    expense=Expense.find_by_id(expense_id)
+	    # Check if expense is valid
+	    if expense
+		# Set attributes
+		@return.expense_id=expense_id
+		@expense=expense
+	    end
+	end
 
 	respond_to do |format|
 	    format.html # new.html.erb
@@ -45,6 +60,13 @@ class ReturnsController < ApplicationController
 	@return = Return.new(params[:return])
 	# Set user
 	@return.user_id=session[:user_id]
+	# check for existing expense
+	if @return.expense
+	    # Set variable
+	    @expense=@return.expense
+	else
+	    @return.expense_id=nil
+	end
 
 	respond_to do |format|
 	    if @return.save
