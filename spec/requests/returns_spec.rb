@@ -137,7 +137,7 @@ describe "Returns" do
 			page.click_button 'Create Return'
 		    }.should change(Return,:count).by(1)
 		    # Test
-		    current_path.should == @add_path
+		    current_path.should == expenses_path
 		    page.should have_content('Return was successfully created.')
 		end
 		it 'should show expense information' do

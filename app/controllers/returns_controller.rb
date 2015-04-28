@@ -26,6 +26,8 @@ class ReturnsController < ApplicationController
     # GET /returns/new
     # GET /returns/new.json
     def new
+	# Reset return_to
+	session[:return_to]=nil
 	# Get new return
 	@return = Return.new
 	# Check params
@@ -41,6 +43,8 @@ class ReturnsController < ApplicationController
 		@expense=expense
 		@return.expense_id=expense_id
 		@return.transaction_date=expense.date_purchased
+		# Set referer
+		session[:return_to] = request.referer
 	    end
 	end
 
@@ -71,7 +75,13 @@ class ReturnsController < ApplicationController
 
 	respond_to do |format|
 	    if @return.save
-		format.html { redirect_to "#{returns_path}/new", notice: 'Return was successfully created.' }
+		# Get path
+		if session[:return_to]
+		    path=session[:return_to]
+		else
+		    path="#{returns_path}/new"
+		end
+		format.html { redirect_to path, notice: 'Return was successfully created.' }
 		format.json { render json: @return, status: :created, location: @return }
 	    else
 		format.html { render action: "new" }
