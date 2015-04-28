@@ -2,4 +2,48 @@
 
 = render 'form'
 
+- if @return.expense_id
+  %p
+    %h2 Expense
+  %table{:border => 1}
+    %tr
+      %th Id:
+      %td= @expense.id
+    %tr
+      %th Date purchased:
+      %td= @expense.date_purchased
+    %tr
+      %th Description:
+      %td= @expense.description
+    %tr
+      %th Pay method:
+      %td= @expense.pay_method.name
+    %tr
+      %th Reason:
+      %td= @expense.reason.name
+    %tr
+      %th Store:
+      %td= @expense.store.name
+    %tr
+      %th User:
+      %td= @expense.user.user_name
+    %tr
+      %th Group:
+      %td= @expense.group.name
+    %tr
+      %th Amount:
+      %td= @expense.amount
+    %tr
+      %th Process flag:
+      %td= @expense.process_flag
+    %tr
+      %th Process date:
+      %td= @expense.process_date
+    %tr
+      %th Created date:
+      %td= @expense.created_at
+    %tr
+      %th Modified date:
+      %td= @expense.updated_at
+
 = link_to 'Back', returns_path
