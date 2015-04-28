@@ -10,6 +10,8 @@
     .field
       = f.label :expense_id, "Expense ID"
       = f.text_field :expense_id
+  - else
+    = f.hidden_field :expense_id, :value => @return.expense_id
   .field
     = f.label :transaction_date
     %br/

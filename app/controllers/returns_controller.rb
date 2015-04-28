@@ -38,8 +38,9 @@ class ReturnsController < ApplicationController
 	    # Check if expense is valid
 	    if expense
 		# Set attributes
-		@return.expense_id=expense_id
 		@expense=expense
+		@return.expense_id=expense_id
+		@return.transaction_date=expense.date_purchased
 	    end
 	end
 
