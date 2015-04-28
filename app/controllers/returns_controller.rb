@@ -4,7 +4,7 @@ class ReturnsController < ApplicationController
     # GET /returns
     # GET /returns.json
     def index
-	@returns = Return.all
+	@returns = Return.includes(:user).all
 
 	respond_to do |format|
 	    format.html # index.html.erb
