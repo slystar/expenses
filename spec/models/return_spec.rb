@@ -253,6 +253,29 @@ describe Return do
 	object.save.should == true
     end
 
+    it "should not be modifyable if it has been processed" do
+	# Process expense
+	@exp.process(@exp.user_id).should == true
+	# Create object
+	object=Return.create!(@attr)
+	# Get amount
+	original_amount=object.amount
+	new_amount=object.amount - 1
+	# Should save
+	object.save.should == true
+	# Process
+	#object.process(object.user_id)
+	object.process(object.user_id).should == true
+	# Reload
+	object.reload
+	# Change amount
+	object.amount=new_amount
+	# Test
+	object.process_flag.should == true
+	object.amount.should_not == original_amount
+	object.save.should == false
+    end
+
     it "should respond to a 'process' method" do
 	# Create object
 	object=Return.create!(@attr)
@@ -267,6 +290,7 @@ describe Return do
 	object.save.should == true
 	# Test
 	object.process(999999).should == false
+	object.errors.messages.to_s.should =~ /invalid user/
     end
 
     it "should link to UserPayments" do
@@ -354,7 +378,7 @@ describe Return do
 	    # Save return
 	    object.save.should == true
 	    # Process return
-	    object.process(object.user_id)
+	    object.process(object.user_id).should == true
 	    # Reload
 	    object.reload
 	    # Test
@@ -379,7 +403,7 @@ describe Return do
 	    # Save return
 	    object.save.should == true
 	    # Process return
-	    object.process(object.user_id)
+	    object.process(object.user_id).should == true
 	    # Reload
 	    object.reload
 	    # Test
@@ -447,7 +471,7 @@ describe Return do
 	    # Save return
 	    return_object.save.should == true
 	    # Process return
-	    return_object.process(u1.id)
+	    return_object.process(u1.id).should == true
 	    # Add payment
 	    add_user_payment(u1,u2,payment1)
 	    add_user_payment(u2,u1,payment2)
@@ -477,6 +501,7 @@ describe Return do
 	    object=Return.new(@attr)
 	    # Try to process
 	    object.process(object.user_id).should == false
+	    object.errors.messages.to_s.should =~ /return is saved first/i
 	    object.errors.size.should > 0
 	    # Reset fields
 	    object.process_date=nil
@@ -498,6 +523,7 @@ describe Return do
 	    object.save.should == true
 	    # Test
 	    object.process(@exp.user_id).should == false
+	    object.errors.messages.to_s.should =~ /expense is processed first/i
 	    object.errors.size.should > 0
 	    object.expense.should == @exp
 	    # Process expense

@@ -26,6 +26,7 @@ class Return < ActiveRecord::Base
     validate :check_transaction_date
     validate :check_process_date, :on => :create
     validate :check_process_flag, :on => :create
+    validate :check_for_processed_record_update, :on => :update
 
     # Check on destruction
     before_destroy :check_for_processed_record_delete
@@ -171,5 +172,31 @@ class Return < ActiveRecord::Base
 	end
 	# Ok
 	return true
+    end
+
+    # Method to check if this record can be modified
+    def check_for_processed_record_update
+	# Fields that can be modified
+	modifyable_fields=[:date_processed]
+	# Get database version
+	db_version=Return.find(self.id)
+	# Get database process flag
+	db_process_flag=db_version.process_flag
+	db_process_date=db_version.process_date
+	# Ok to update if no process info
+	if (not db_process_flag) and (db_process_date.nil?)
+	    # Good to go
+	    return true
+	end
+	# Loop over attributes
+	db_version.attribute_names.each do |a|
+	    # Skip modifyable attributes
+	    next if modifyable_fields.include?(a.to_sym)
+	    # Check if value has changed
+	    if not self[a] == db_version[a]
+		self.errors.add(:base,"Can't update #{self.class} #{a}: because this return has been processed")
+		return false
+	    end
+	end
     end
 end
