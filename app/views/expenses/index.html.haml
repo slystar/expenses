@@ -23,8 +23,6 @@ records found
       %th Amount
       %th Process date
       %th Process flag
-      %th
-      %th
     %tr
       %td
       %td
@@ -32,8 +30,6 @@ records found
       %td= select_tag(:filter_reason, options_for_select(@reason_names, :selected => @filters[:filter_reason]),:prompt => '--')
       %td= select_tag(:filter_store, options_for_select(@store_names, :selected => @filters[:filter_store]),:prompt => '--')
       %td= select_tag(:filter_user, options_for_select(@user_names, :selected => @filters[:filter_user]),:prompt => '--')
-      %td
-      %td
       %td
       %td
       %td
@@ -52,6 +48,7 @@ records found
         %td= expense.process_flag
         %td= link_to 'Show', expense
         %td= link_to 'Edit', edit_expense_path(expense)
+        %td= link_to 'Add Return', "#{returns_path}/new?expense_id=#{expense.id}"
 %br/
 = link_to 'New Expense', new_expense_path
 %p

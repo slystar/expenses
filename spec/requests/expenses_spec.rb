@@ -160,6 +160,10 @@ describe "Expenses ->" do
 		    page.should have_select(:filter_user, :with_options => [e.user.user_name])
 		    # Test: should have a reset filters link
 		    page.should have_link("Reset filters")
+		    # Test: links
+		    page.should have_link("Show")
+		    page.should have_link("Edit")
+		    page.should have_link("Add Return")
 		end
 	    end
 
