@@ -59,6 +59,9 @@ class ExpensesController < ApplicationController
 	@store_names=@expenses.map{|e| [e.store.name,e.store.id]}.sort{|a,b| a[0]<=>b[0]}.uniq
 	@user_names=@expenses.map{|e| [e.user.user_name,e.user.id]}.sort{|a,b| a[0]<=>b[0]}.uniq
 
+	# set return_to
+	session[:return_to] = request.url
+
 	respond_to do |format|
 	    format.html # index.html.erb
 	    format.json { render json: @expenses }
