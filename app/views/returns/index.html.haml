@@ -1,13 +1,26 @@
 %h1 Listing returns
 
-%table
+%table{:border => 1}
   %tr
-    %th
-    %th
-    %th
+    %th Expense_id
+    %th Amount
+    %th Description
+    %th User
+    %th Transaction Date
+    %th Date entered
+    %th Processed
+    %th Date Processed
 
   - @returns.each do |return_obj|
     %tr
+      %td= return_obj.expense_id
+      %td= return_obj.amount
+      %td= return_obj.description
+      %td= return_obj.user.user_name
+      %td= return_obj.transaction_date
+      %td= return_obj.created_at
+      %td= return_obj.process_flag
+      %td= return_obj.process_date
       %td= link_to 'Show', return_obj
       %td= link_to 'Edit', edit_return_path(return_obj)
       %td= link_to 'Destroy', return_obj, :method => :delete, :data => { :confirm => 'Are you sure?' }
