@@ -76,12 +76,17 @@ class ReturnsController < ApplicationController
     # DELETE /returns/1
     # DELETE /returns/1.json
     def destroy
+	# Get return
 	@return = Return.find(params[:id])
-	@return.destroy
 
 	respond_to do |format|
-	    format.html { redirect_to returns_url }
-	    format.json { head :no_content }
+	    if @return.destroy
+		format.html { redirect_to returns_url, notice: "Return successfully destroyed" }
+		format.json { head :no_content }
+	    else
+		format.html { redirect_to returns_url, alert: "Error: #{@return.errors.messages[:base].first}" }
+		format.json { head :no_content }
+	    end
 	end
     end
 end
