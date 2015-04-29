@@ -11,11 +11,12 @@
           = h.to_s.camelize
     - @expenses.each do |e|
       - if not user_id.nil? and e.user_id != user_id
-        %tr
-          %td{:colspan => headers.size}
-            - stats.each do |k,v|
-              = "#{k} : #{number_to_currency(v)}"
-              %br
+        - if stats.size > 0
+          %tr
+            %td{:colspan => headers.size}
+              - stats.each do |k,v|
+                = "#{k} : #{number_to_currency(v)}"
+                %br
       - if e.user_id != user_id
         - user_id=e.user_id
         - stats={}
