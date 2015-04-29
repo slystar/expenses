@@ -1,8 +1,11 @@
 - headers=[:user,:date_purchased,:description,:store,:pay_method,:reason,:group,:amount]
 - user_id=0
 - stats={}
+- return_totals={}
+- flag_process=false
 %h1
-  Process expenses
+  Process records
+%h2 Expenses
 - if @expenses.size > 0
   %table{:border => 1}
     %tr
@@ -41,6 +44,35 @@
   %p
     Records:
     = @expenses.size
-  = button_to 'Process', {:controller => :expenses, :action => "process_all_now"}, :method => :post, confirm: 'Are you sure?'
+  - flag_process=true
 - else
   0 records to process
+
+%h2 Returns
+- if @returns.size > 0
+  %table{:border => 1}
+    %tr
+      %th User
+      %th TranscationDate
+      %th Description
+      %th Created
+      %th Amount
+    - @returns.each do |r|
+      - return_totals[r.user.user_name]=0 if return_totals[r.user.user_name].nil?
+      - return_totals[r.user.user_name]+= r.amount
+      %tr
+        %td= r.user.user_name
+        %td= r.transaction_date
+        %td= r.description
+        %td= r.created_at
+        %td= r.amount
+    %tr
+      - return_totals.each do |u,amount|
+        %td{:colspan =>5}= "#{u} Total: #{amount} $"
+  %p
+    Records:
+    = @returns.size
+  - flag_process=true
+- if flag_process
+  %p
+    = button_to 'Process', {:controller => :expenses, :action => "process_all_now"}, :method => :post, confirm: 'Are you sure?'

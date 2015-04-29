@@ -448,6 +448,36 @@ describe "Expenses ->" do
 		    visit(menu_path)
 		    page.should have_link("Process expense")
 		end
+		before(:each) do
+		    # Get expense
+		    @exp=get_valid_expense
+		    # Save expense
+		    @exp.save.should == true
+		    # Set Return properties
+		    r1={:expense_id => @exp.id, :amount => @exp.amount / 2.0, :transaction_date => @exp.date_purchased.to_s, :user_id => @exp.user_id, :description => 'description 1'}
+		    r2=r1.merge(:amount => (@exp.amount / 4.0).round(2), :description => 'description 2')
+		    # Get a valid return
+		    @obj1=Return.new(r1)
+		    @obj2=Return.new(r2)
+		    # Save Return
+		    @obj1.save.should == true
+		    @obj2.save.should == true
+		end
+		it 'should show return on process page' do
+		    # Visit
+		    visit "/expenses/process_data"
+		    # Loop over returns
+		    [@obj1,@obj2].each do |o|
+			# Test
+			page.should have_content o.user.user_name
+			page.should have_content o.transaction_date.to_s
+			page.should have_content o.description
+			page.should have_content o.amount
+			page.should have_content o.expense.amount
+		    end
+		    page.should have_content "Total: #{@obj1.amount + @obj2.amount} $"
+		    page.should have_content "Returns"
+		end
 	    end
 
 	    describe "Import expenses ->" do

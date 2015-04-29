@@ -470,6 +470,8 @@ class ExpensesController < ApplicationController
     def process_data
 	# Get expenses to process
 	@expenses=Expense.where(:process_flag => false).includes(:user).includes(:store).includes(:pay_method).includes(:reason).includes(:group).order(:user_id).order(:date_purchased)
+	# Get returns to process
+	@returns=Return.where(:process_flag => false).includes(:user).order(:user_id).order(:transaction_date)
     end
 
     # Method to process all expenses now
