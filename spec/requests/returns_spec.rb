@@ -80,8 +80,6 @@ describe "Returns" do
 	    before(:each) do
 		# Save expense
 		@exp.save.should == true
-		# Get a valid return
-		@object=Return.new
 		# Visit page
 		visit @add_path
 	    end
