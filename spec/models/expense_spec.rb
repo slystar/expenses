@@ -105,6 +105,20 @@ describe Expense do
 	expense.should_not be_valid
     end
 
+    it "should map to a group with users" do
+	expense=Expense.new(@attr)
+	# Get group
+	group=expense.group
+	# remove users
+	group.user_ids=[]
+	# test
+	expense.should_not be_valid
+	expense.save.should == false
+	expense.errors.messages.to_s.should =~ /Group has no users./i
+	# Try to create expense
+	lambda{Expense.create!(@attr)}.should raise_error
+    end
+
     it "should have an amount" do
 	expense=Expense.new(@attr)
 	expense.amount=nil

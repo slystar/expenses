@@ -41,6 +41,7 @@ class Expense < ActiveRecord::Base
     validate :check_for_processed_record_update, :on => :update
     validate :check_duplication_check_reviewed, :on => :create
     validate :check_duplication_check_processed, :on => :create
+    validate :check_group_users
 
     # Before save
     before_save :create_duplication_check_hash
@@ -277,6 +278,26 @@ class Expense < ActiveRecord::Base
 		    self.save
 		end
 	    end
+	end
+    end
+
+    # Method to check that the group has users
+    def check_group_users
+	# Get group
+	group=self.group
+	# Skip test if no group defined
+	return true if not group
+	# Get user count
+	count=group.user_ids.size
+	# Test
+	if count > 0
+	    # Good, at least one user there
+	    return true
+	else
+	    # Add error message
+	    self.errors.add(:base,"Group has no users.")
+	    # Return false
+	    return false
 	end
     end
 end
