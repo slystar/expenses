@@ -27,6 +27,7 @@ class Return < ActiveRecord::Base
     validate :check_process_date, :on => :create
     validate :check_process_flag, :on => :create
     validate :check_for_processed_record_update, :on => :update
+    validate :check_return_to_self
 
     # Check on destruction
     before_destroy :check_for_processed_record_delete
@@ -201,6 +202,25 @@ class Return < ActiveRecord::Base
 		self.errors.add(:base,"Can't update #{self.class} #{a}: because this return has been processed")
 		return false
 	    end
+	end
+    end
+
+    # Method to check if we are submiting a return to self (user)
+    def check_return_to_self
+	# Get expeense
+	exp=self.expense
+	# OK if no expense is present yet
+	return true if not exp
+	# Get affected_user ids
+	affected_user_ids=get_affected_user_ids
+	# OK if group has more than 1 user
+	return true if affected_user_ids.size > 1
+	# Check if all user_id are the same
+	if affected_user_ids.first == self.user_id and self.user_id == exp.user_id
+	    # Add error message
+	    self.errors.add(:base,"Cannot create a return to self.")
+	    # Return false
+	    return false
 	end
     end
 

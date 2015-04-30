@@ -4,6 +4,10 @@ describe Return do
     before(:each) do
 	@exp=get_valid_expense
 	@attr={:description => Faker::Company.name, :expense_id => @exp.id, :transaction_date => Date.today, :user_id => @exp.user_id, :amount => @exp.amount - 1}
+	# Get 2nd user
+	u2=get_next_user
+	# Add to group
+	@exp.group.add_user(u2)
     end
 
     it "should create a new instance given valid attributes" do
@@ -366,6 +370,34 @@ describe Return do
 	UserPayment.all.size.should == 2
     end
 
+    it "should not allow a return to self" do
+	# Get Objects
+	obj=Return.new(@attr)
+	exp=obj.expense
+	group=obj.expense.group
+	# Clear group
+	group.user_ids=[]
+	# Add self
+	group.add_user(obj.user)
+	group.reload
+	# Test
+	obj.user_id.should == exp.user_id
+	group.user_ids.include?(obj.user_id).should == true
+	group.user_ids.size.should == 1
+	obj.should_not be_valid
+	obj.save.should == false
+	obj.errors.messages.to_s.should =~ /cannot create a return to self/i
+	lambda {Return.create!(@attr)}.should raise_error
+	# Get another user
+	u2=get_next_user
+	# Add another user to group
+	group.add_user(u2)
+	# Test
+	u2.id.should_not == obj.user_id
+	group.user_ids.size.should > 1
+	obj.should be_valid
+    end
+
     describe "should return the correct amount to each person" do
 	before(:each) do
 	    @exp_amount=22.00
@@ -504,7 +536,7 @@ describe Return do
 	    expected_dept_2_3=0
 	    expected_dept_3_1=(dept1 / 3.0) + (dept2 / 3.0)
 	    expected_dept_3_2=(dept3 / 3.0)
-	    UserDept.all.size.should == 7
+	    UserDept.all.size.should == 8
 	    UserDept.where(:from_user_id => u1.id, :to_user_id => u2.id).inject(0){|sum,ud| sum + ud.amount}.should == expected_dept_1_2
 	    UserDept.where(:from_user_id => u1.id, :to_user_id => u3.id).inject(0){|sum,ud| sum + ud.amount}.should == expected_dept_1_3
 	    UserDept.where(:from_user_id => u2.id, :to_user_id => u1.id).inject(0){|sum,ud| sum + ud.amount}.should == expected_dept_2_1
