@@ -60,17 +60,21 @@ class Return < ActiveRecord::Base
 	# Add transaction
 	transaction do
 	    # Get group members
-	    members=self.expense.group.users
+	    members=get_affected_user_ids
+	    # Check if we have data
+	    if members.size == 0
+		members=self.expense.group.user_ids
+	    end
 	    # Get count of members
 	    member_count=members.size
 	    # Get return amount
 	    return_amount=self.amount / member_count.to_f
 	    # Loop over members
-	    members.each do |member|
+	    members.each do |id|
 		# Skip self
-		next if member.id == self.user_id
+		next if id == self.user_id
 		# Create new UserPayment
-		UserPayment.return_payment(self.id, member.id, self.user_id, return_amount)
+		UserPayment.return_payment(self.id, id, self.user_id, return_amount)
 	    end
 	    # Update Balance
 	    UserBalance.update_balances(self.user_id)
@@ -197,6 +201,18 @@ class Return < ActiveRecord::Base
 		self.errors.add(:base,"Can't update #{self.class} #{a}: because this return has been processed")
 		return false
 	    end
+	end
+    end
+
+    # Method to get affected_user ids
+    def get_affected_user_ids
+	# Get expense
+	expense=self.expense
+	# Check if expense has been processed
+	if expense.process_flag == true
+	    return self.expense.affected_users.split(/,/).collect{|i| i.to_i}
+	else
+	    return expense.group.user_ids
 	end
     end
 end

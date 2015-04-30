@@ -312,6 +312,60 @@ describe Return do
 	obj.user_payments.include?(up).should == true
     end
 
+    it "should return to expense.affected_users instead of the group members" do
+	# In case the group has changed since the expense was processed
+	# Get users
+	u1=get_next_user
+	u2=get_next_user
+	u3=get_next_user
+	# Get new return
+	object=Return.create!(@attr)
+	# Get expense
+	exp=object.expense
+	# Test
+	exp.process_flag.should == false
+	# Get the group
+	group=exp.group
+	# Set group members
+	group.users=[u1,u2]
+	# Process expense
+	exp.process(exp.user_id).should == true
+	# Modify the group
+	group.users=[u1,u2,u3]
+	# Process return
+	object.should be_valid
+	# Process record
+	object.process(object.user_id).should == true
+	# test
+	UserPayment.all.size.should == 2
+    end
+
+    it "should fallback on group members if affected_users not available" do
+	# Get users
+	u1=get_next_user
+	u2=get_next_user
+	# Get new return
+	object=Return.create!(@attr)
+	# Get expense
+	exp=object.expense
+	# Test
+	exp.process_flag.should == false
+	# Get the group
+	group=exp.group
+	# Set group members
+	group.users=[u1,u2]
+	# Process expense
+	exp.process(exp.user_id).should == true
+	# Remove affected_users
+	exp.affected_users.size.should > 0
+	exp.affected_users=""
+	exp.save(:validate => false).should == true
+	exp.affected_users.size.should == 0
+	# Process return
+	object.process(object.user_id).should == true
+	UserPayment.all.size.should == 2
+    end
+
     describe "should return the correct amount to each person" do
 	before(:each) do
 	    @exp_amount=22.00
