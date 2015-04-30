@@ -58,12 +58,21 @@ class Expense < ActiveRecord::Base
 	if self.new_record?
 	    # Add error
 	    self.errors.add(:base,"Cannot process #{self.class} unless #{self.class} is saved first")
-	    # Not a valid user, return false
+	    # return false
 	    return false
 	end
 	# Verify user
 	if User.where(:id => processing_user_id).first.nil?
+	    # Add error
+	    self.errors.add(:base,"Cannot process #{self.class} because user is invalid")
 	    # Not a valid user, return false
+	    return false
+	end
+	# Verify group
+	if self.group.user_ids.size == 0
+	    # Add error
+	    self.errors.add(:base,"Cannot process #{self.class} because group '#{self.group.name}' has no users")
+	    # No user in group
 	    return false
 	end
 	# Add transaction

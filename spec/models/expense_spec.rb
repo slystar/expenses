@@ -233,6 +233,17 @@ describe Expense do
 	expense.process(999999).should == false
     end
 
+    it "should not process an expense with no users in group" do
+	# Create expense
+	exp=Expense.create!(@attr)
+	# Empty the group
+	exp.group.user_ids=[]
+	# Test
+	exp.group.user_ids.size.should == 0
+	exp.process(exp.user_id).should == false
+	exp.errors.messages.to_s.should =~ /group.*has no users/i
+    end
+
     context "should be able to process itself" do
 	it "2 users" do
 	    # Variables
