@@ -448,11 +448,17 @@ describe "Expenses ->" do
 		    visit(menu_path)
 		    page.should have_link("Process expense")
 		end
+
 		before(:each) do
 		    # Get expense
 		    @exp=get_valid_expense
+		    # Get 2nd user
+		    u2=get_next_user
+		    @exp.group.add_user(u2)
 		    # Save expense
 		    @exp.save.should == true
+		    # Process expense
+		    @exp.process(@exp.user_id).should == true
 		    # Set Return properties
 		    r1={:expense_id => @exp.id, :amount => @exp.amount / 2.0, :transaction_date => @exp.date_purchased.to_s, :user_id => @exp.user_id, :description => 'description 1'}
 		    r2=r1.merge(:amount => (@exp.amount / 4.0).round(2), :description => 'description 2')

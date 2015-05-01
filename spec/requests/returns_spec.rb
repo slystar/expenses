@@ -4,6 +4,10 @@ describe "Returns" do
 
     before(:each) do
 	@exp=get_valid_expense
+	# Get 2nd user
+	u2=get_next_user
+	# Add 2nd user to group
+	@exp.group.add_user(u2)
 	@attr={:description => Faker::Company.name, :expense_id => @exp.id, :transaction_date => Date.today, :user_id => @exp.user_id, :amount => @exp.amount - 1}
     end
 

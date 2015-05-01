@@ -26,6 +26,9 @@ describe ReturnsController do
 	user=get_next_user
 	request.session[:user_id] = user.id
 	@exp=get_valid_expense
+	# add 2nd user to group
+	u2=get_next_user
+	@exp.group.add_user(u2)
     end
 
 

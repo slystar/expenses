@@ -9,10 +9,10 @@ describe Group do
 
     def create_expense_with_group()
 	@group=Group.create!(@attr)
-	expense=get_valid_expense
-	expense.group=@group
-	expense.save
-	return expense
+	@expense=get_valid_expense
+	@expense.group=@group
+	@expense.save
+	return @expense
     end
     it "should create a new instance given valid attributes" do
 	Group.create!(@attr)
@@ -79,6 +79,7 @@ describe Group do
 	expense=create_expense_with_group
 	group=expense.group
 	group_other=Group.create!(@attr.merge(:name => Faker::Name.name))
+	group_other.add_user(@expense.user)
 	Expense.create!(@attr_expense.merge(:group_id => group.id))
 	Expense.create!(@attr_expense.merge(:group_id => group_other.id))
 	@group.expenses.size.should == 2
@@ -114,6 +115,8 @@ describe Group do
 	expense=create_expense_with_group
 	group=expense.group
 	expense.destroy
+	# remove users
+	group.user_ids=[]
 	group.destroy
 	group.should be_destroyed
     end

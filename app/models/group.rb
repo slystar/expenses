@@ -45,7 +45,7 @@ class Group < ActiveRecord::Base
     # Method to check for users
     def check_for_users
 	if self.users.size > 0
-	    self.errors.add(:base,"Can't delete #{self.class} #{self.name}: because this group has existing users")
+	    self.errors.add(:base,"Can't delete #{self.class} '#{self.name}' because this group has existing users")
 	    return false
 	else
 	    return true

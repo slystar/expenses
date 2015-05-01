@@ -15,6 +15,9 @@ describe UserPayment do
 
     def create_return
 	@exp=get_valid_expense
+	# get 2nd user
+	u2=get_new_user('user_return')
+	@exp.group.add_user(u2)
 	attr_return={:description => Faker::Company.name, :expense_id => @exp.id, :transaction_date => Date.today, :user_id => @exp.user_id, :amount => @exp.amount - 1}
 	Return.create!(attr_return)
     end
