@@ -46,7 +46,7 @@
     = @expenses.size
   - flag_process=true
 - else
-  0 records to process
+  0 expenses to process
 
 %h2 Returns
 - if @returns.size > 0
@@ -73,6 +73,8 @@
     Records:
     = @returns.size
   - flag_process=true
+- else
+  0 returns to process
 - if flag_process
   %p
     = button_to 'Process', {:controller => :expenses, :action => "process_all_now"}, :method => :post, confirm: 'Are you sure?'
