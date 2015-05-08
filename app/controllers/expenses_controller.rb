@@ -479,6 +479,8 @@ class ExpensesController < ApplicationController
 	# Variables
 	count_good=0
 	count_bad=0
+	count_good_return=0
+	count_bad_return=0
 	# Loop over each record (this could be a list of id numbers from previous page but let's keep it simple)
 	@expenses=Expense.where(:process_flag => false).order(:user_id).order(:date_purchased).each do |e|
 	    # Process this record
@@ -490,6 +492,17 @@ class ExpensesController < ApplicationController
 		count_bad += 1
 	    end
 	end
-	redirect_to menu_path, notice: "All expenses processed, #{count_good} OK, #{count_bad} errors"
+	# Loop over each returnn
+	Return.where(:process_flag => false).order(:user_id).order(:transaction_date).each do |r|
+	    # Process this return
+	    if r.process(current_user.id)
+		# Add to count
+		count_good_return += 1
+	    else
+		# Add to count
+		count_bad_return += 1
+	    end
+	end
+	redirect_to menu_path, notice: "All expenses processed, #{count_good} OK, #{count_bad} errors, All returns processed, #{count_good_return} OK, #{count_bad_return} errors"
     end
 end

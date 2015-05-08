@@ -452,26 +452,30 @@ describe "Expenses ->" do
 		before(:each) do
 		    # Get expense
 		    @exp=get_valid_expense
-		    # Get 2nd user
-		    u2=get_next_user
-		    @exp.group.add_user(u2)
+		    # Get users
+		    @u1=@exp.user
+		    @u2=get_next_user
+		    @exp.group.add_user(@u2)
 		    # Save expense
 		    @exp.save.should == true
 		    # Process expense
-		    @exp.process(@exp.user_id).should == true
+		    @exp.process(@u1.id).should == true
 		    # Set Return properties
-		    r1={:expense_id => @exp.id, :amount => @exp.amount / 2.0, :transaction_date => @exp.date_purchased.to_s, :user_id => @exp.user_id, :description => 'description 1'}
-		    r2=r1.merge(:amount => (@exp.amount / 4.0).round(2), :description => 'description 2')
+		    @r1_amount=@exp.amount / 2.0
+		    @r2_amount=(@exp.amount / 4.0).round(2)
+		    r1={:expense_id => @exp.id, :amount => @r1_amount, :transaction_date => @exp.date_purchased.to_s, :user_id => @u1.id, :description => 'description 1'}
+		    r2=r1.merge(:amount => @r2_amount, :description => 'description 2')
 		    # Get a valid return
 		    @obj1=Return.new(r1)
 		    @obj2=Return.new(r2)
 		    # Save Return
 		    @obj1.save.should == true
 		    @obj2.save.should == true
-		end
-		it 'should show return on process page' do
 		    # Visit
 		    visit "/expenses/process_data"
+		end
+
+		it 'should show return on process page' do
 		    # Loop over returns
 		    [@obj1,@obj2].each do |o|
 			# Test
@@ -479,10 +483,61 @@ describe "Expenses ->" do
 			page.should have_content o.transaction_date.to_s
 			page.should have_content o.description
 			page.should have_content o.amount
-			page.should have_content o.expense.amount
 		    end
 		    page.should have_content "Total: #{@obj1.amount + @obj2.amount} $"
 		    page.should have_content "Returns"
+		end
+
+		it "should process a return" do
+		    # Current balance
+		    @u1.balances.first.amount.should == -(@exp.amount / 2.0)
+		    @u2.balances.first.amount.should == (@exp.amount / 2.0)
+		    # Click process button
+		    page.click_button("Process")
+		    # Reload records
+		    @obj1.reload
+		    @obj2.reload
+		    # Test
+		    current_path.should == menu_path
+		    @obj1.process_flag.should == true
+		    @obj2.process_flag.should == true
+		    page.should have_content "All expenses processed, 0 OK, 0 errors, All returns processed, 2 OK, 0 errors"
+		    UserPayment.where(:return_id => @obj1.id).first.amount.should == @r1_amount / 2.0
+		    UserPayment.where(:return_id => @obj2.id).first.amount.should == @r2_amount / 2.0
+		    UserDept.all.size.should == 1
+		    UserDept.first.amount.should == @exp.amount / 2.0
+		    @u2.balances.first.amount.should == ((@exp.amount / 2.0) - (@r1_amount / 2.0) - (@r2_amount / 2.0))
+		    @u1.balances.first.amount.should == -((@exp.amount / 2.0) - (@r1_amount / 2.0) - (@r2_amount / 2.0))
+		end
+
+		it "should process returns and expenses" do
+		    # Get unprocessed expense
+		    exp2=get_valid_expense
+		    exp2.user_id=@exp.user_id
+		    exp2.group = @exp.group
+		    exp2.amount = 33.33
+		    exp2.save.should == true
+		    # Click process button
+		    page.click_button("Process")
+		    # Reload records
+		    @obj1.reload
+		    @obj2.reload
+		    @exp.reload
+		    exp2.reload
+		    # Test
+		    current_path.should == menu_path
+		    @exp.process_flag.should == true
+		    exp2.process_flag.should == true
+		    @obj1.process_flag.should == true
+		    @obj2.process_flag.should == true
+		    page.should have_content "All expenses processed, 1 OK, 0 errors, All returns processed, 2 OK, 0 errors"
+		    UserPayment.where(:return_id => @obj1.id).first.amount.should == @r1_amount / 2.0
+		    UserPayment.where(:return_id => @obj2.id).first.amount.should == @r2_amount / 2.0
+		    UserDept.all.size.should == 2
+		    UserDept.first.amount.should == @exp.amount / 2.0
+		    UserDept.last.amount.should == exp2.amount / 2.0
+		    @u2.balances.first.amount.should == ((@exp.amount / 2.0) - (@r1_amount / 2.0) - (@r2_amount / 2.0) + exp2.amount / 2.0)
+		    @u1.balances.first.amount.should == -((@exp.amount / 2.0) - (@r1_amount / 2.0) - (@r2_amount / 2.0) + exp2.amount / 2.0)
 		end
 	    end
 
